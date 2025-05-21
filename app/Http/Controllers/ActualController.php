@@ -50,7 +50,7 @@ class ActualController extends Controller
 
         $targetUnits1 = DB::table('target_units')->leftJoin('targets', 'targets.target_unit_id', '=', 'target_units.id')->select('target_1', 'target_2', 'target_3', 'target_4', 'target_5', 'target_6', 'targets.id as target_id', 'targets.date as month')->where('employee_id', '=', $employeeID)->whereYear('targets.date', '=', $year)->get();
 
-        $targetUnits2 = DB::table('target_units')->leftJoin('targets', 'targets.target_unit_id', '=', 'target_units.id')->select('target_7', 'target_8', 'target_9', 'target_10', 'target_11', 'target_12',  'targets.id as target_id', 'targets.date as month')->where('employee_id', '=', $employeeID)->whereYear('targets.date', '=', $year)->get();
+        $targetUnits2 = DB::table('target_units')->leftJoin('targets', 'targets.target_unit_id', '=', 'target_units.id')->select('target_7', 'target_8', 'target_9', 'target_10', 'target_11', 'target_12', 'targets.id as target_id', 'targets.date as month')->where('employee_id', '=', $employeeID)->whereYear('targets.date', '=', $year)->get();
 
 
         // dd($actuals);
@@ -90,7 +90,7 @@ class ActualController extends Controller
 
         $targetUnits1 = DB::table('target_units')->leftJoin('department_targets', 'department_targets.target_unit_id', '=', 'target_units.id')->select('target_1', 'target_2', 'target_3', 'target_4', 'target_5', 'target_6', 'department_targets.id as target_id', 'department_targets.date as month')->where('department_id', '=', $departmentID)->whereYear('department_targets.date', '=', $year)->get();
 
-        $targetUnits2 = DB::table('target_units')->leftJoin('department_targets', 'department_targets.target_unit_id', '=', 'target_units.id')->select('target_7', 'target_8', 'target_9', 'target_10', 'target_11', 'target_12',  'department_targets.id as target_id', 'department_targets.date as month')->where('department_id', '=', $departmentID)->whereYear('department_targets.date', '=', $year)->get();
+        $targetUnits2 = DB::table('target_units')->leftJoin('department_targets', 'department_targets.target_unit_id', '=', 'target_units.id')->select('target_7', 'target_8', 'target_9', 'target_10', 'target_11', 'target_12', 'department_targets.id as target_id', 'department_targets.date as month')->where('department_id', '=', $departmentID)->whereYear('department_targets.date', '=', $year)->get();
 
 
         return view('actual.input-actual-department-details', [
@@ -397,30 +397,51 @@ class ActualController extends Controller
 
         $date = Carbon::createFromDate($request->year, $request->date, 1)->startOfMonth();
 
-        if ($request->hasFile('record_file')) {
-            $recordFile = $request->file('record_file');
-            $extension = $recordFile->getClientOriginalExtension();
+        try {
+            if ($request->hasFile('record_file')) {
+                $recordFile = $request->file('record_file');
+                $extension = $recordFile->getClientOriginalExtension();
 
-            if ($extension == 'jpeg' || $extension == 'jpg') {
-                $image = $recordFile;
-                $imageName = Str::random(40) . '.pdf';
+                if (in_array($extension, ['jpeg', 'jpg'])) {
+                // Simpan gambar sementara
+                $tempImageName = Str::random(40) . '.' . $extension;
+                $tempImagePath = public_path('temp/' . $tempImageName);
 
-                // Convert image to base64
-                $imageBase64 = "data:image/jpg;base64," . base64_encode(file_get_contents($image));
-                // dd($imageBase64, $imageName, $image);
+                // Pastikan folder temp ada
+                if (!file_exists(public_path('temp'))) {
+                    mkdir(public_path('temp'), 0755, true);
+                }
 
-                // Generate PDF with the image
+                $recordFile->move(public_path('temp'), $tempImageName);
+
+                // Buat nama file PDF tujuan
+                $pdfFileName = Str::random(40) . '.pdf';
+                $pdfFilePath = public_path('record_files/' . $pdfFileName);
+
+                // Buat PDF dari gambar
                 $pdf = app('dompdf.wrapper');
-                $res = $pdf->loadView('pdf.image', ['imageData' => $imageBase64]);
+                $pdf->loadView('pdf.image', ['imagePath' => $tempImagePath]);
 
-                // Save the PDF
-                $pdf->save(public_path('record_files/' . $imageName));
-                $recordFileName = $imageName; // Store the PDF file name
-            } else {
-                $recordFileName = Str::random(40) . '.' . $recordFile->getClientOriginalExtension();
-                $recordFile->move(public_path('record_files'), $recordFileName);
+                // Simpan PDF ke folder tujuan
+                if (!file_exists(public_path('record_files'))) {
+                    mkdir(public_path('record_files'), 0755, true);
+                }
+
+                $pdf->save($pdfFilePath);
+                $recordFileName = $pdfFileName;
+
+                // Hapus gambar sementara
+                unlink($tempImagePath);
+                } else {
+                    $recordFileName = Str::random(40) . '.' . $recordFile->getClientOriginalExtension();
+                    $recordFile->move(public_path('record_files'), $recordFileName);
+                }
             }
+        } catch (\Exception $e) {
+            dd("PDF generation failed: " . $e->getMessage());
         }
+
+
 
         $semester = '';
 
@@ -542,7 +563,8 @@ class ActualController extends Controller
             } elseif ($request->status == 'Revise') {
                 $actual->deadline = $newDeadline;
                 $actual->save();
-            };
+            }
+            ;
         }
 
         $actual->save();
@@ -577,7 +599,9 @@ class ActualController extends Controller
                 $actual->approved_by = $user;
             } elseif ($request->status == 'Revise') {
                 $actual->deadline = $newDeadline;
-            };;
+            }
+            ;
+            ;
         }
 
         $actual->save();

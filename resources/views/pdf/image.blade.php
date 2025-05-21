@@ -7,6 +7,6 @@
     <title>Document</title>
 </head>
 <body>
-    <img src="{{ $imageData }}" style="width: 100%; height: auto;">
+    <img src="{{ $imagePath }}" style="width: 100%; height: auto;">
 </body>
 </html>
