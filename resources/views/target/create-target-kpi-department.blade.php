@@ -1,4 +1,7 @@
 <x-app-layout :title="$title" :desc="$desc">
+  <div class="ml-64 mt-4 overflow-x-auto p-2 bg-white border border-gray-100 shadow-md shadow-black/10 rounded-md border-collapse">
+  <span class="px-2 font-semibold text-base">Departemen: {{ $departmentDetail->name }}</span>
+  </div>
     <div class="ml-64 mt-4 overflow-x-auto p-2 bg-white border border-gray-100 shadow-md shadow-black/10 rounded-md border-collapse">
       @php
       $semesterQuery = request()->query('semester');

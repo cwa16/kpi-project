@@ -47,8 +47,13 @@
                 </div>
             </div>
         </div>
-        <div class="flex justify-end mt-4 mb-2">
-            <a href="{{ route('user.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600">Tambah Employee</a>
+        <div class="flex justify-end mt-2 mb-2">
+            <div class="">
+                <input type="text" name="search" id="search" placeholder="Search" class="border border-gray-300 rounded-md px-4 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 mx-2" value="">
+            </div>
+            <div class="mb-0">
+                <a href="{{ route('user.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600">Tambah Employee</a>
+            </div>
         </div>
         <table class="w-full table-auto">
             <tr class="bg-blue-700">
@@ -60,15 +65,18 @@
                 <th style="width: 15%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-1">Email</th>
                 <th style="width: 7%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-1">Input Type</th>
                 <th style="width: 9%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-1">Role</th>
+                <th style="width: 9%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-1">Status Aktif</th>
                 <th style="width: 4%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-1">Aksi</th>
             </tr>
             @php
                 $i = ($users->currentPage() - 1) * $users->perPage();
             @endphp
+            <tbody id="user-table-body">
             @foreach ($users as $user)
             @php
                 $i++;
             @endphp
+                {{-- @include('users.partials-user-table') --}}
             <tr class="{{ $i % 2 == 0 ? 'bg-blue-100' : 'bg-white' }}">
                 <td class="border-2 border-gray-400 text-[14px] tracking-wide py-1 px-2 text-center">{{ $i }}</td>
                 <td class="border-2 border-gray-400 text-[14px] tracking-wide py-1 px-2">
@@ -91,6 +99,9 @@
                 </td>
                 <td class="border-2 border-gray-400 text-[14px] tracking-wide py-1 px-2">
                     {{ $user->role }}
+                </td>
+                <td class="border-2 border-gray-400 text-[14px] tracking-wide py-1 px-2">
+                    {{ $user->is_active }}
                 </td>
                 <td class="border-2 border-gray-400 text-[14px] tracking-wide py-0.5 px-1 text-center">
                    <div class="flex gap-x-1 justify-center">
@@ -139,6 +150,7 @@
             </div>
             {{-- delete modal ends --}}
             @endforeach
+            </tbody>
         </table>
     </div>
 
@@ -219,4 +231,13 @@
     function closeModal(modalId) {
         document.getElementById(modalId).classList.add('hidden');
     }
+
+    document.getElementById('search').addEventListener('input', function() {
+    let query = this.value;
+    fetch(`{{ route('user.search') }}?search=${encodeURIComponent(query)}`)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('user-table-body').innerHTML = html;
+        });
+});
 </script>

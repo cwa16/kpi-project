@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Jobs\ReminderCheck2Email;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SendEmailReminderCheck2 extends Command
 {
@@ -50,6 +51,9 @@ class SendEmailReminderCheck2 extends Command
                 ReminderCheck2Email::dispatch($details);
             }
         }
-        $this->info('Email reminders for Check 2 have been dispatched successfully.');
+        Log::channel('laravel-worker')->info(
+            'ReminderCheck2Email sent to: ' . $details['email']
+        );
+        // Log::channel('laravel-worker')->info('Email reminders for Check 2 have been dispatched successfully.');
     }
 }

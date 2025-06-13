@@ -175,17 +175,17 @@
                     $targetUnit = $target->$targetUnitField;
                     $sumTarget += $targetUnit;
                     $actual = $actuals->first(function($item) use ($target, $month) {
-                            return \Carbon\Carbon::parse($item->date)->format('m') == $month && $item->kpi_item == $target->indicator;
+                            return \Carbon\Carbon::parse($item->date)->format('m') == $month && $item->kpi_item == $target->indicator && $target->is_active == 1;
                         });
                         // dump($actual);
                 @endphp
                     <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                     @if ($actual)
-                    @if ($actual->target === '%')
-                        {{ $actual->target !== null ? ($actual->target * 100) . '%' : '' }}
-                    @elseif ($actual->target == 'Rp')
+                    @if ($actual->kpi_unit === '%')
+                        {{ $actual->target !== null ? $actual->target . '%' : '' }}
+                    @elseif ($actual->kpi_unit == 'Rp')
                     {{ $actual->target !== null ? substr(number_format($actual->target, 0, '.', ','), 0, 7) : ''}}
-                    @elseif ($actual->target == 'Kg')
+                    @elseif ($actual->kpi_unit == 'Kg')
                     {{ $actual->target !== null ? substr(number_format($actual->target, 1, '.', ','), 0, 7) : ''}}
                     @else
                         {{ $actual->target !== null ? $actual->target : 'N/A' }} 
@@ -241,8 +241,9 @@
                     @foreach ($months as $month => $monthName)
                     @php
                         $actual = $actuals->first(function($item) use ($target, $month) {
-                            return \Carbon\Carbon::parse($item->date)->format('m') == $month && $item->kpi_item == $target->indicator;
+                            return \Carbon\Carbon::parse($item->date)->format('m') == $month && $item->kpi_item == $target->indicator && $target->is_active == 1;
                         });
+                        
                         // dump($actual);
 
                         //  dump('target: ', $target, 'actual: ', $actual,  $month);
@@ -270,8 +271,8 @@
                         {{ number_format($totalActual, 0) }}%
                         @elseif ($target->unit === 'Tgl' || $target->unit === 'tgl')
                         {{ number_format($totalActual) }}
-                        @elseif ($target->unit === 'Rp')
-                        {{ substr(number_format($totalActual, 0, '.', ','), 0, 7) }}
+                        @elseif ($target->unit === 'Rp' || $target->unit === 'Rp/Kg' || $target->unit === 'Kg/Tap')
+                        {{ substr(number_format($totalActual, 0, '.', ','), 0, 9) }}
                         @elseif ($target->unit === 'Kg')
                         {{ substr(number_format($totalActual, 0, '.', ','), 0, 7) }}
                         @else

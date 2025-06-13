@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Jobs\ReminderInputEmail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\MailController;
 
 class SendEmailReminderInput extends Command
@@ -50,7 +51,11 @@ class SendEmailReminderInput extends Command
             if ($details['email'] !== null && $details['email'] !== '' && $details['email'] !== 0) {
                 ReminderInputEmail::dispatch($details);
             }
+            Log::channel('laravel-worker')->info(
+                'ReminderInputEmail sent to: ' . $details['email']
+            );
         }
-        $this->info('Email reminders for Input have been dispatched successfully.');
+
+        // Log::channel('laravel-worker')->info('Email reminder for input sent successfully.');
     }
 }

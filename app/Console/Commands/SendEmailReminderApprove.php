@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Jobs\ReminderApproveEmail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SendEmailReminderApprove extends Command
 {
@@ -50,6 +51,9 @@ class SendEmailReminderApprove extends Command
                 ReminderApproveEmail::dispatch($details);
             }
         }
-        $this->info('Email reminders for approval have been dispatched successfully.');
+        Log::channel('laravel-worker')->info(
+            'ReminderApproveEmail sent to: ' . $details['email']
+        );
+        // Log::channel('laravel-worker')->info('Email reminders for approval have been dispatched successfully.');
     }
 }

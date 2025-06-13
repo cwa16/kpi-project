@@ -265,7 +265,7 @@
                 @endif
                 @if ($role == 'Approver')
                 <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">
-                    <a href="{{ route('target.edit', ['id' => $target->id]) }}?semester={{ $semesterQuery }}">
+                    <a href="{{ route('target.edit', ['id' => $target->id]) }}?semester={{ $semesterQuery }}&employee={{ $employeeQuery }}">
                         <i class="ri-edit-2-line bg-yellow-500 p-1 rounded-sm"></i>
                     </a>
                 </td>
@@ -440,7 +440,7 @@
                 @endif
                 @if ($role == 'Approver')
                 <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">
-                    <a href="{{ route('target.edit', ['id' => $target->id]) }}?semester={{ $semesterQuery }}">
+                    <a href="{{ route('target.edit', ['id' => $target->id]) }}?semester={{ $semesterQuery }}&employee={{ $employeeQuery }}">
                         <i class="ri-edit-2-line bg-yellow-500 p-1 rounded-sm"></i>
                     </a>
                 </td>

@@ -504,9 +504,15 @@
                         achievement = (actual / target) * 100;
                     }
 
-                    if (achievement >= 150) {
+                    if (achievement >= 150 && unitValue == '%') {
                         achievement = 150;
+                    } else if (achievement >= 120 && (unitValue == 'Kg/Tap' || unitValue == 'Rp' || unitValue == 'Rp/Kg' || unitValue == 'Hari' || unitValue == 'Jam')) {
+                        achievement = 120;
+                    } else if (achievement >= 110 && (unitValue == 'Jlh' || unitValue == 'Freq')) {
+                        achievement = 100;
                     }
+
+
                     achievementField.value = Math.round(achievement) + '%';
                 } else {
                     achievementField.value = '';

@@ -133,17 +133,17 @@
                             });
                         @endphp
                         <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                            {{-- @if ($actual)
-                                @if ($actual->target === '%')
-                                    {{ $actual->target !== null ? ($actual->target * 100) . '%' : '' }}
-                                @elseif ($actual->target == 'Rp')
-                                {{ $actual->target !== null ? substr(number_format($actual->target, 0, '.', ','), 0, 7) : ''}}
-                                @elseif ($actual->target == 'Kg')
-                                {{ $actual->target !== null ? substr(number_format($actual->target, 1, '.', ','), 0, 7) : ''}}
-                                @else
-                                    {{ $actual->target !== null ? $actual->target : 'N/A' }} 
-                                @endif
-                            @else --}}
+                            @if ($actual)
+                            @if ($actual->kpi_unit === '%')
+                                {{ $actual->target !== null ? $actual->target . '%' : '' }}
+                            @elseif ($actual->kpi_unit == 'Rp')
+                            {{ $actual->target !== null ? substr(number_format($actual->target, 0, '.', ','), 0, 7) : ''}}
+                            @elseif ($actual->kpi_unit == 'Kg')
+                            {{ $actual->target !== null ? substr(number_format($actual->target, 1, '.', ','), 0, 7) : ''}}
+                            @else
+                                {{ $actual->target !== null ? $actual->target : 'N/A' }} 
+                            @endif
+                            @else
                                 @if ($target->unit === '%')
                                     {{ $targetUnit !== null ? ($targetUnit) . '%' : 'N/A' }}
                                 @elseif ($target->unit == 'Rp')
@@ -153,7 +153,7 @@
                                 @else
                                     {{ $targetUnit !== null ? $targetUnit : 'N/A' }} 
                                 @endif
-                            {{-- @endif --}}
+                            @endif
                         </td>
                         @endforeach
                         
@@ -593,17 +593,17 @@
                             });
                         @endphp
                         <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                            {{-- @if ($actual)
-                                @if ($actual->target === '%')
-                                    {{ $actual->target !== null ? ($actual->target * 100) . '%' : '' }}
-                                @elseif ($actual->target == 'Rp')
-                                {{ $actual->target !== null ? substr(number_format($actual->target, 0, '.', ','), 0, 7) : ''}}
-                                @elseif ($actual->target == 'Kg')
-                                {{ $actual->target !== null ? substr(number_format($actual->target, 1, '.', ','), 0, 7) : ''}}
-                                @else
-                                    {{ $actual->target !== null ? $actual->target : 'N/A' }} 
-                                @endif
-                            @else --}}
+                             @if ($actual)
+                            @if ($actual->kpi_unit === '%')
+                                {{ $actual->target !== null ? $actual->target . '%' : '' }}
+                            @elseif ($actual->kpi_unit == 'Rp')
+                            {{ $actual->target !== null ? substr(number_format($actual->target, 0, '.', ','), 0, 7) : ''}}
+                            @elseif ($actual->kpi_unit == 'Kg')
+                            {{ $actual->target !== null ? substr(number_format($actual->target, 1, '.', ','), 0, 7) : ''}}
+                            @else
+                                {{ $actual->target !== null ? $actual->target : 'N/A' }} 
+                            @endif
+                            @else
                                 @if ($target->unit === '%')
                                     {{ $targetUnit !== null ? ($targetUnit) . '%' : 'N/A' }}
                                 @elseif ($target->unit == 'Rp')
@@ -613,7 +613,7 @@
                                 @else
                                     {{ $targetUnit !== null ? $targetUnit : 'N/A' }} 
                                 @endif
-                            {{-- @endif --}}
+                            @endif
                         </td>
                         @endforeach
                         
@@ -962,7 +962,7 @@
                 <tr>
                     <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF" data-f-color="FFFFFFFF" class="border-2 bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center" id="changeColSpan" colspan="5">Total</td>
                     <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF" data-f-color="FFFFFFFF" class="border-2 bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center">{{ $sumWeighting }}%</td>
-                    <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF" data-f-color="FFFFFFFF" class="border-2 bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center" colspan="8"></td>
+                    <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF" data-f-color="FFFFFFFF" class="border-2 bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center" colspan="9"></td>
                     <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF" data-f-color="FFFFFFFF" class="border-2 bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center" colspan="1">{{ number_format($sumTotalWeightingAchievement, 1) }}%</td>
 
                 </tr>

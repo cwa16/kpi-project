@@ -1,4 +1,33 @@
 <x-app-layout :title="$title" :desc="$desc">
+   <div class="ml-64 mt-4 overflow-x-auto p-2 bg-white border border-gray-100 shadow-md shadow-black/10 rounded-md border-collapse">
+  <div class="flex justify-start">
+    <div class="px-2">
+      <span class="font-medium text-gray-600 text-sm">Employee Detail</span>
+    </div>
+  </div>
+  <table>
+    <tr>
+      <td class="px-2 py-0 font-semibold text-sm">NIK</td>
+      <td class="text-sm">:</td>
+      <td class="px-2 py-0 text-sm">{{ $employeeDetail->nik }}</td>
+    </tr>
+    <tr>
+      <td class="px-2 py-0 font-semibold text-sm">Nama</td>
+      <td class="text-sm">:</td>
+      <td class="px-2 py-0 text-sm">{{ $employeeDetail->name }}</td>
+    </tr>
+    <tr>
+      <td class="px-2 py-0 font-semibold text-sm">Jabatan</td>
+      <td class="text-sm">:</td>
+      <td class="px-2 py-0 text-sm">{{ $employeeDetail->occupation }}</td>
+    </tr>
+    <tr>
+      <td class="px-2 py-0 font-semibold text-sm">Departemen</td>
+      <td class="text-sm">:</td>
+      <td class="px-2 py-0 text-sm">{{ $employeeDetail->department }}</td>
+    </tr>
+  </table>
+  </div>
     <div class="ml-64 mt-4 overflow-x-auto p-2 bg-white border border-gray-100 shadow-md shadow-black/10 rounded-md border-collapse">
       @php
       $semesterQuery = request()->query('semester');

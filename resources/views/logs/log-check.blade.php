@@ -80,7 +80,7 @@
                     $targetCount = $targetCounts->first(function($item) use ($department) {
                         return $item->code == $department->code;
                     });
-                    $totalTarget = ($targetCount->total ?? 0) + ($targetCountDept->total ?? 0)
+                    $totalTarget = ($targetCount->total ?? 0) + ($targetCountDept->total ?? 0);
                 @endphp
                 <td class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2 text-center">{{ $targetCount->total ?? '' }}</td>
                 @if ($totalTarget > 0)
@@ -91,14 +91,6 @@
 
                 @foreach ($months as $month)
                 @php
-                    $actual = $actualCounts->first(function($item) use ($department, $month) {
-                        return \Carbon\Carbon::parse($item->month)->format('m') == $month && $item->department_code == $department->code;
-                    });
-                    $actualDept = $actualCountsDept->first(function($item) use ($department, $month) {
-                        return \Carbon\Carbon::parse($item->month)->format('m') == $month && $item->department_code == $department->code;
-                    });
-
-                    $totalActual = ($actual->total ?? 0) + ($actualDept->total ?? 0);
 
                     if ($semesterQuery == '1') {
                         $targetUnitCounts = $targetUnitCounts1;
@@ -117,6 +109,18 @@
                     });
 
                     $totalTargetUnitCount = ($targetUnitCount->$targetColumn ?? 0) + ($targetUnitCountDept->$targetColumn ?? 0);
+
+                    $actual = $actualCounts->first(function($item) use ($department, $month) {
+                        return $item->month == $month && $item->department_code == $department->code;
+                    });
+                    $actualDept = $actualCountsDept->first(function($item) use ($department, $month) {
+                        return $item->month == $month && $item->department_code == $department->code;
+                    });
+                    
+                    $totalActual = ($actual->total ?? 0) + ($actualDept->total ?? 0);
+                    // dump($month, $actual->month ?? 'none');
+                    // dump($department->code, $month,$actual->month ?? 'none')
+
 
                     // dump('Count iteration ' . $targetColumn .':', $targetUnitCountDept, 'Count Employee iteration ' . $targetColumn .':', $targetUnitCount)
                     

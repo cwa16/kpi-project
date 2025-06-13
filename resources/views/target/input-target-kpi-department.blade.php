@@ -63,7 +63,7 @@
                     </a>
                     @endif
                     @if ($role == 'Approver')
-                    <a href="{{ route('target.createTargetDept') }}?department={{ $departmentQuery }}&semester={{ $semesterQuery }}&year={{ $yearQuery }}" class="p-1 mx-0.5 bg-green-600 py-2 items-center rounded-md">
+                    <a href="{{ route('target.createTargetDept') }}?department={{ $departmentQuery }}&semester={{ $semesterQuery }}&year={{ $yearQuery }}&department={{ $departmentQuery }}s" class="p-1 mx-0.5 bg-green-600 py-2 items-center rounded-md">
                         <i class="ri-add-fill text-xl text-white"></i>
                         <span class="font-medium text-white">Add Target</span>
                     </a>
@@ -226,7 +226,7 @@
                     @endif
                     @if ($role == 'Approver')
                     <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-1 text-center">
-                        <a href="{{ route('target.editDept', ['id' => $target->id]) }}?semester={{ $semesterQuery }}">
+                        <a href="{{ route('target.editDept', ['id' => $target->id]) }}?semester={{ $semesterQuery }}&department={{ $departmentQuery }}">
                             <i class="ri-edit-2-line bg-yellow-500 p-1 rounded-sm"></i>
                         </a>
                     </td>

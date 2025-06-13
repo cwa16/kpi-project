@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
+use function Laravel\Prompts\select;
 
 class TargetController extends Controller
 {
@@ -268,7 +269,7 @@ class TargetController extends Controller
                 ->where(DB::raw('YEAR(targets.date)'), $year)
                 ->get();
 
-            // dd($targets);
+            // dd($inactiveTargets);
             $deadline = DB::table('setting_target_deadlines')->first();
 
             return view('target.input-target-kpi', ['title' => 'Input KPI Target', 'desc' => 'Employees', 'employee' => $employee, 'targets' => $targets, 'all' => $allStatus, 'inactiveTargets' => $inactiveTargets, 'deadline' => $deadline]);
@@ -437,21 +438,28 @@ class TargetController extends Controller
 
     public function edit($id)
     {
+        $employeeID = request()->query('employee');
+        $employeeDetail = DB::table('employees')->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
+            ->select('employees.*', 'departments.name as department')
+            ->where('employees.id', $employeeID)
+            ->first();
         $target = DB::table('targets')->leftJoin('target_units', 'target_units.id', '=', 'targets.target_unit_id')
             ->select('target_units.*', 'targets.*', DB::raw('YEAR(targets.date) as year'), 'targets.id as target_id', 'target_units.id as target_unit_id')
             ->where('targets.id', $id)
             ->first();
 
-        return view('target.edit-target-kpi', ['title' => 'Edit Data Target', 'desc' => 'Edit Target Employee', 'target' => $target]);
+        return view('target.edit-target-kpi', ['title' => 'Edit Data Target', 'desc' => 'Edit Target Employee', 'target' => $target, 'employeeDetail' => $employeeDetail]);
     }
     public function editDept($id)
     {
+        $departmentID = request()->query('department');
+        $departmentDetail = DB::table('departments')->where('id', $departmentID)->first();
         $target = DB::table('department_targets')->leftJoin('target_units', 'target_units.id', '=', 'department_targets.target_unit_id')
             ->select('target_units.*', 'department_targets.*', DB::raw('YEAR(department_targets.date) as year'), 'department_targets.id as department_target_id', 'target_units.id as target_unit_id')
             ->where('department_targets.id', $id)
             ->first();
 
-        return view('target.edit-target-kpi-department', ['title' => 'Edit Data Target', 'desc' => 'Edit Target Department', 'target' => $target]);
+        return view('target.edit-target-kpi-department', ['title' => 'Edit Data Target', 'desc' => 'Edit Target Department', 'target' => $target, 'departmentDetail' => $departmentDetail]);
     }
 
     public function update(Request $request)
@@ -539,20 +547,23 @@ class TargetController extends Controller
     {
         $employeeID = $request->query('employee');
 
-        DB::table('employees')->where('id', $employeeID)->first();
+        $employeeDetail = DB::table('employees')->leftJoin('departments', 'departments.id', '=', 'employees.department_id')->select('employees.*', 'departments.name as department')->where('employees.id', $employeeID)->first();
         return view('target.create-target-kpi', [
             'title' => 'Create Target',
             'desc' => 'Employee',
             'employeeID' => $employeeID,
+            'employeeDetail' => $employeeDetail,
         ]);
     }
     public function createTargetDept(Request $request)
     {
         $departmentID = $request->query('department');
+        $departmentDetail = DB::table('departments')->where('id', $departmentID)->first();
         return view('target.create-target-kpi-department', [
             'title' => 'Create Target',
             'desc' => 'Department',
             'departmentID' => $departmentID,
+            'departmentDetail' => $departmentDetail,
         ]);
     }
 

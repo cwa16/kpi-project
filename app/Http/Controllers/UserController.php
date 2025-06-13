@@ -97,6 +97,8 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'Please fill all the fields.');
         }
 
+        $isActive = $request->is_active == 'aktif' ? true : false;
+
         $data = [
             'name' => $request->name,
             'nik' => $request->nik,
@@ -108,21 +110,26 @@ class UserController extends Controller
             'input_type' => $request->input_type,
             'role' => $request->role,
             'phone' => $request->phone,
+            'is_active' => $isActive,
         ];
+
+
 
         // Check if password is provided
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
 
-        Employee::where('id', $id)->update($data);
+        $res = Employee::where('id', $id)->update($data);
+        // dd($res);
+
 
         return redirect()->route('user.index')->with('success', 'Employee updated successfully.');
     }
 
     public function softDelete($id)
     {
-        Employee::where('id', $id)->update(['is_active' => 0]);
+        Employee::where('id', $id)->update(['is_active' => false]);
 
         return redirect()->route('user.index')->with('success', 'Employee deleted successfully.');
     }
@@ -148,5 +155,17 @@ class UserController extends Controller
             ]);
 
         return redirect()->to('/')->with('success', 'Password reset successfully.');
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $users = DB::table('employees')->where('name', 'like', "%$search%")
+            ->orWhere('nik', 'like', "%$search%")
+            ->orWhere('email', 'like', "%$search%")
+            ->paginate(20);
+
+        // Return only the table rows as a partial view
+        return view('users.partials-user-table', compact('users'))->render();
     }
 }

@@ -59,6 +59,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('users')->group(function () {
         Route::get('/list', [UserController::class, 'index'])->name('user.index');
+        Route::get('/users/search', [UserController::class, 'search'])->name('user.search');
         Route::get('/create', [UserController::class, 'create'])->name('user.create');
         Route::post('/store', [UserController::class, 'store'])->name('user.store');
         Route::get('/edit/{id}', [UserController::class, 'edit'])->name('user.edit');
@@ -134,6 +135,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/log-input-individual', [LogController::class, 'individual'])->name('log-input.individual');
         Route::get('/log-input-monitoring-employee', [LogController::class, 'indexMonitoringEmployee'])->name('log-input.monitoringEmployee');
         Route::get('/log-input-monitoring-dept', [LogController::class, 'indexMonitoringDept'])->name('log-input.monitoringDept');
+        Route::get('/jobs-log', [LogController::class, 'jobsLog'])->name('log.jobsLog');
     });
 
     Route::prefix('action-plan')->group(function () {
