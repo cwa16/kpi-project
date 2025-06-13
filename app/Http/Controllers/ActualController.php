@@ -264,31 +264,50 @@ class ActualController extends Controller
         }
         $date = Carbon::createFromDate($request->year, $request->date, 1)->startOfMonth();
 
+        try {
+            if ($request->hasFile('record_file')) {
+                $recordFile = $request->file('record_file');
+                $extension = $recordFile->getClientOriginalExtension();
 
-        if ($request->hasFile('record_file')) {
-            $recordFile = $request->file('record_file');
-            $extension = $recordFile->getClientOriginalExtension();
+                if (in_array($extension, ['jpeg', 'jpg'])) {
+                // Simpan gambar sementara
+                $tempImageName = Str::random(40) . '.' . $extension;
+                $tempImagePath = public_path('temp/' . $tempImageName);
 
-            if ($extension == 'jpeg' || $extension == 'jpg') {
-                $image = $recordFile;
-                $imageName = Str::random(40) . '.pdf';
+                // Pastikan folder temp ada
+                if (!file_exists(public_path('temp'))) {
+                    mkdir(public_path('temp'), 0755, true);
+                }
 
-                // Convert image to base64
-                $imageBase64 = "data:image/jpg;base64," . base64_encode(file_get_contents($image));
-                // dd($imageBase64, $imageName, $image);
+                $recordFile->move(public_path('temp'), $tempImageName);
 
-                // Generate PDF with the image
+                // Buat nama file PDF tujuan
+                $pdfFileName = Str::random(40) . '.pdf';
+                $pdfFilePath = public_path('record_files/' . $pdfFileName);
+
+                // Buat PDF dari gambar
                 $pdf = app('dompdf.wrapper');
-                $res = $pdf->loadView('pdf.image', ['imageData' => $imageBase64]);
+                $pdf->loadView('pdf.image', ['imagePath' => $tempImagePath]);
 
-                // Save the PDF
-                $pdf->save(public_path('record_files/' . $imageName));
-                $recordFileName = $imageName; // Store the PDF file name
-            } else {
-                $recordFileName = Str::random(40) . '.' . $recordFile->getClientOriginalExtension();
-                $recordFile->move(public_path('record_files'), $recordFileName);
+                // Simpan PDF ke folder tujuan
+                if (!file_exists(public_path('record_files'))) {
+                    mkdir(public_path('record_files'), 0755, true);
+                }
+
+                $pdf->save($pdfFilePath);
+                $recordFileName = $pdfFileName;
+
+                // Hapus gambar sementara
+                unlink($tempImagePath);
+                } else {
+                    $recordFileName = Str::random(40) . '.' . $recordFile->getClientOriginalExtension();
+                    $recordFile->move(public_path('record_files'), $recordFileName);
+                }
             }
+        } catch (\Exception $e) {
+             dd("PDF generation failed: " . $e->getMessage());
         }
+
 
         $semester = '';
 
