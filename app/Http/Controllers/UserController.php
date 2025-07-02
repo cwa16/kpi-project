@@ -10,14 +10,50 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    // public function index(Request $request)
+    // {
+    //     $department = $request->query('department');
+    //     $status = $request->query('status');
+
+    //     $deptList = DB::table('departments')->get();
+    //     $statusList = DB::table('employees')->select('status')->distinct()->get();
+    //     $query = DB::table('employees')->where('is_active', 1);
+    //     if ($department && $status) {
+    //         $users = $query->where('department_id', $department)->where('status', $status)->paginate(20);
+    //     } elseif ($department) {
+    //         $users = $query->where('department_id', $department)->paginate(20);
+    //     } elseif ($status) {
+    //         $users = $query->where('status', $status)->paginate(20);
+    //     } else {
+    //         $users = $query->paginate(20);
+    //     }
+
+    //     return view('users.list-user', ['title' => 'Employees', 'desc' => 'Master Employee', 'users' => $users, 'deptList' => $deptList, 'statusList' => $statusList]);
+    // }
+
     public function index(Request $request)
     {
         $department = $request->query('department');
         $status = $request->query('status');
 
-        $deptList = DB::table('departments')->get();
-        $statusList = DB::table('employees')->select('status')->distinct()->get();
-        $query = DB::table('employees')->where('is_active', 1);
+        // Subquery for employees table from the first database
+        $employeesSubquery = DB::connection('mysql')->table('employees')
+            ->select('employees.*');
+
+        // Main query for users table from the second database
+        $employees = DB::connection('mysql2')->table('users')
+            ->leftJoinSub($employeesSubquery, 'employees', function ($join) {
+                $join->on('users.kpi_id', '=', 'employees.id');
+            })
+            ->select('employees.*')
+            ->where('users.active', 'yes')
+            ->where('users.kpi_id', '!=', null)
+            ->get();
+
+        $deptList = DB::connection('mysql')->table('departments')->get();
+        $statusList = DB::connection('mysql')->table('employees')->select('status')->distinct()->get();
+        $query = DB::connection('mysql')->table('employees')->where('is_active', 1);
+
         if ($department && $status) {
             $users = $query->where('department_id', $department)->where('status', $status)->paginate(20);
         } elseif ($department) {
@@ -28,7 +64,13 @@ class UserController extends Controller
             $users = $query->paginate(20);
         }
 
-        return view('users.list-user', ['title' => 'Employees', 'desc' => 'Master Employee', 'users' => $users, 'deptList' => $deptList, 'statusList' => $statusList]);
+        return view('users.list-user', [
+            'title' => 'Employees',
+            'desc' => 'Master Employee',
+            'users' => $users,
+            'deptList' => $deptList,
+            'statusList' => $statusList
+        ]);
     }
 
     public function create()
@@ -45,7 +87,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'nik' => 'required',
-            // 'email' => 'required',
+            'email' => 'required',
             'department_id' => 'required',
         ]);
 
@@ -89,15 +131,13 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'nik' => 'required',
-            // 'email' => 'required|email|unique:employees,email,' . $id,
+            'email' => 'required|email|unique:employees,email,' . $id,
             'department_id' => 'required',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->with('error', 'Please fill all the fields.');
         }
-
-        $isActive = $request->is_active == 'aktif' ? true : false;
 
         $data = [
             'name' => $request->name,
@@ -110,33 +150,28 @@ class UserController extends Controller
             'input_type' => $request->input_type,
             'role' => $request->role,
             'phone' => $request->phone,
-            'is_active' => $isActive,
         ];
-
-
 
         // Check if password is provided
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
 
-        $res = Employee::where('id', $id)->update($data);
-        // dd($res);
-
+        Employee::where('id', $id)->update($data);
 
         return redirect()->route('user.index')->with('success', 'Employee updated successfully.');
     }
 
     public function softDelete($id)
     {
-        Employee::where('id', $id)->update(['is_active' => false]);
+        Employee::where('id', $id)->update(['is_active' => 0]);
 
         return redirect()->route('user.index')->with('success', 'Employee deleted successfully.');
     }
 
     public function updatePassword(Request $request)
     {
-        // dd($request->all()); 
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'token' => 'required',
             'email' => 'required',
@@ -155,17 +190,5 @@ class UserController extends Controller
             ]);
 
         return redirect()->to('/')->with('success', 'Password reset successfully.');
-    }
-
-    public function search(Request $request)
-    {
-        $search = $request->input('search');
-        $users = DB::table('employees')->where('name', 'like', "%$search%")
-            ->orWhere('nik', 'like', "%$search%")
-            ->orWhere('email', 'like', "%$search%")
-            ->paginate(20);
-
-        // Return only the table rows as a partial view
-        return view('users.partials-user-table', compact('users'))->render();
     }
 }
