@@ -49,13 +49,23 @@
     <div class="flex justify-between">
         <div class="mt-0">   
             @if ($role == 'Approver')
-            <div class="relative mt-0 rounded-md mb-1">
+            <div class="flex gap-x-2">
+                 <div class="relative mt-0 rounded-md mb-1">
                 <button class="p-2 bg-blue-600 my-0 rounded-md">
                     <a id="set-deadline-link" href="{{ route('actual.editDeadline') }}">
                         <i class="ri-settings-2-line text-lg text-white"></i>
                         <span class="text-white">Setting Deadline KPI</span>
                     </a>
                 </button>
+            </div>
+            <div class="relative mt-0 rounded-md mb-1">
+                <button class="p-2 bg-blue-600 my-0 rounded-md">
+                    <a id="set-deadline-link" href="{{ route('actual.viewInputReminder') }}">
+                        <i class="ri-send-plane-2-line text-lg text-white"></i>
+                        <span class="text-white">Send Reminder</span>
+                    </a>
+                </button>
+            </div>
             </div>
             @endif
         </div>

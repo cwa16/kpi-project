@@ -24,7 +24,7 @@
                     <label for="email" class="font-semibold mb-0.5">Email:</label>
                     <input class="p-2 rounded-xl border-none mb-2" type="text" name="email" id="email" placeholder="Email" autocomplete="on">
                     <label for="password" class="font-semibold mb-0.5">Password:</label>
-                    <input class="p-2 rounded-xl border-none mb-0" type="password" name="password" id="password" placeholder="Password" autocomplete="on">
+                    <input class="p-2 rounded-xl border-none mb-0" type="password" name="password" id="password" placeholder="Password" autocomplete="off">
                     <div class="mb-3 mt-1 ml-1">
                         <a href="{{ route('reset-password') }}">
                             <p class="text-blue-500">Reset Password</p>

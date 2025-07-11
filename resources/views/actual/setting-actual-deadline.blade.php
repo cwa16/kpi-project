@@ -21,7 +21,7 @@
             <div class="flex justify-center">
                 <select name="deadline" id="deadline" class="col-start-1 row-start-1 w-1/2 appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                     <option value="">-- Pilih Deadline --</option>
-                   @for ($day = 16; $day <= 31; $day++)
+                   @for ($day = 15; $day <= 31; $day++)
                    <option value="{{ $day }}">{{ $day }}</option>
                    @endfor
                 </select>

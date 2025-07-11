@@ -14,6 +14,7 @@ use Dflydev\DotAccessData\Data;
 use App\Models\DepartmentTarget;
 use App\Imports\TargetDeptImport;
 use App\Imports\TargetUnitImport;
+use App\Models\Actual;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -473,6 +474,11 @@ class TargetController extends Controller
 
         $target = Target::find($id);
         $target->update(request()->all());
+        DB::table('actuals')
+            ->where('kpi_code', $request->code)
+            ->where('employee_id', $employee_id)
+            ->whereYear('date', $year)
+            ->update(['kpi_unit' => $request->unit]);
         $targetUnit = TargetUnit::find($targetUnitId);
         $targetUnit->update(request()->all());
 
@@ -491,6 +497,11 @@ class TargetController extends Controller
         $target->update(request()->all());
         $targetUnit = TargetUnit::find($targetUnitId);
         $targetUnit->update(request()->all());
+        DB::table('department_actuals')
+            ->where('kpi_code', $request->code)
+            ->where('department_id', $departmentID)
+            ->whereYear('date', $year)
+            ->update(['kpi_unit' => $request->unit]);
 
         return redirect()->to('/target/input-target-kpi-department?department=' . $departmentID . '&year=' . $year  . '&semester=' . $semester)->with('success', 'Data updated successfully.');
     }

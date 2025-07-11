@@ -193,9 +193,9 @@
                     @else
                     @if ($target->unit === '%')
                         {{ $targetUnit !== null ? ($targetUnit * 100) . '%' : 'N/A' }}
-                    @elseif ($target->unit == 'Rp')
+                    @elseif ($target->unit == 'Rp' || $target->unit == 'Kg/Tap' || $target->unit == 'Rp/Kg')
                     {{ $targetUnit !== null ? substr(number_format($targetUnit, 0, '.', ','), 0, 7) : 'N/A'}}
-                    @elseif ($target->unit == 'Kg')
+                    @elseif ($target->unit == 'Kg' )
                     {{ $targetUnit !== null ? substr(number_format($targetUnit, 1, '.', ','), 0, 7) : 'N/A'}}
                     @else
                         {{ $targetUnit !== null ? $targetUnit : 'N/A' }} 
@@ -205,19 +205,20 @@
                     </td>
                     @endforeach
                     
-                    @php
-                        $totalTarget = $sumTarget;
-                    @endphp
-                @if ($totalTarget >= 0)
+                @if ($targetUnit >= 0)
                      <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                         @if ($target->unit === '%')
                             {{ PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average(floatval($targetUnit)) * 100 }}%
+                        @elseif ( $target->unit === 'Tgl' || $target->unit === 'tgl' || $target->unit === 'mm' || $target->unit === 'M3' || $target->unit === 'Hari' || $target->unit === 'Freq "0"' || $target->unit === 'Jam')
+                        {{ PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average(floatval($actual ? $actual->target : $targetUnit)) }}
+                        @elseif ( $target->unit === 'Kg/Tap' || $target->unit === 'Rp/Kg')
+                        {{ substr(number_format (PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average($targetUnit), 0, '.', ','), 0, 9) }}
                         @elseif ($target->unit === 'Rp')
-                        {{ substr(number_format($totalTarget, 0, '.', ','), 0, 9) }}
+                        {{ substr(number_format($sumTarget, 0, '.', ','), 0, 9) }}
                         @elseif ($target->unit === 'Kg')
-                        {{ substr(number_format($totalTarget, 0, '.', ','), 0, 7) }}
+                        {{ substr(number_format($sumTarget, 0, '.', ','), 0, 7) }}
                         @else
-                        {{ $totalTarget }}
+                        {{ $sumTarget }}
                         @endif
                      </td>
                  @else
@@ -252,6 +253,8 @@
                     <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                     @if ($target->unit === '%')
                         {{ $actual ? $actual->actual . '%' : '' }}
+                    @elseif ($target->unit === 'Rp' || $target->unit === 'Rp/Kg' || $target->unit === 'Kg/Tap')
+                    {{ $actual ? substr(number_format($actual->actual, 0, '.', ','), 0, 7) : ''}}
                     @elseif ($target->unit == 'Rp')
                     {{ $actual ? substr(number_format($actual->actual, 0, '.', ','), 0, 7) : ''}}
                     @elseif ($target->unit == 'Kg')
@@ -265,7 +268,7 @@
                     @php
                          $totalActual = $totals[$target->indicator]['total_actual'] ?? 0;
                     @endphp
-                    @if ($totalTarget >= 0)
+                    @if ($targetUnit >= 0)
                      <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                         @if ($target->unit === '%')
                         {{ number_format($totalActual, 0) }}%
@@ -296,7 +299,7 @@
                     @php
                          $totalPercentage = $totals[$target->indicator]['percentageCalc'] ?? 0;
                     @endphp
-                    @if ($totalTarget >= 0)
+                    @if ($targetUnit >= 0)
                      <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">{{ number_format($totalPercentage) }}%</td>
                  @else
                      <td class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"></td>
@@ -330,7 +333,9 @@
                             // dd($userID);
                         @endphp
                             <button id="{{ $buttonId }}" class="hover:underline" data-month="{{ $date->format('m') }}" data-actual-id="{{ $actual->actual_id }}">
-                                @if ($actual->status == 'Revise')
+                                @if ($actual->status == 'Invalid')
+                                <span class="text-red-500">Invalid</span>
+                                @elseif ($actual->status == 'Revise')
                                 <span class="text-orange-600">Revisi</span>
                                 @elseif ($actual->approved_at != null)
                                 <span class="text-green-500">Yes</span>
@@ -342,6 +347,7 @@
                                 <span class="text-orange-300">Check 1</span>
                                 @elseif ($actual->input_at != null)
                                 <span class="text-yellow-500">Check</span>
+                                
                                 @endif
                             </button>
                             {{-- MODAL --}}
@@ -508,14 +514,22 @@
                                     @endphp
                                         @if ($role != 'Inputer' && $role != '')
                                             @if ($actual->status !== 'Approved')
-                                            <form action="{{ route('email.sendEmail') }}" method="POST">
-                                                @csrf
-                                                <div class="p-1 flex justify-start">
+                                                <div class="p-1 flex justify-start gap-x-2">
                                                     <span class="text-semibold mb-1 text-[12px]">Berikan Komentar      
                                                     </span>
+                                                    @if ($role == 'Approver')
+                                                    <div class="flex gap-x-2 items-center">
+                                                        <div class="">
+                                                            <input type="checkbox" name="is_invalid" id="is_invalid_{{ $actual->actual_id }}">
+                                                        </div>
+                                                        <span class="">Data Pendukung Invalid</span>
+                                                    </div>
+                                                    @endif
                                                 </div>
-                                                <div class="p-0 mb-2 flex justify-center">
-                                                    <textarea name="comment" id="comment" cols="58" rows="2"></textarea>
+                                            <form action="{{ route('email.sendEmail') }}" method="POST" id="send-email-form-{{ $actual->actual_id }}" >
+                                                @csrf
+                                                <div class="p-0 mb-2 flex justify-center gap-x-2">
+                                                    <textarea name="comment" id="comment" cols="40" rows="2"></textarea>
                                                 </div>
                                                 <div class="flex justify-center gap-3">
 
@@ -534,7 +548,26 @@
                                                     <input type="hidden" name="kpi_item" id="kpi_item" value="{{ $target->indicator }}">
                                                     <input type="hidden" name="department_id" id="department_id" value="{{ $actuals->first()->department_id }}">
                                                     <input type="hidden" name="actual_id" id="actual_id" value="{{ $actual->actual_id }}">
+                                                
+                                            </form>
+                                            </div>
+                                            <form action="{{ route('report.setInvalid') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="actual_id" id="" value="{{ $actual->actual_id }}">
+                                            <div class="hidden" id="invalid-comment-{{ $actual->actual_id }}">
+                                                <div class="p-1 flex justify-start">
+                                                    <span class="text-semibold mb-1 text-[12px]">
+                                                        Komentar data pendukung tidak valid:     
+                                                    </span>
                                                 </div>
+                                                <div class="p-0 mb-2 flex justify-center gap-x-2">
+                                                    <textarea name="invalid_reason" id="invalid_reason" cols="40" rows="2"></textarea>
+                                                </div>
+                                                <button type="submit" id="set-invalid-btn-{{ $actual->actual_id }}" class="bg-red-500 text-white px-4 py-2 rounded text-[12px] mb-3 hidden">
+                                                    <i class="ri-close-line"></i>
+                                                    <span>Set Data Invalid</span>
+                                                </button>
+                                            </div>
                                             </form>
                                             @endif
                                         @endif
@@ -679,18 +712,18 @@
                     @endforeach
                     
                     @php
-                        $totalTarget = $sumTarget;
+                        $targetUnit = $sumTarget;
                     @endphp
-                @if ($totalTarget >= 0)
+                @if ($targetUnit >= 0)
                      <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                         @if ($target->unit === '%')
                             {{ PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average(floatval($targetUnit)) * 100 }}%
                         @elseif ($target->unit === 'Rp')
-                        {{ substr(number_format($totalTarget, 0, '.', ','), 0, 9) }}
+                        {{ substr(number_format($targetUnit, 0, '.', ','), 0, 9) }}
                         @elseif ($target->unit === 'Kg')
-                        {{ substr(number_format($totalTarget, 0, '.', ','), 0, 7) }}
+                        {{ substr(number_format($targetUnit, 0, '.', ','), 0, 7) }}
                         @else
-                        {{ $totalTarget }}
+                        {{ $targetUnit }}
                         @endif
                      </td>
                  @else
@@ -736,7 +769,7 @@
                     @php
                          $totalActual = $totals[$target->indicator]['total_actual'] ?? 0;
                     @endphp
-                    @if ($totalTarget >= 0)
+                    @if ($targetUnit >= 0)
                      <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                         @if ($target->unit === '%')
                         {{ number_format($totalActual, 0) }}%
@@ -767,7 +800,7 @@
                     @php
                          $totalPercentage = $totals[$target->indicator]['percentageCalc'] ?? 0;
                     @endphp
-                    @if ($totalTarget >= 0)
+                    @if ($targetUnit >= 0)
                      <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">{{ number_format($totalPercentage) }}%</td>
                  @else
                      <td class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"></td>
@@ -1354,5 +1387,23 @@ document.getElementById('batch-approve-form').addEventListener('submit', functio
     } else {
         console.error('Hidden input fields not found');
     }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Select all checkboxes with id starting with 'is_invalid_'
+    document.querySelectorAll('input[type="checkbox"][id^="is_invalid_"]').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            // Get the actual_id from the checkbox id
+            const actualId = this.id.replace('is_invalid_', '');
+            const button = document.getElementById('set-invalid-btn-' + actualId);
+            const invalidComment = document.getElementById('invalid-comment-' + actualId);
+            const sendEamilForm = document.getElementById('send-email-form-' + actualId);
+            if (button) {
+                button.classList.toggle('hidden', !this.checked);
+                invalidComment.classList.toggle('hidden', !this.checked);
+                sendEamilForm.classList.toggle('hidden', this.checked);
+            }
+        });
+    });
 });
 </script>

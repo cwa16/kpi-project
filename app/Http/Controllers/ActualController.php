@@ -2,23 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\ApproveEmail;
 use Carbon\Carbon;
 use App\Models\Actual;
 use App\Models\Employee;
 use Barryvdh\DomPDF\PDF;
 use App\Mail\ApproveMail;
+use App\Jobs\ApproveEmail;
 use App\Models\Department;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Jobs\ReminderInputEmail;
 use App\Models\ActualDepartment;
 use App\Models\DepartmentActual;
+use App\Jobs\ReminderCheck1Email;
+use App\Jobs\ReminderCheck2Email;
+use App\Jobs\ReminderApproveEmail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Laravel\Facades\Image;
+use Psy\CodeCleaner\FunctionReturnInWriteContextPass;
 
 class ActualController extends Controller
 {
@@ -905,5 +911,146 @@ class ActualController extends Controller
 
         flash()->success('Deadline berhasil diperbarui.');
         return redirect()->back();
+    }
+
+    public function viewInputReminder()
+    {
+        $employees = DB::table('employees')
+            ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
+            ->where('email', '!=', null)
+            ->where('email', '!=', '')
+            ->where('email', '!=', "0")
+            ->select('employees.*', 'departments.name as department_name', 'departments.id as department_id')
+            ->paginate(10);
+        // dd($employees);
+        return view('actual.send-input-actual-reminder', ['title' => 'Send Input Reminder', 'desc' => 'Notification', 'employees' => $employees]);
+    }
+
+    public function sendReminderInput()
+    {
+        $details = [
+            'title' => 'Notifikasi Pengingat Pengisian Data KPI',
+            'greetings' => 'Yth. ',
+            'name' => '',
+            'msg' => 'Mengingatkan kembali untuk mengisi data KPI dan mengupload data pendukung KPI yang sesuai.',
+            'msg2' => 'Jika anda sudah mengisi data KPI dan data pendukung KPI, abaikan email ini.',
+            'closing' => 'Terima kasih atas perhatian dan kerjasamanya.',
+            'email' => '',
+        ];
+
+        $sendTo = DB::table('employees')
+            ->where('employees.role', '!=', 'Mng Approver')
+            ->select('employees.email', 'employees.name')
+            ->get();
+
+        foreach ($sendTo as $email) {
+            $details['email'] = $email->email;
+            $details['name'] = $email->name;
+
+            if ($details['email'] !== null && $details['email'] !== '' && $details['email'] !== 0) {
+                ReminderInputEmail::dispatch($details);
+            }
+            Log::channel('laravel-worker')->info(
+                'ReminderInputEmail sent to: ' . $details['email']
+            );
+        }
+
+        return redirect()->back()->with('success', 'Reminder Input Email Sent Successfully');
+    }
+
+    public function sendReminderCheck1()
+    {
+        $details = [
+            'title' => 'Notifikasi Pengingat Pengecekan (Check 1) Data KPI',
+            'greetings' => 'Yth. ',
+            'name' => '',
+            'msg' => 'Mengingatkan kembali untuk melakukan pengecekan (Check 1) pada data KPI dan data pendukung KPI yang sudah diinputkan.',
+            'msg2' => 'Jika anda sudah melakukan pengecekan data KPI dan data pendukung KPI, abaikan email ini.',
+            'closing' => 'Terima kasih atas perhatian dan kerjasamanya.',
+            'email' => '',
+        ];
+
+        $sendTo = DB::table('employees')
+            ->where('employees.occupation', '=', 'Asst Mng')
+            ->select('employees.email', 'employees.name')
+            ->get();
+
+        foreach ($sendTo as $email) {
+            $details['email'] = $email->email;
+            $details['name'] = $email->name;
+
+            if ($details['email'] !== null && $details['email'] !== '' && $details['email'] !== 0) {
+                ReminderCheck1Email::dispatch($details);
+            }
+        }
+        Log::channel('laravel-worker')->info(
+            'ReminderCheck1Email sent to: ' . $details['email']
+        );
+
+        return redirect()->back()->with('success', 'Reminder Check 1 Email Sent Successfully');
+    }
+
+    public function sendReminderCheck2()
+    {
+        $details = [
+            'title' => 'Notifikasi Pengingat Pengecekan (Check 2) Data KPI',
+            'greetings' => 'Yth. ',
+            'name' => '',
+            'msg' => 'Mengingatkan kembali untuk melakukan pengecekan (Check 2) pada data KPI dan data pendukung KPI yang sudah diinputkan.',
+            'msg2' => 'Jika anda sudah melakukan pengecekan data KPI dan data pendukung KPI, abaikan email ini.',
+            'closing' => 'Terima kasih atas perhatian dan kerjasamanya.',
+            'email' => '',
+        ];
+
+        $sendTo = DB::table('employees')
+            ->whereIn('employees.role', ['Checker Div 1', 'Checker Div 2'])
+            ->select('employees.email', 'employees.name')
+            ->get();
+
+        foreach ($sendTo as $email) {
+            $details['email'] = $email->email;
+            $details['name'] = $email->name;
+
+            if ($details['email'] !== null && $details['email'] !== '' && $details['email'] !== 0) {
+                ReminderCheck2Email::dispatch($details);
+            }
+        }
+        Log::channel('laravel-worker')->info(
+            'ReminderCheck2Email sent to: ' . $details['email']
+        );
+
+        return redirect()->back()->with('success', 'Reminder Check 2 Email Sent Successfully');
+    }
+
+    public function sendReminderMngApproval()
+    {
+        $details = [
+            'title' => 'Notifikasi Pengingat Persetujuan Data KPI',
+            'greetings' => 'Yth. ',
+            'name' => '',
+            'msg' => 'Mengingatkan kembali untuk melakukan persetujuan (Approve) pada data KPI dan data pendukung KPI yang sudah diinputkan.',
+            'msg2' => 'Jika anda sudah melakukan persetujuan data KPI dan data pendukung KPI, abaikan email ini.',
+            'closing' => 'Terima kasih atas perhatian dan kerjasamanya.',
+            'email' => '',
+        ];
+
+        $sendTo = DB::table('employees')
+            ->where('employees.role', '=', 'Mng Approver')
+            ->select('employees.email', 'employees.name')
+            ->get();
+
+        foreach ($sendTo as $email) {
+            $details['email'] = $email->email;
+            $details['name'] = $email->name;
+
+            if ($details['email'] !== null && $details['email'] !== '' && $details['email'] !== 0) {
+                ReminderApproveEmail::dispatch($details);
+            }
+        }
+        Log::channel('laravel-worker')->info(
+            'ReminderApproveEmail sent to: ' . $details['email']
+        );
+
+        return redirect()->back()->with('success', 'Reminder Mng Approval Email Sent Successfully');
     }
 }

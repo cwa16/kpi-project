@@ -115,6 +115,11 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/input-actual-department-achievement/batchUpdateDept', [ActualController::class, 'batchUpdateActualDept'])->name('actual.batchUpdateActualDept');
         Route::get('/setting-actual-deadline', [ActualController::class, 'editDeadline'])->name('actual.editDeadline');
         Route::put('/setting-actual-deadline/update', [ActualController::class, 'updateDeadline'])->name('actual.updateDeadline');
+        Route::get('/send-input-reminder', [ActualController::class, 'viewInputReminder'])->name('actual.viewInputReminder');
+        Route::post('/send-input-reminder/input', [ActualController::class, 'sendReminderInput'])->name('actual.sendReminderInput');
+        Route::post('/send-input-reminder/check1', [ActualController::class, 'sendReminderCheck1'])->name('actual.sendReminderCheck1');
+        Route::post('/send-input-reminder/check2', [ActualController::class, 'sendReminderCheck2'])->name('actual.sendReminderCheck2');
+        Route::post('/send-input-reminder/approve', [ActualController::class, 'sendReminderMngApproval'])->name('actual.sendReminderMngApproval');
     });
 
     Route::prefix('report')->group(function () {
@@ -127,6 +132,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/file-preview', [ReportController::class, 'showFile'])->name('report.showFile');
         Route::get('/file-preview-dept', [ReportController::class, 'showFileDept'])->name('report.showFileDept');
         Route::get('/kpi-department-report', [ReportController::class, 'departmentTargetReport'])->name('report.departmentTargetReport');
+        Route::post('/set-invalid', [ReportController::class, 'setDataInvalid'])->name('report.setInvalid');
     });
 
     Route::prefix('logs')->group(function () {
