@@ -414,10 +414,12 @@ class ReportController extends Controller
 
                 $zeroCheck = ($firstItem->target == 0) ? 'yes' : 'no';
                 if ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == '%' || $unitItem == 'Kg/Tap' || $unitItem == 'Rp/Kg' || $unitItem == 'mm' || $unitItem == 'M3' || $unitItem == 'Hari' || $unitItem == 'Freq "0"' || $unitItem == 'Jam' || $zeroCheck == 'yes') {
+                    $totalTarget = $group->sum(function ($item) {
+                        return (float) $item->target;
+                    });
                     $totalActual = $group->avg(function ($item) {
                         return $item->is_valid ? (float) $item->actual : 0;
                     });
-
                     $totalPercentage = $group->avg(function ($item) {
                         return  $item->is_valid ? (float) $item->kpi_percentage : 0;
                     });
