@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\Notifications\CustomResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Employee extends Model
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class Employee extends Authenticatable
 {
     use HasFactory;
 

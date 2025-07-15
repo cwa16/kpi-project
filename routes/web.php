@@ -2,8 +2,13 @@
 
 use App\Models\Actual;
 use App\Models\Preview;
+use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
+use Laravel\Sanctum\PersonalAccessToken;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MailController;
@@ -20,6 +25,32 @@ use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SupportingDocumentController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+
+// Route BSKP Gate
+Route::middleware(['web'])->get('/kpi-new/public', function (Request $request) {
+    $token = $request->query('token');
+    $appId = $request->query('app_id');
+
+    if (!$token || !$appId) {
+        abort(400, 'Token dan App ID harus disertakan.');
+    }
+
+    $response = Http::withToken($token)->get("http://127.0.0.1:8000/api/profile?app_id={$appId}");
+
+    if (!$response->ok()) abort(401);
+
+    $data = $response->json();
+
+    $user = Employee::firstWhere('email', $data['email']);
+
+    if ($user) {
+    Auth::guard('web')->login($user);
+
+    return redirect('/dashboard');
+} else {
+    abort(403, 'User tidak ditemukan di aplikasi ini');
+}
+});
 
 // Auth Routes
 Route::get('/', [AuthController::class, 'login']);
