@@ -35,7 +35,7 @@ Route::middleware(['web'])->get('/kpi-new/public', function (Request $request) {
         abort(400, 'Token dan App ID harus disertakan.');
     }
 
-    $response = Http::withToken($token)->get("http://127.0.0.1:8000/api/profile?app_id={$appId}");
+    $response = Http::withToken($token)->get("http://192.168.99.202/bskp-gate/public/api/profile?app_id={$appId}");
 
     if (!$response->ok()) abort(401);
 

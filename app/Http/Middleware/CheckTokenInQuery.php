@@ -16,7 +16,7 @@ class CheckTokenInQuery
         $token = $request->query('token');
         $appId = $request->query('app_id');
 
-        $response = Http::withToken($token)->get("http://127.0.0.1:8000/api/profile?app_id=$appId");
+        $response = Http::withToken($token)->get("http://192.168.99.202/bskp-gate/public/api/profile?app_id=$appId");
 
         if (!$response->ok()) {
             abort(401, 'Token tidak valid.');
@@ -34,5 +34,5 @@ class CheckTokenInQuery
 
     return $next($request);
     }
-    
+
 }
