@@ -346,14 +346,16 @@ class ActualController extends Controller
             'date' => $date,
             'department_id' => $request->department_id,
         ];
-
+        $actualDeadline = DB::table('setting_actual_deadlines')->first();
         $existingActual = DB::table('department_actuals')->where($searchConditions)->first();
         $existingActualApproved = DB::table('department_actuals')->where($searchConditions)
             ->whereIn('status', ['Approved'])->first();
+        $existingActualInvalid = DB::table('department_actuals')->where($searchConditions)
+            ->whereIn('status', ['Invalid'])->first();
         $revisedActual = DB::table('department_actuals')->where($searchConditions)
             ->whereIn('status', ['Revise'])->first();
 
-        $deadline = $existingActual->deadline ?? 15;
+        $deadline = $actualDeadline->open_until ?? 15;
 
         if (!$revisedActual) {
             if ($now > $deadline && ($role == '' || $role == 'Inputer' || $role == 'Checker 1')) {
@@ -368,8 +370,8 @@ class ActualController extends Controller
             }
         }
 
-        if ($existingActualApproved && ($role != 'Approver' || $existingActual->status != 'Revise')) {
-            flash()->error('Data sudah melewati Final Check (HRD)');
+        if (($existingActualApproved || $existingActualInvalid) && $role != 'Approver') {
+            flash()->error('Data dinyatakan tidak valid atau sudah melewati Final Check (HRD)');
             return redirect()->back()->withErrors(['status' => 'Cannot update or create record: Data sudah di check atau di approve.']);
         }
         $dataToUpdateOrCreate = [
@@ -507,6 +509,8 @@ class ActualController extends Controller
         $existingActual = DB::table('actuals')->where($searchConditions)->first();
         $existingActualApproved = DB::table('actuals')->where($searchConditions)
             ->whereIn('status', ['Approved'])->first();
+        $existingActualInvalid = DB::table('actuals')->where($searchConditions)
+            ->whereIn('status', ['Invalid'])->first();
         $revisedActual = DB::table('actuals')->where($searchConditions)
             ->whereIn('status', ['Revise'])->first();
 
@@ -525,8 +529,8 @@ class ActualController extends Controller
             }
         }
 
-        if ($existingActualApproved && $role != 'Approver') {
-            flash()->error('Data sudah melewati Final Check (HRD)');
+        if (($existingActualApproved || $existingActualInvalid) && $role != 'Approver') {
+            flash()->error('Data dinyatakan tidak valid atau sudah melewati Final Check (HRD)');
             return redirect()->back()->withErrors(['status' => 'Cannot update or create record: Data sudah di check atau di approve.']);
         }
 
