@@ -10,6 +10,7 @@
         $currentMonth = Carbon\Carbon::now()->month;
         $monthQuery = request()->query('month');
         $date = DateTime::createFromFormat('!m', $monthQuery);
+        // dd($date);
         $monthName = $date->format('F');
         function formatDate($dateString) {
         if ($dateString) {

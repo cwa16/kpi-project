@@ -133,6 +133,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/file-preview-dept', [ReportController::class, 'showFileDept'])->name('report.showFileDept');
         Route::get('/kpi-department-report', [ReportController::class, 'departmentTargetReport'])->name('report.departmentTargetReport');
         Route::post('/set-invalid', [ReportController::class, 'setDataInvalid'])->name('report.setInvalid');
+        Route::post('/set-invalid-dept', [ReportController::class, 'setDataInvalidDept'])->name('report.setInvalidDept');
     });
 
     Route::prefix('logs')->group(function () {

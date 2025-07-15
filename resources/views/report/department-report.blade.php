@@ -275,7 +275,9 @@
                             $pdfObjectId = 'pdfObject-' . $actual->department_actual_id;
                         @endphp
                             <button id="{{ $buttonId }}" class="hover:underline" data-month="{{ $date->format('m') }}" data-actual-id="{{ $actual->department_actual_id }}">
-                                @if ($actual->status == 'Revise')
+                                @if ($actual->status == 'Invalid')
+                                <span class="text-red-500">Invalid</span>
+                                @elseif ($actual->status == 'Revise')
                                 <span class="text-orange-600">Revisi</span>
                                 @elseif ($actual->approved_at != null)
                                 <span class="text-green-500">Yes</span>
@@ -454,14 +456,22 @@
                                     @endphp
                                         @if ($role != 'Inputer' && $role != '')
                                             @if ($actual->status !== 'Approved')
-                                            <form action="{{ route('email.sendEmailDept') }}" method="POST">
+                                            <div class="p-1 flex justify-start gap-x-2">
+                                                <span class="text-semibold mb-1 text-[12px]">Berikan Komentar      
+                                                </span>
+                                                @if ($role == 'Approver')
+                                                    <div class="flex gap-x-2 items-center">
+                                                        <div class="">
+                                                            <input type="checkbox" name="is_invalid" id="is_invalid_{{ $actual->department_actual_id }}">
+                                                        </div>
+                                                        <span class="">Data Pendukung Invalid</span>
+                                                    </div>
+                                                    @endif
+                                            </div>
+                                            <form action="{{ route('email.sendEmailDept') }}" method="POST" id="send-email-form-{{ $actual->department_actual_id }}">
                                                 @csrf
-                                                <div class="p-1 flex justify-start">
-                                                    <span class="text-semibold mb-1 text-[12px]">Berikan Komentar      
-                                                    </span>
-                                                </div>
                                                 <div class="p-0 mb-2 flex justify-center">
-                                                    <textarea name="comment" id="comment" cols="58" rows="2"></textarea>
+                                                    <textarea name="comment" id="comment" cols="40" rows="2"></textarea>
                                                 </div>
                                                 <div class="flex justify-center gap-3">
 
@@ -477,6 +487,24 @@
                                                 <input type="hidden" name="kpi_item" id="kpi_item" value="{{ $target->indicator }}">
                                                 <input type="hidden" name="department_id" id="department_id" value="{{ $target->department_id }}">
                                                 <input type="hidden" name="actual_id" id="actual_id" value="{{ $actual->department_actual_id }}">
+                                            </form>
+                                            <form action="{{ route('report.setInvalidDept') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="department_actual_id" id="" value="{{ $actual->department_actual_id }}">
+                                            <div class="hidden" id="invalid-comment-{{ $actual->department_actual_id }}">
+                                                <div class="p-1 flex justify-start">
+                                                    <span class="text-semibold mb-1 text-[12px]">
+                                                        Komentar data pendukung tidak valid:     
+                                                    </span>
+                                                </div>
+                                                <div class="p-0 mb-2 flex justify-center gap-x-2">
+                                                    <textarea name="invalid_reason" id="invalid_reason" cols="40" rows="2"></textarea>
+                                                </div>
+                                                <button type="submit" id="set-invalid-btn-{{ $actual->department_actual_id }}" class="bg-red-500 text-white px-4 py-2 rounded text-[12px] mb-3 hidden">
+                                                    <i class="ri-close-line"></i>
+                                                    <span>Set Data Invalid</span>
+                                                </button>
+                                            </div>
                                             </form>
                                             @endif
                                         @endif
@@ -1291,5 +1319,23 @@ document.getElementById('batch-approve-form').addEventListener('submit', functio
     } else {
         console.error('Hidden input fields not found');
     }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Select all checkboxes with id starting with 'is_invalid_'
+    document.querySelectorAll('input[type="checkbox"][id^="is_invalid_"]').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            // Get the actual_id from the checkbox id
+            const actualId = this.id.replace('is_invalid_', '');
+            const button = document.getElementById('set-invalid-btn-' + actualId);
+            const invalidComment = document.getElementById('invalid-comment-' + actualId);
+            const sendEamilForm = document.getElementById('send-email-form-' + actualId);
+            if (button) {
+                button.classList.toggle('hidden', !this.checked);
+                invalidComment.classList.toggle('hidden', !this.checked);
+                sendEamilForm.classList.toggle('hidden', this.checked);
+            }
+        });
+    });
 });
     </script>

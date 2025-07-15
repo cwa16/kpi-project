@@ -2193,4 +2193,18 @@ class ReportController extends Controller
         // Return a success response
         return back()->with('success', 'Data has been set to invalid successfully.');
     }
+
+    public function setDataInvalidDept(Request $request)
+    {
+        $actualId = $request->input('department_actual_id');
+        $invalidReason = $request->input('invalid_reason');
+
+        // Update the status of the actual record
+        DB::table('department_actuals')
+            ->where('id', $actualId)
+            ->update(['is_valid' => 0, 'status' => 'Invalid', 'invalid_reason' => $invalidReason]);
+
+        // Return a success response
+        return back()->with('success', 'Data has been set to invalid successfully.');
+    }
 }
