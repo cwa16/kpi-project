@@ -327,7 +327,7 @@
                                             </div>
                                             <div class="">
                                                 <span class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
-                                                    P:
+                                                    %:
                                                 </span>
                                                 <span id="percent-modal-{{ $actual->department_actual_id }}" class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
                                             </div>
@@ -798,7 +798,7 @@
                                 
                                 @endif
                             </button>
-                            {{-- MODAL --}}
+                           {{-- MODAL --}}
                             <div id="{{ $backgroundId }}" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden exclude-from-export"></div>
                             <div id="{{ $modalId }}" class="modal fixed inset-0 justify-center hidden exclude-from-export z-50 mt-5" data-month="{{ $date->format('m') }}">
                                 <div class="flex justify-center">
@@ -817,6 +817,26 @@
                                                 Komentar:
                                             </span>
                                             <span id="comment-modal-{{ $actual->department_actual_id }}" class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
+                                        </div>
+                                        <div class="p-0 flex gap-x-4 justify-center">
+                                            <div class="">
+                                                <span class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
+                                                    T:
+                                                </span>
+                                                <span id="t-modal-{{ $actual->department_actual_id }}" class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
+                                            </div>
+                                            <div class="">
+                                                <span class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
+                                                    A:
+                                                </span>
+                                                <span id="a-modal-{{ $actual->department_actual_id }}" class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
+                                            </div>
+                                            <div class="">
+                                                <span class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
+                                                    %:
+                                                </span>
+                                                <span id="percent-modal-{{ $actual->department_actual_id }}" class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="p-1 flex justify-between">
@@ -962,14 +982,22 @@
                                     @endphp
                                         @if ($role != 'Inputer' && $role != '')
                                             @if ($actual->status !== 'Approved')
-                                            <form action="{{ route('email.sendEmailDept') }}" method="POST">
+                                            <div class="p-1 flex justify-start gap-x-2">
+                                                <span class="text-semibold mb-1 text-[12px]">Berikan Komentar      
+                                                </span>
+                                                @if ($role == 'Approver')
+                                                    <div class="flex gap-x-2 items-center">
+                                                        <div class="">
+                                                            <input type="checkbox" name="is_invalid" id="is_invalid_{{ $actual->department_actual_id }}">
+                                                        </div>
+                                                        <span class="">Data Pendukung Invalid</span>
+                                                    </div>
+                                                    @endif
+                                            </div>
+                                            <form action="{{ route('email.sendEmailDept') }}" method="POST" id="send-email-form-{{ $actual->department_actual_id }}">
                                                 @csrf
-                                                <div class="p-1 flex justify-start">
-                                                    <span class="text-semibold mb-1 text-[12px]">Berikan Komentar      
-                                                    </span>
-                                                </div>
                                                 <div class="p-0 mb-2 flex justify-center">
-                                                    <textarea name="comment" id="comment" cols="58" rows="2"></textarea>
+                                                    <textarea name="comment" id="comment" cols="40" rows="2"></textarea>
                                                 </div>
                                                 <div class="flex justify-center gap-3">
 
@@ -985,6 +1013,24 @@
                                                 <input type="hidden" name="kpi_item" id="kpi_item" value="{{ $target->indicator }}">
                                                 <input type="hidden" name="department_id" id="department_id" value="{{ $target->department_id }}">
                                                 <input type="hidden" name="actual_id" id="actual_id" value="{{ $actual->department_actual_id }}">
+                                            </form>
+                                            <form action="{{ route('report.setInvalidDept') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="department_actual_id" id="" value="{{ $actual->department_actual_id }}">
+                                            <div class="hidden" id="invalid-comment-{{ $actual->department_actual_id }}">
+                                                <div class="p-1 flex justify-start">
+                                                    <span class="text-semibold mb-1 text-[12px]">
+                                                        Komentar data pendukung tidak valid:     
+                                                    </span>
+                                                </div>
+                                                <div class="p-0 mb-2 flex justify-center gap-x-2">
+                                                    <textarea name="invalid_reason" id="invalid_reason" cols="40" rows="2"></textarea>
+                                                </div>
+                                                <button type="submit" id="set-invalid-btn-{{ $actual->department_actual_id }}" class="bg-red-500 text-white px-4 py-2 rounded text-[12px] mb-3 hidden">
+                                                    <i class="ri-close-line"></i>
+                                                    <span>Set Data Invalid</span>
+                                                </button>
+                                            </div>
                                             </form>
                                             @endif
                                         @endif
