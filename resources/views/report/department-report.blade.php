@@ -312,6 +312,26 @@
                                             </span>
                                             <span id="comment-modal-{{ $actual->department_actual_id }}" class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
                                         </div>
+                                        <div class="p-0 flex gap-x-4 justify-center">
+                                            <div class="">
+                                                <span class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
+                                                    T:
+                                                </span>
+                                                <span id="t-modal-{{ $actual->department_actual_id }}" class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
+                                            </div>
+                                            <div class="">
+                                                <span class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
+                                                    A:
+                                                </span>
+                                                <span id="a-modal-{{ $actual->department_actual_id }}" class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
+                                            </div>
+                                            <div class="">
+                                                <span class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
+                                                    P:
+                                                </span>
+                                                <span id="percent-modal-{{ $actual->department_actual_id }}" class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="p-1 flex justify-between">
                                         <button id="{{ $prevButtonId }}" class="bg-blue-500 text-white p-2 text-[12px] rounded">Previous</button>
@@ -1124,6 +1144,9 @@
         const nextButton = document.getElementById(`nextButton-${index}`);
         const fileNumberElement = document.getElementById(`fileNumber-modal-${index}`);
         const commentElement = document.getElementById(`comment-modal-${index}`);
+        const targetModalId = document.getElementById(`t-modal-${actualId}`);
+        const actualModalId = document.getElementById(`a-modal-${actualId}`);
+        const percentModalId = document.getElementById(`percent-modal-${actualId}`);
         const currentIndex = currentIndexes[index]; // Get currentIndex for this modal
         const pdfUrls = pdfData[index]; // Get pdfUrls for this modal
     
@@ -1134,6 +1157,27 @@
             fileNumberElement.textContent = `${currentPdf.kpi_code} | ${currentPdf.kpi_item}`;
             if (currentPdf.comment != null) {
                 commentElement.textContent = `${currentPdf.comment}`;
+            }
+
+            // Format target with commas
+            if (currentPdf.target != null) {
+                const formattedTarget = parseFloat(currentPdf.target).toLocaleString('en-US');
+                targetModalId.textContent = formattedTarget;
+            } else {
+                targetModalId.textContent = '';
+            }
+
+            // Format actual with commas
+            if (currentPdf.actual != null) {
+                const formattedActual = parseFloat(currentPdf.actual).toLocaleString('en-US');
+                actualModalId.textContent = formattedActual;
+            } else {
+                actualModalId.textContent = '';
+            }
+            if (currentPdf.kpi_percentage != null) {
+                percentModalId.textContent = `${currentPdf.kpi_percentage}`;
+            } else {
+                percentModalId.textContent = '';
             }
         } else {
             pdfObject.data = '';

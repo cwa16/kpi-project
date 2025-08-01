@@ -163,30 +163,12 @@ class ReportController extends Controller
     {
         // dump($target, $actual);
         $zeroStatus = ($targetZero === "0" || $targetZero == 0) ? 'yes' : 'no';
-        $oneStatus = ($targetZero === "1" || $targetZero == 1) ? 'yes' : 'no';
+        // $oneStatus = ($targetZero === "1" || $targetZero == 1) ? 'yes' : 'no';
 
         // dump($zeroStatus, $targetZero);
 
 
-        if ($oneStatus == 'yes') {
-            if ($actual == 0) {
-                $oneCalc = '0%';
-            } elseif ($actual == 1) {
-                $oneCalc = '100%';
-            } elseif ($actual == 2) {
-                $oneCalc = '105%';
-            } else if ($actual == 3) {
-                $oneCalc = '110%';
-            } else if ($actual == 4) {
-                $oneCalc = '115%';
-            } else if ($actual >= 5) {
-                $oneCalc = '120%';
-            } else {
-                $oneCalc = '0%';
-            }
-            $percentageValue = $oneCalc;
-            return $percentageValue;
-        } elseif ($zeroStatus == 'yes') {
+        if ($zeroStatus == 'yes') {
             if ($actual == 0) {
                 $zeroCalc = '100%';
             } elseif ($actual == 1) {
@@ -207,13 +189,15 @@ class ReportController extends Controller
         } elseif ($unit == 'Tgl' || $unit == 'tgl') {
             $percentageValue = Averages::average($totalPercentage);
         } elseif ($trend == 'Negatif' || $trend == 'negatif') {
-            $percentageValue = ($target != 0 && $actual != 0) ? ($target / $actual) * 100 : 0;
+            if ($unit == 'Freq "0"') {
+                $percentageValue = Averages::average($totalPercentage);
+            } else {
+                $percentageValue = ($target != 0 && $actual != 0) ? ($target / $actual) * 100 : 0;
+            }
         } elseif ($trend == 'Positif'  || $trend == 'positif') {
             $percentageValue = ($target != 0 && $actual != 0) ? ($actual / $target) * 100 : 0;
         } else {
             $percentageValue = 0;
-            $oneCalc = 0;
-            $zeroCalc = 0;
         }
 
         return $percentageValue;
@@ -286,6 +270,7 @@ class ReportController extends Controller
 
             $groupedData = $actuals->groupBy('kpi_item');
             // dd($targets, $groupedData);
+            // dd($groupedData->get('Meeting KPI'));
 
 
             // Hitung total target dan actual untuk setiap kelompok
@@ -293,7 +278,7 @@ class ReportController extends Controller
                 $firstItem = $group->first();
                 $unitItem = $firstItem->kpi_unit;
 
-                if ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == '%' || $unitItem == 'Kg/Tap' || $unitItem == 'Rp/Kg' || $unitItem == 'mm' || $unitItem == 'M3' || $unitItem == 'Hari' || $unitItem == 'Freq "0"' || $unitItem == 'Jam') {
+                if ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == '%' || $unitItem == 'Kg/Tap' || $unitItem == 'Rp/Kg' || $unitItem == 'mm' || $unitItem == 'M3' || $unitItem == 'Hari' || $unitItem == 'Jam') {
                     $totalTarget = $group->avg(function ($item) {
                         return (float) $item->target;
                     });
@@ -314,7 +299,7 @@ class ReportController extends Controller
                         return $item->is_valid ? (float) $item->actual : 0;
                     });
 
-                    $totalPercentage = $group->sum(function ($item) {
+                    $totalPercentage = $group->avg(function ($item) {
                         return $item->is_valid ? (float) $item->kpi_percentage : 0;
                     });
                 }
@@ -412,9 +397,9 @@ class ReportController extends Controller
                 $firstItem = $group->first();
                 $unitItem = $firstItem->kpi_unit;
 
-                $zeroCheck = ($firstItem->target == 0) ? 'yes' : 'no';
-                if ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == '%' || $unitItem == 'Kg/Tap' || $unitItem == 'Rp/Kg' || $unitItem == 'mm' || $unitItem == 'M3' || $unitItem == 'Hari' || $unitItem == 'Freq "0"' || $unitItem == 'Jam' || $zeroCheck == 'yes') {
-                    $totalTarget = $group->sum(function ($item) {
+                // $zeroCheck = ($firstItem->target == 0) ? 'yes' : 'no';
+                if ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == '%' || $unitItem == 'Kg/Tap' || $unitItem == 'Rp/Kg' || $unitItem == 'mm' || $unitItem == 'M3' || $unitItem == 'Hari' || $unitItem == 'Jam') {
+                    $totalTarget = $group->avg(function ($item) {
                         return (float) $item->target;
                     });
                     $totalActual = $group->avg(function ($item) {
@@ -432,7 +417,7 @@ class ReportController extends Controller
                         return $item->is_valid ? (float) $item->actual : 0;
                     });
 
-                    $totalPercentage = $group->sum(function ($item) {
+                    $totalPercentage = $group->avg(callback: function ($item) {
                         return $item->is_valid ? (float) $item->kpi_percentage : 0;
                     });
                 }
@@ -582,7 +567,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -633,7 +618,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -683,7 +668,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -733,7 +718,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -981,7 +966,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1032,7 +1017,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1081,7 +1066,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1134,7 +1119,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1184,7 +1169,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1234,7 +1219,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1286,7 +1271,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1336,7 +1321,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1551,7 +1536,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1601,7 +1586,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1652,7 +1637,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1704,7 +1689,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1880,7 +1865,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1937,7 +1922,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -1988,7 +1973,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -2039,7 +2024,7 @@ class ReportController extends Controller
                             return $item->is_valid ? (float) $item->actual : 0;
                         });
 
-                        $totalPercentage = $subGroup->sum(function ($item) {
+                        $totalPercentage = $subGroup->avg(function ($item) {
                             return $item->is_valid ? (float) $item->kpi_percentage : 0;
                         });
                     }
@@ -2123,7 +2108,7 @@ class ReportController extends Controller
 
         $pdfUrls = Actual::whereMonth('date', $month)
             ->where('id', $actualId)
-            ->get(['id', 'record_file', 'kpi_code', 'kpi_item', 'status', 'comment'])
+            ->get(['id', 'record_file', 'kpi_code', 'kpi_item', 'status', 'comment', 'target', 'actual', 'kpi_percentage'])
             ->toArray();
 
         return response()->json($pdfUrls);
@@ -2136,7 +2121,7 @@ class ReportController extends Controller
 
         $pdfUrls = DepartmentActual::whereMonth('date', $month)
             ->where('id', $actualId)
-            ->get(['id', 'record_file', 'kpi_code', 'kpi_item', 'status', 'comment'])
+            ->get(['id', 'record_file', 'kpi_code', 'kpi_item', 'status', 'comment', 'target', 'actual', 'kpi_percentage'])
             ->toArray();
 
         return response()->json($pdfUrls);
