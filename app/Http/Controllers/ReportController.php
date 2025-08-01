@@ -313,6 +313,14 @@ class ReportController extends Controller
 
                 $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
+                if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                    $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                    $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                    $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                }
+
                 $weight = floatval($group->first()->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                 $totalAchievementWeight = $convertedCalc * $weight / 100;
 
@@ -431,6 +439,14 @@ class ReportController extends Controller
 
                 $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
                 // dd($convertedCalc);
+
+                if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                    $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                    $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                    $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                }
 
 
                 $weight = floatval($group->first()->kpi_weighting); // Ambil bobot dari item pertama dalam grup
@@ -577,6 +593,22 @@ class ReportController extends Controller
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
+
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
+
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
 
@@ -626,6 +658,14 @@ class ReportController extends Controller
                     $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem,  $unitItem, $totalPercentage);
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
 
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
@@ -677,6 +717,14 @@ class ReportController extends Controller
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
+
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
 
@@ -726,6 +774,14 @@ class ReportController extends Controller
                     $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem, $unitItem, $totalPercentage);
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
 
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
@@ -975,6 +1031,14 @@ class ReportController extends Controller
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
+
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
 
@@ -1025,6 +1089,14 @@ class ReportController extends Controller
                     $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem, $unitItem, $totalPercentage);
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
 
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
@@ -1077,6 +1149,14 @@ class ReportController extends Controller
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
+
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
 
@@ -1128,6 +1208,14 @@ class ReportController extends Controller
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
+
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
 
@@ -1177,6 +1265,14 @@ class ReportController extends Controller
                     $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem,  $unitItem, $totalPercentage);
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
 
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
@@ -1230,6 +1326,14 @@ class ReportController extends Controller
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
+
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
 
@@ -1279,6 +1383,14 @@ class ReportController extends Controller
                     $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem, $unitItem,  $totalPercentage);
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
 
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
@@ -1331,6 +1443,14 @@ class ReportController extends Controller
 
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
 
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
@@ -1545,6 +1665,14 @@ class ReportController extends Controller
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
+
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
 
@@ -1594,6 +1722,14 @@ class ReportController extends Controller
                     $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem, $unitItem,  $totalPercentage);
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
 
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
@@ -1646,6 +1782,14 @@ class ReportController extends Controller
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
+
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
 
@@ -1697,6 +1841,14 @@ class ReportController extends Controller
                     $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem,  $unitItem,  $totalPercentage);
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
 
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
@@ -1880,6 +2032,14 @@ class ReportController extends Controller
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
+
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
 
@@ -1930,6 +2090,14 @@ class ReportController extends Controller
                     $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem,  $unitItem,  $totalPercentage);
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
 
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
@@ -1982,6 +2150,14 @@ class ReportController extends Controller
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
+
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;
 
@@ -2032,6 +2208,14 @@ class ReportController extends Controller
                     $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem,  $unitItem,  $totalPercentage);
 
                     $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+
+                    if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
+                        $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
+                    } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
+                        $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
+                    } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                        $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                    }
 
                     $weight = floatval($firstItem->kpi_weighting); // Ambil bobot dari item pertama dalam grup
                     $totalAchievementWeight = $convertedCalc * $weight / 100;

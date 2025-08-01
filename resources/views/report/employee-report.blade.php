@@ -278,6 +278,8 @@
                         {{ substr(number_format($totalActual, 0, '.', ','), 0, 9) }}
                         @elseif ($target->unit === 'Kg')
                         {{ substr(number_format($totalActual, 0, '.', ','), 0, 7) }}
+                        @elseif ($target->unit == 'Hari' || $target->unit == 'Jam')
+                        {{ number_format($totalActual, 1) }}
                         @else
                         {{ $totalActual }}
                         @endif
@@ -300,7 +302,7 @@
                          $totalPercentage = $totals[$target->indicator]['percentageCalc'] ?? 0;
                     @endphp
                     @if ($targetUnit >= 0)
-                     <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">{{ number_format($totalPercentage) }}%</td>
+                     <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">{{ number_format($totalPercentage, 0) }}%</td>
                  @else
                      <td class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"></td>
                  @endif
