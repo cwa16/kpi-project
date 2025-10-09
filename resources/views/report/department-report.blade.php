@@ -74,15 +74,15 @@
                     @php
                     $months = [];
                     $selectedSemester = $semester ?? 1;
-                
+
                     if ($selectedSemester == 1) {
                         $months = [
-                            '1' => 'Jan', '2' => 'Feb', '3' => 'Mar', '4' => 'Apr', 
+                            '1' => 'Jan', '2' => 'Feb', '3' => 'Mar', '4' => 'Apr',
                             '5' => 'May', '6' => 'Jun'
                         ];
                     } else {
                         $months = [
-                            '7' => 'Jul', '8' => 'Aug', '9' => 'Sep', '10' => 'Oct', 
+                            '7' => 'Jul', '8' => 'Aug', '9' => 'Sep', '10' => 'Oct',
                             '11' => 'Nov', '12' => 'Dec'
                         ];
                     }
@@ -99,7 +99,7 @@
                         $sumTotalWeightingAchievement = 0;
                     @endphp
                     @foreach ($targets as $target)
-                    @php        
+                    @php
                         $i++;
                     @endphp
                     <tr class="{{ $i % 2 === 0 ? 'bg-blue-100' : 'bg-gray-50' }}">
@@ -141,7 +141,7 @@
                             @elseif ($actual->kpi_unit == 'Kg')
                             {{ $actual->target !== null ? substr(number_format($actual->target, 1, '.', ','), 0, 7) : ''}}
                             @else
-                                {{ $actual->target !== null ? $actual->target : 'N/A' }} 
+                                {{ $actual->target !== null ? $actual->target : 'N/A' }}
                             @endif
                             @else
                                 @if ($target->unit === '%')
@@ -151,12 +151,12 @@
                                 @elseif ($target->unit == 'Kg')
                                 {{ $targetUnit !== null ? substr(number_format($targetUnit, 1, '.', ','), 0, 7) : 'N/A'}}
                                 @else
-                                    {{ $targetUnit !== null ? $targetUnit : 'N/A' }} 
+                                    {{ $targetUnit !== null ? $targetUnit : 'N/A' }}
                                 @endif
                             @endif
                         </td>
                         @endforeach
-                        
+
                         @php
                             $totalTarget = $sumTarget;
                         @endphp
@@ -179,8 +179,8 @@
                             $totalWeightingAchievement = $totals[$target->code]['total_achievement_weight'] ?? 0;
                             $sumTotalWeightingAchievement += $totalWeightingAchievement;
                         @endphp
-    
-    
+
+
                          @if ($totalWeightingAchievement >= 0)
                          <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center" rowspan="4">{{ number_format($totalWeightingAchievement, 1) }}%</td>
                         @else
@@ -195,7 +195,7 @@
                                 return \Carbon\Carbon::parse($item->date)->format('m') == $month && $item->kpi_code == $target->code;
                             });
                         @endphp
-                        
+
                         <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                         @if ($target->unit === '%')
                             {{ $actual ? $actual->actual . '%' : '' }}
@@ -208,7 +208,7 @@
                         @endif
                         </td>
                         @endforeach
-    
+
                         @php
                              $totalActual = $totals[$target->code]['total_actual'] ?? 0;
                         @endphp
@@ -289,7 +289,7 @@
                                 <span class="text-orange-300">Check 1</span>
                                 @elseif ($actual->input_at != null)
                                 <span class="text-yellow-500">Check</span>
-                                
+
                                 @endif
                             </button>
                             {{-- MODAL --}}
@@ -345,11 +345,11 @@
                                             <label class="text-[14px]">
                                                 <input type="checkbox" class="status-checkbox" data-actual-id="{{ $actual->department_actual_id }}" data-status="Checked 1" {{ $actual->asst_mng_checked_at ? 'checked' : '' }} {{ $role == 'Checker 1' || $role == 'Checker WS' || $role == 'Checker Factory' || $role == 'FAD' || $email == 'widya.citra@bskp.co.id' ? '' : 'disabled' }}>
                                                 Check 1
-                                            </label>             
+                                            </label>
                                             <div class="flex justify-center gap-x-2 mt-1.5">
                                                 <div class="flex flex-col">
                                                     <span class="text-[9px] text-center">Check 1 By:</span>
-                                                    @if ($actual->asst_mng_checked_by)                                 
+                                                    @if ($actual->asst_mng_checked_by)
                                                     <span class="text-[9px] text-center">
                                                         {{ $actual->asst_mng_checked_by }}
                                                     </span>
@@ -381,7 +381,7 @@
                                             <div class="flex justify-center gap-x-2 mt-1.5">
                                                 <div class="flex flex-col">
                                                     <span class="text-[9px] text-center">Check 2 By:</span>
-                                                    @if ($actual->checked_by)                                 
+                                                    @if ($actual->checked_by)
                                                     <span class="text-[9px] text-center">
                                                         {{ $actual->checked_by }}
                                                     </span>
@@ -413,7 +413,7 @@
                                             <div class="flex justify-center gap-x-2 mt-1.5">
                                                 <div class="flex flex-col">
                                                     <span class="text-[9px] text-center">Approved By:</span>
-                                                    @if ($actual->mng_approved_by)                                 
+                                                    @if ($actual->mng_approved_by)
                                                     <span class="text-[9px] text-center">
                                                         {{ $actual->mng_approved_by }}
                                                     </span>
@@ -445,7 +445,7 @@
                                             <div class="flex justify-center gap-x-2 mt-1.5">
                                                 <div class="flex flex-col">
                                                     <span class="text-[9px] text-center">Final Check By:</span>
-                                                    @if ($actual->approved_by)                                 
+                                                    @if ($actual->approved_by)
                                                     <span class="text-[9px] text-center">
                                                         {{ \Carbon\Carbon::parse($actual->approved_at)->format('d M Y H:i') }}
                                                     </span>
@@ -477,7 +477,7 @@
                                         @if ($role != 'Inputer' && $role != '')
                                             @if ($actual->status !== 'Approved')
                                             <div class="p-1 flex justify-start gap-x-2">
-                                                <span class="text-semibold mb-1 text-[12px]">Berikan Komentar      
+                                                <span class="text-semibold mb-1 text-[12px]">Berikan Komentar
                                                 </span>
                                                 @if ($role == 'Approver')
                                                     <div class="flex gap-x-2 items-center">
@@ -500,7 +500,7 @@
                                                             <i class="ri-send-plane-line"></i>
                                                             <span>Kirim Revisi</span>
                                                         </button>
-                                                        
+
                                                     </div>
                                                 </div>
                                                 <input type="hidden" name="kpi_code" id="kpi_code" value="{{ $target->code }}">
@@ -514,7 +514,7 @@
                                             <div class="hidden" id="invalid-comment-{{ $actual->department_actual_id }}">
                                                 <div class="p-1 flex justify-start">
                                                     <span class="text-semibold mb-1 text-[12px]">
-                                                        Komentar data pendukung tidak valid:     
+                                                        Komentar data pendukung tidak valid:
                                                     </span>
                                                 </div>
                                                 <div class="p-0 mb-2 flex justify-center gap-x-2">
@@ -528,7 +528,7 @@
                                             </form>
                                             @endif
                                         @endif
-                                    
+
                                     {{-- <div class="flex justify-end">
                                         <button id="close-modal-{{ $modalId }}" class="bg-red-500 text-white px-4 py-2 rounded mr-2 text-[12px] mt-0.5">Close</button>
                                     </div> --}}
@@ -582,15 +582,15 @@
                     @php
                     $months = [];
                     $selectedSemester = $semester ?? 1;
-                
+
                     if ($selectedSemester == 1) {
                         $months = [
-                            '1' => 'Jan', '2' => 'Feb', '3' => 'Mar', '4' => 'Apr', 
+                            '1' => 'Jan', '2' => 'Feb', '3' => 'Mar', '4' => 'Apr',
                             '5' => 'May', '6' => 'Jun'
                         ];
                     } else {
                         $months = [
-                            '7' => 'Jul', '8' => 'Aug', '9' => 'Sep', '10' => 'Oct', 
+                            '7' => 'Jul', '8' => 'Aug', '9' => 'Sep', '10' => 'Oct',
                             '11' => 'Nov', '12' => 'Dec'
                         ];
                     }
@@ -607,7 +607,7 @@
                         $sumTotalWeightingAchievement = 0;
                     @endphp
                     @foreach ($inactiveTargets as $target)
-                    @php        
+                    @php
                         $i++;
                     @endphp
                     <tr class="{{ $i % 2 === 0 ? 'bg-blue-100' : 'bg-gray-50' }}">
@@ -649,7 +649,7 @@
                             @elseif ($actual->kpi_unit == 'Kg')
                             {{ $actual->target !== null ? substr(number_format($actual->target, 1, '.', ','), 0, 7) : ''}}
                             @else
-                                {{ $actual->target !== null ? $actual->target : 'N/A' }} 
+                                {{ $actual->target !== null ? $actual->target : 'N/A' }}
                             @endif
                             @else
                                 @if ($target->unit === '%')
@@ -659,12 +659,12 @@
                                 @elseif ($target->unit == 'Kg')
                                 {{ $targetUnit !== null ? substr(number_format($targetUnit, 1, '.', ','), 0, 7) : 'N/A'}}
                                 @else
-                                    {{ $targetUnit !== null ? $targetUnit : 'N/A' }} 
+                                    {{ $targetUnit !== null ? $targetUnit : 'N/A' }}
                                 @endif
                             @endif
                         </td>
                         @endforeach
-                        
+
                         @php
                             $totalTarget = $sumTarget;
                         @endphp
@@ -687,8 +687,8 @@
                             $totalWeightingAchievement = $totals[$target->code]['total_achievement_weight'] ?? 0;
                             $sumTotalWeightingAchievement += $totalWeightingAchievement;
                         @endphp
-    
-    
+
+
                          @if ($totalWeightingAchievement >= 0)
                          <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center" rowspan="4">{{ number_format($totalWeightingAchievement, 1) }}%</td>
                         @else
@@ -703,7 +703,7 @@
                                 return \Carbon\Carbon::parse($item->date)->format('m') == $month && $item->kpi_code == $target->code;
                             });
                         @endphp
-                        
+
                         <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                         @if ($target->unit === '%')
                             {{ $actual ? $actual->actual . '%' : '' }}
@@ -716,7 +716,7 @@
                         @endif
                         </td>
                         @endforeach
-    
+
                         @php
                              $totalActual = $totals[$target->code]['total_actual'] ?? 0;
                         @endphp
@@ -795,7 +795,7 @@
                                 <span class="text-orange-300">Check 1</span>
                                 @elseif ($actual->input_at != null)
                                 <span class="text-yellow-500">Check</span>
-                                
+
                                 @endif
                             </button>
                            {{-- MODAL --}}
@@ -851,11 +851,11 @@
                                             <label class="text-[14px]">
                                                 <input type="checkbox" class="status-checkbox" data-actual-id="{{ $actual->department_actual_id }}" data-status="Checked 1" {{ $actual->asst_mng_checked_at ? 'checked' : '' }} {{ $role == 'Checker 1' || $role == 'Checker WS' || $role == 'Checker Factory' || $role == 'FAD' || $email == 'widya.citra@bskp.co.id' ? '' : 'disabled' }}>
                                                 Check 1
-                                            </label>             
+                                            </label>
                                             <div class="flex justify-center gap-x-2 mt-1.5">
                                                 <div class="flex flex-col">
                                                     <span class="text-[9px] text-center">Check 1 By:</span>
-                                                    @if ($actual->asst_mng_checked_by)                                 
+                                                    @if ($actual->asst_mng_checked_by)
                                                     <span class="text-[9px] text-center">
                                                         {{ $actual->asst_mng_checked_by }}
                                                     </span>
@@ -887,7 +887,7 @@
                                             <div class="flex justify-center gap-x-2 mt-1.5">
                                                 <div class="flex flex-col">
                                                     <span class="text-[9px] text-center">Check 2 By:</span>
-                                                    @if ($actual->checked_by)                                 
+                                                    @if ($actual->checked_by)
                                                     <span class="text-[9px] text-center">
                                                         {{ $actual->checked_by }}
                                                     </span>
@@ -919,7 +919,7 @@
                                             <div class="flex justify-center gap-x-2 mt-1.5">
                                                 <div class="flex flex-col">
                                                     <span class="text-[9px] text-center">Approved By:</span>
-                                                    @if ($actual->mng_approved_by)                                 
+                                                    @if ($actual->mng_approved_by)
                                                     <span class="text-[9px] text-center">
                                                         {{ $actual->mng_approved_by }}
                                                     </span>
@@ -951,7 +951,7 @@
                                             <div class="flex justify-center gap-x-2 mt-1.5">
                                                 <div class="flex flex-col">
                                                     <span class="text-[9px] text-center">Final Check By:</span>
-                                                    @if ($actual->approved_by)                                 
+                                                    @if ($actual->approved_by)
                                                     <span class="text-[9px] text-center">
                                                         {{ \Carbon\Carbon::parse($actual->approved_at)->format('d M Y H:i') }}
                                                     </span>
@@ -983,7 +983,7 @@
                                         @if ($role != 'Inputer' && $role != '')
                                             @if ($actual->status !== 'Approved')
                                             <div class="p-1 flex justify-start gap-x-2">
-                                                <span class="text-semibold mb-1 text-[12px]">Berikan Komentar      
+                                                <span class="text-semibold mb-1 text-[12px]">Berikan Komentar
                                                 </span>
                                                 @if ($role == 'Approver')
                                                     <div class="flex gap-x-2 items-center">
@@ -1006,7 +1006,7 @@
                                                             <i class="ri-send-plane-line"></i>
                                                             <span>Kirim Revisi</span>
                                                         </button>
-                                                        
+
                                                     </div>
                                                 </div>
                                                 <input type="hidden" name="kpi_code" id="kpi_code" value="{{ $target->code }}">
@@ -1020,7 +1020,7 @@
                                             <div class="hidden" id="invalid-comment-{{ $actual->department_actual_id }}">
                                                 <div class="p-1 flex justify-start">
                                                     <span class="text-semibold mb-1 text-[12px]">
-                                                        Komentar data pendukung tidak valid:     
+                                                        Komentar data pendukung tidak valid:
                                                     </span>
                                                 </div>
                                                 <div class="p-0 mb-2 flex justify-center gap-x-2">
@@ -1034,7 +1034,7 @@
                                             </form>
                                             @endif
                                         @endif
-                                    
+
                                     {{-- <div class="flex justify-end">
                                         <button id="close-modal-{{ $modalId }}" class="bg-red-500 text-white px-4 py-2 rounded mr-2 text-[12px] mt-0.5">Close</button>
                                     </div> --}}
@@ -1079,7 +1079,7 @@
                         </div>
                         <form id="batch-approve-form" action="{{ route('actual.batchUpdateActualDept', $departmentCreds->id) }}" method="POST" class="flex gap-x-3 p-0">
                             @csrf
-                            @method('PUT')  
+                            @method('PUT')
                             <input type="hidden" name="year" id="year" value="{{ request()->query('year') }}">
                             <input type="hidden" name="selected_targets" id="selected_targets">
                             <input type="hidden" name="target_codes" id="target_codes">
@@ -1120,24 +1120,24 @@
 <script type="text/javascript" src="{{ asset('js/tableToExcel.js') }}"></script>
 
 
-    
+
 <script>
     let pdfData = {}; // Dictionary to store pdfUrls for each modal
     let currentIndexes = {}; // Dictionary to store currentIndex for each modal
     let modalOrder = {}; // Dictionary to store the order of modals for each month
-    
+
     // Collect modal data based on month
     // Report Modal
     document.querySelectorAll('.modal').forEach(modal => {
         const month = modal.dataset.month;
         const actualId = modal.id.split('-').pop();
-        
+
         if (!modalOrder[month]) {
             modalOrder[month] = [];
         }
         modalOrder[month].push(actualId);
     });
-    
+
     document.querySelectorAll('button[id^="open-modal-"]').forEach(button => {
         button.addEventListener('click', function() {
             const month = this.dataset.month;
@@ -1145,7 +1145,7 @@
             fetchPdfUrls(month, actualId, this.id);
         });
     });
-    
+
     document.querySelectorAll('button[id^="close-modal-"]').forEach(button => {
         button.addEventListener('click', function() {
             const actualId = this.id.split('-').pop();
@@ -1153,7 +1153,7 @@
             document.getElementById(`modal-background-${actualId}`).classList.add('hidden');
         });
     });
-    
+
     document.querySelectorAll('div[id^="modal-background-"]').forEach(background => {
         background.addEventListener('click', function() {
             const actualId = this.id.split('-').pop();
@@ -1162,14 +1162,14 @@
         });
     });
 
-    // fetch pdf url 
+    // fetch pdf url
     function fetchPdfUrls(month, actualId, buttonId) {
         const filePreviewUrl = "{{ route('report.showFileDept') }}";
         const url = `${filePreviewUrl}?month=${month}&actual_id=${actualId}`;
         fetch(url)
             .then(response => response.json())
             .then(data => {
-               
+
                 const index = buttonId.split('-').pop();
                 pdfData[index] = data; // Store pdfUrls for this modal
                 currentIndexes[index] = 0; // Initialize currentIndex for this modal
@@ -1181,7 +1181,7 @@
             })
             .catch(error => console.error('Error fetching PDF URLs:', error));
     }
-    
+
     // Show PDF
     function updatePdfViewer(buttonId, actualId) {
         const index = buttonId.split('-').pop();
@@ -1195,7 +1195,7 @@
         const percentModalId = document.getElementById(`percent-modal-${actualId}`);
         const currentIndex = currentIndexes[index]; // Get currentIndex for this modal
         const pdfUrls = pdfData[index]; // Get pdfUrls for this modal
-    
+
         if (pdfUrls.length > 0) {
             const currentPdf = pdfUrls[currentIndex];
             const baseUrl = "{{ asset('record_files') }}";
@@ -1230,11 +1230,11 @@
             fileNumberElement.textContent = '';
             commentElement.textContent = '';
         }
-    
+
         // Remove existing event listeners
         prevButton.replaceWith(prevButton.cloneNode(true));
         nextButton.replaceWith(nextButton.cloneNode(true));
-    
+
         // Reassign the buttons after cloning
         const newPrevButton = document.getElementById(`prevButton-${index}`);
         const newNextButton = document.getElementById(`nextButton-${index}`);
@@ -1256,7 +1256,7 @@
                 }
             }
         });
-    
+
         newNextButton.addEventListener('click', function() {
             const modalElement = document.getElementById(`modal-${actualId}`);
             const month = modalElement.dataset.month;

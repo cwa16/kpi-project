@@ -2,7 +2,7 @@
     <div class="ml-64 mt-4 overflow-x-auto p-2 bg-gray-100 border border-gray-200 shadow-md shadow-black/10 rounded-md">
         @php
             $currentYear = Carbon\Carbon::now()->year;
-            $startYear = 2024; 
+            $startYear = 2024;
             $endYear = $currentYear + 2;
             $yearQuery = request()->query('year', $currentYear);
         @endphp
@@ -56,7 +56,7 @@
                         <div class="mt-2 mb-1">
                             <select name="status[]" multiple id="status" class="col-start-1 row-start-1 w-full appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 <option value="">-- Status --</option>
-                                @foreach ($allOccupation as $item)  
+                                @foreach ($allOccupation as $item)
                                 <option value="{{ $item->status }}">
                                     {{ collect(request()->input('status'))->contains($item->status) ? 'selected' : '' }}
                                     {{ $item->status }}
@@ -140,13 +140,13 @@
                 $totalSemester2WeightSum += $totalSemester2Weight;
                 $totalAverageSum += $totalAverage;
                 $rowCount++;
-                  
+
               @endphp
             <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-blue-100' }}">
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2 text-center">{{ $startIndex + $index }}</td>
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2">{{ $employee->dept }}</td>
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2" >{{ $employee->nik }}</td>
-                <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2">     
+                <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2">
                     {{ $employee->name }}
                 </td>
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2" >{{ $employee->occupation }}</td>
@@ -169,7 +169,7 @@
                 @else
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2 text-center"></td>
                 @endif
-                
+
                 @if ($totalSumDept > 0)
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2 text-center">{{ number_format($totalSumDept, 1) }}%</td>
                 @else
@@ -282,7 +282,7 @@
               @php
                   $i++;
 
-                  
+
                 $employeeId = $employee->employee_id;
                 $departmentId = $employee->department_id;
 
@@ -306,13 +306,13 @@
                 $totalInactiveSemester2WeightSum += $totalInactiveSemester2Weight;
                 $totalInactiveAverageSum += $totalInactiveAverage;
                 $inactiveRowCount++;
-                  
+
               @endphp
             <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-blue-100' }}">
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2 text-center">{{ $startIndex + $index }}</td>
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2">{{ $employee->dept }}</td>
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2" >{{ $employee->nik }}</td>
-                <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2">     
+                <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2">
                     {{ $employee->name }}
                 </td>
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2" >{{ $employee->occupation }}</td>
@@ -327,7 +327,7 @@
                 @else
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2 text-center"></td>
                 @endif
-                
+
                 @if ($totalInactiveSumDept > 0)
                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-gray-600 py-0.5 px-2 text-center">{{ number_format($totalInactiveSumDept, 1) }}%</td>
                 @else
@@ -379,7 +379,7 @@
         </table>
     </div>
     @endif
-    
+
     {{-- Pagination --}}
     <div class="shadow-lg shadow-black/15 mb-2 mt-3">
         <div class="flex w-full items-center justify-between border-t border-gray-200 bg-white px-10 py-3 rounded-md">
@@ -415,7 +415,7 @@
                                 </svg>
                             </a>
                         @endif
-    
+
                         @foreach ($employees->getUrlRange(1, $employees->lastPage()) as $page => $url)
                             @if ($page == $employees->currentPage())
                                 <span aria-current="page" class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{{ $page }}</span>
@@ -425,7 +425,7 @@
                                 <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 cursor-default">...</span>
                             @endif
                         @endforeach
-    
+
                         @if ($employees->hasMorePages())
                             <a href="{{ $employees->nextPageUrl() }}" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
                                 <span class="sr-only">Next</span>

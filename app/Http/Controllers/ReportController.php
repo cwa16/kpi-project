@@ -1479,7 +1479,7 @@ class ReportController extends Controller
             });
 
             $totalSumSemester = $sumGroupSemester1->map(function ($value, $key) use ($sumGroupSemester2) {
-                return ($value + ($sumGroupSemester2[$key] ?? 0)) * 0.7;
+                return ($value + ($sumGroupSemester2[$key] ?? 0)) / 2 * 0.7;
             });
 
 
@@ -1491,7 +1491,7 @@ class ReportController extends Controller
             });
 
             $totalSumSemesterDept = $sumSemester1Dept->map(function ($value, $key) use ($sumSemester2Dept) {
-                return ($value + ($sumSemester2Dept[$key] ?? 0)) * 0.3;
+                return ($value + ($sumSemester2Dept[$key] ?? 0)) / 2 * 0.3;
             });
 
             $sumInactiveGroupSemester1 = $inactiveSemester1Group->mapWithKeys(function ($group, $employeeId) {
@@ -1503,7 +1503,7 @@ class ReportController extends Controller
             });
 
             $totalSumInactiveSemester = $sumInactiveGroupSemester1->map(function ($value, $key) use ($sumInactiveGroupSemester2) {
-                return ($value + ($sumInactiveGroupSemester2[$key] ?? 0)) * 0.7;
+                return ($value + ($sumInactiveGroupSemester2[$key] ?? 0)) / 2 * 0.7;
             });
 
             $sumInactiveSemester1Dept = $inactiveSemester1DeptGroup->mapWithKeys(function ($group, $departmentId) {
@@ -1515,7 +1515,7 @@ class ReportController extends Controller
             });
 
             $totalSumInactiveSemesterDept = $sumInactiveSemester1Dept->map(function ($value, $key) use ($sumInactiveSemester2Dept) {
-                return ($value + ($sumInactiveSemester2Dept[$key] ?? 0)) * 0.3;
+                return ($value + ($sumInactiveSemester2Dept[$key] ?? 0)) / 2 * 0.3;
             });
 
             // dd($sumSemester1Dept, $sumSemester2Dept, $totalSumSemester);
@@ -1877,7 +1877,7 @@ class ReportController extends Controller
             });
 
             $totalSumSemester = $sumGroupSemester1->map(function ($value, $key) use ($sumGroupSemester2) {
-                return ($value + ($sumGroupSemester2[$key] ?? 0)) * 0.7;
+                return ($value + ($sumGroupSemester2[$key] ?? 0)) / 2 * 0.7;
             });
 
 
@@ -1889,7 +1889,7 @@ class ReportController extends Controller
             });
 
             $totalSumSemesterDept = $sumSemester1Dept->map(function ($value, $key) use ($sumSemester2Dept) {
-                return ($value + ($sumSemester2Dept[$key] ?? 0)) * 0.3;
+                return ($value + ($sumSemester2Dept[$key] ?? 0)) / 2 * 0.3;
             });
 
             // dd($sumSemester1Dept, $sumSemester2Dept, $totalSumSemester);
@@ -2242,7 +2242,7 @@ class ReportController extends Controller
             });
 
             $totalSumSemester = $sumGroupSemester1->map(function ($value, $key) use ($sumGroupSemester2) {
-                return ($value + ($sumGroupSemester2[$key] ?? 0)) * 0.7;
+                return ($value + ($sumGroupSemester2[$key] ?? 0)) / 2 * 0.7;
             });
 
 
@@ -2254,7 +2254,7 @@ class ReportController extends Controller
             });
 
             $totalSumSemesterDept = $sumSemester1Dept->map(function ($value, $key) use ($sumSemester2Dept) {
-                return ($value + ($sumSemester2Dept[$key] ?? 0)) * 0.3;
+                return ($value + ($sumSemester2Dept[$key] ?? 0)) / 2 * 0.3;
             });
 
             // dd($sumSemester1Dept, $sumSemester2Dept, $totalSumSemester);
