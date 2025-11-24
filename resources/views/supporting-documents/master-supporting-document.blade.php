@@ -58,12 +58,15 @@
                                 <a href="{{ route('showMasterSupportingDocument', ['id' => $dt->id]) }}"
                                     id="employee-link-{{ $dt->id }}" target="_blank" {{-- Penting: Membuka PDF di tab baru --}}
                                     class="rounded-md text-blue-500 hover:underline">View</a>
-                                <a href="{{ route('editMasterSupportingDocument', ['id' => $dt->id]) }}"
-                                    id="employee-link-{{ $dt->id }}"
-                                    class="rounded-md text-green-500 hover:underline">Edit</a>
-                                <a href="{{ route('deleteMasterSupportingDocument', ['id' => $dt->id]) }}"
-                                    id="employee-link-{{ $dt->id }}"
-                                    class="rounded-md text-red-500 hover:underline">Delete</a>
+                                @if ($auth_dept == 6 || $auth_dept == 3)
+                                    <a href="{{ route('editMasterSupportingDocument', ['id' => $dt->id]) }}"
+                                        id="employee-link-{{ $dt->id }}"
+                                        class="rounded-md text-green-500 hover:underline">Edit</a>
+                                    <a href="{{ route('deleteMasterSupportingDocument', ['id' => $dt->id]) }}"
+                                        id="employee-link-{{ $dt->id }}"
+                                        class="rounded-md text-red-500 hover:underline">Delete</a>
+                                @endif
+
 
                             </div>
                         </td>

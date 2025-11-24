@@ -142,16 +142,19 @@ class SupportingDocumentController extends Controller
     public function indexMaster(Request $request)
     {
         $data = DB::table('master_data_pendukung')->get();
+        $auth_dept = auth()->user()->department_id;
 
         return view('supporting-documents.master-supporting-document', [
             'title' => 'Master Data Pendukung',
             'desc' => 'Master Data Pendukung',
             'data' => $data,
+            'auth_dept' => $auth_dept,
         ]);
     }
 
     public function indexInputMaster(Request $request)
     {
+
         return view('supporting-documents.input-master-supporting-document', [
             'title' => 'Input Master Data Pendukung',
             'desc' => 'Input Master Data Pendukung',
