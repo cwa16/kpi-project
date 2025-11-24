@@ -141,7 +141,7 @@ class SupportingDocumentController extends Controller
 
     public function indexMaster(Request $request)
     {
-        $data = DB::table('master_data_pendukung')->get();
+        $data = DB::table('master_data_pendukung')->where('kind', 'individu')->get();
         $auth_dept = auth()->user()->department_id;
 
         return view('supporting-documents.master-supporting-document', [
@@ -154,10 +154,12 @@ class SupportingDocumentController extends Controller
 
     public function indexInputMaster(Request $request)
     {
+        $dept = DB::table('departments')->get();
 
         return view('supporting-documents.input-master-supporting-document', [
             'title' => 'Input Master Data Pendukung',
             'desc' => 'Input Master Data Pendukung',
+            'dept' => $dept,
         ]);
     }
 
@@ -166,6 +168,7 @@ class SupportingDocumentController extends Controller
         $request->validate([
             'no_kpi' => 'required|string',
             'nama_kpi' => 'required|string',
+            'dept' => 'required|string',
             'url_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
@@ -174,6 +177,8 @@ class SupportingDocumentController extends Controller
         DB::table('master_data_pendukung')->insert([
             'no_kpi' => $request->input('no_kpi'),
             'nama_kpi' => $request->input('nama_kpi'),
+            'dept' => $request->input('dept'),
+            'kind' => 'individu',
             'url_file' => $filePath,
             'created_at' => now(),
             'updated_at' => now(),
@@ -212,6 +217,7 @@ class SupportingDocumentController extends Controller
         $updateData = [
             'no_kpi' => $request->input('no_kpi'),
             'nama_kpi' => $request->input('nama_kpi'),
+            'dept' => $request->input('dept'),
             'updated_at' => now(),
         ];
 
@@ -230,5 +236,103 @@ class SupportingDocumentController extends Controller
         DB::table('master_data_pendukung')->where('id', $id)->delete();
 
         return redirect()->route('masterSupportingDocument')->with('success', 'Master data pendukung berhasil dihapus.');
+    }
+
+    public function indexMasterDept(Request $request)
+    {
+        $data = DB::table('master_data_pendukung')->where('kind', 'department')->get();
+        $auth_dept = auth()->user()->department_id;
+
+        return view('supporting-documents.master-supporting-document-dept', [
+            'title' => 'Master Data Pendukung Dept.',
+            'desc' => 'Master Data Pendukung Dept.',
+            'data' => $data,
+            'auth_dept' => $auth_dept,
+        ]);
+    }
+
+    public function indexInputMasterDept(Request $request)
+    {
+        $dept = DB::table('departments')->get();
+
+        return view('supporting-documents.input-master-supporting-document-dept', [
+            'title' => 'Input Master Data Pendukung Dept.',
+            'desc' => 'Input Master Data Pendukung Dept.',
+            'dept' => $dept,
+        ]);
+    }
+
+    public function storeMasterDept(Request $request)
+    {
+        $request->validate([
+            'no_kpi' => 'required|string',
+            'nama_kpi' => 'required|string',
+            'dept' => 'required|string',
+            'url_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
+
+        $filePath = $request->file('url_file')->store('master_data_pendukung', 'public');
+
+        DB::table('master_data_pendukung')->insert([
+            'no_kpi' => $request->input('no_kpi'),
+            'nama_kpi' => $request->input('nama_kpi'),
+            'dept' => $request->input('dept'),
+            'kind' => 'department',
+            'url_file' => $filePath,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('masterSupportingDocumentDept')->with('success', 'Master data pendukung berhasil ditambahkan.');
+    }
+
+    public function showDocumentDept($id)
+    {
+        $data = DB::table('master_data_pendukung')->where('id', $id)->first();
+        $url = Storage::url($data->url_file);
+
+        return redirect()->to($url);
+    }
+
+    public function editMasterDept($id)
+    {
+        $data = DB::table('master_data_pendukung')->where('id', $id)->first();
+
+        return view('supporting-documents.edit-master-supporting-document-dept', [
+            'title' => 'Edit Master Data Pendukung Dept.',
+            'desc' => 'Edit Master Data Pendukung Dept.',
+            'data' => $data,
+        ]);
+    }
+
+    public function updateMasterDept(Request $request, $id)
+    {
+        $request->validate([
+            'no_kpi' => 'required|string',
+            'nama_kpi' => 'required|string',
+            'url_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
+
+        $updateData = [
+            'no_kpi' => $request->input('no_kpi'),
+            'nama_kpi' => $request->input('nama_kpi'),
+            'updated_at' => now(),
+        ];
+
+        if ($request->hasFile('url_file')) {
+            $filePath = $request->file('url_file')->store('master_data_pendukung', 'public');
+            $updateData['url_file'] = $filePath;
+        }
+
+        DB::table('master_data_pendukung')->where('id', $id)->update($updateData);
+
+        return redirect()->route('masterSupportingDocumentDept')->with('success', 'Master data pendukung berhasil diperbarui.');
+    }
+
+    public function destroyMasterDept($id)
+    {
+        DB::table('master_data_pendukung')->where('id', $id)->delete();
+
+        return redirect()->route('masterSupportingDocumentDept')->with('success', 'Master data pendukung berhasil dihapus.');
     }
 }

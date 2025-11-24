@@ -8,22 +8,16 @@
         @endphp
         <div class="flex justify-between">
             <div class="">
-                <span class="font-bold text-2xl">Master Data Pendukung</span>
+                <span class="font-bold text-2xl">Master Data Pendukung Dept.</span>
             </div>
 
             <div class="flex justify-end">
                 <div class="mt-0 rounded-md mb-1 mx-2">
                     <button type="button" class="p-2 bg-blue-600 my-2 rounded-md text-white">
-                        <a href="{{ route('inputMasterSupportingDocument') }}" id="employee-link-">
-                            Input Data Pendukung
+                        <a href="{{ route('inputMasterSupportingDocumentDept') }}" id="employee-link-">
+                            Input Data Pendukung Dept.
                         </a>
                     </button>
-                    <button type="button" class="p-2 bg-blue-600 my-2 rounded-md text-white">
-                        <a href="{{ route('masterSupportingDocumentDept') }}" id="employee-link-">
-                            Master Data Pendukung Dept.
-                        </a>
-                    </button>
-
                 </div>
             </div>
         </div>
@@ -44,6 +38,7 @@
                     <th style="width: 30%"
                         class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">
                         Dept.</th>
+
                     <th style="width: 20%"
                         class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">
                         Aksi</th>
@@ -66,14 +61,14 @@
                         </td>
                         <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">
                             <div class="flex justify-center gap-3 my-0.5">
-                                <a href="{{ route('showMasterSupportingDocument', ['id' => $dt->id]) }}"
+                                <a href="{{ route('showMasterSupportingDocumentDept', ['id' => $dt->id]) }}"
                                     id="employee-link-{{ $dt->id }}" target="_blank" {{-- Penting: Membuka PDF di tab baru --}}
                                     class="rounded-md text-blue-500 hover:underline">View</a>
                                 @if ($auth_dept == 6 || $auth_dept == 3)
-                                    <a href="{{ route('editMasterSupportingDocument', ['id' => $dt->id]) }}"
+                                    <a href="{{ route('editMasterSupportingDocumentDept', ['id' => $dt->id]) }}"
                                         id="employee-link-{{ $dt->id }}"
                                         class="rounded-md text-green-500 hover:underline">Edit</a>
-                                    <a href="{{ route('deleteMasterSupportingDocument', ['id' => $dt->id]) }}"
+                                    <a href="{{ route('deleteMasterSupportingDocumentDept', ['id' => $dt->id]) }}"
                                         id="employee-link-{{ $dt->id }}"
                                         class="rounded-md text-red-500 hover:underline">Delete</a>
                                 @endif

@@ -219,6 +219,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/edit-master-supporting-document/{id}', [SupportingDocumentController::class, 'editMaster'])->name('editMasterSupportingDocument');
     Route::put('/update-master-supporting-document/{id}', [SupportingDocumentController::class, 'updateMaster'])->name('updateMasterSupportingDocument');
     Route::get('/delete-master-supporting-document/{id}', [SupportingDocumentController::class, 'destroyMaster'])->name('deleteMasterSupportingDocument');
+
+     Route::get('/master-supporting-document-dept', [SupportingDocumentController::class, 'indexMasterDept'])->name('masterSupportingDocumentDept');
+    Route::get('/input-master-supporting-document-dept', [SupportingDocumentController::class, 'indexInputMasterDept'])->name('inputMasterSupportingDocumentDept');
+    Route::post('/store-master-supporting-document-dept', [SupportingDocumentController::class, 'storeMasterDept'])->name('storeMasterSupportingDocumentDept');
+    Route::get('/show-master-supporting-document-dept/{id}', [SupportingDocumentController::class, 'showDocumentDept'])->name('showMasterSupportingDocumentDept');
+    Route::get('/edit-master-supporting-document-dept/{id}', [SupportingDocumentController::class, 'editMasterDept'])->name('editMasterSupportingDocumentDept');
+    Route::put('/update-master-supporting-document-dept/{id}', [SupportingDocumentController::class, 'updateMasterDept'])->name('updateMasterSupportingDocumentDept');
+    Route::get('/delete-master-supporting-document-dept/{id}', [SupportingDocumentController::class, 'destroyMasterDept'])->name('deleteMasterSupportingDocumentDept');
 });
 
 Route::get('/get-user-data/{nik}', [UserController::class, 'getUserData'])->name('get.user.data');

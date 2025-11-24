@@ -8,7 +8,7 @@
         @endphp
         <div class="flex justify-between">
             <div class="">
-                <span class="font-bold text-2xl">Input Data Pendukung</span>
+                <span class="font-bold text-2xl">Input Data Pendukung Dept.</span>
             </div>
         </div>
 
@@ -18,7 +18,7 @@
                 @csrf
                 <input type="text" name="no_kpi" id="no_kpi" placeholder="No. KPI" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
                 <input type="text" name="nama_kpi" id="nama_kpi" placeholder="Nama KPI" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
-                <select name="dept" id="dept" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
+                 <select name="dept" id="dept" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
                     <option value="" disabled selected>Pilih Dept.</option>
                     <option value="all">All</option>
                     @foreach ($dept as $item)
