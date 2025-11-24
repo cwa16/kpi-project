@@ -4,7 +4,7 @@
         $auth = auth()->user();
         // dd($auth);
             $currentYear = Carbon\Carbon::now()->year;
-            $startYear = 2024; 
+            $startYear = 2024;
             $endYear = $currentYear + 2;
             $role = auth()->user()->role;
 
@@ -92,12 +92,12 @@
             <div class="pl-2 bg-gray-100 mt-4 grid lg:grid-cols-2 border-gray-200 shadow-md shadow-black/10 rounded-md gap-4">
             <div class="p-1 bg-gray-200 mt-2 grid lg:grid-cols-2 border-gray-200 rounded-md gap-4">
                 <div class="relative mt-1 rounded-md">
-                    <span class="pl-3 font-semibold">Departemen</span>  
+                    <span class="pl-3 font-semibold">Departemen</span>
                     <div class="pl-3 mb-3">
                         <select name="department" id="department" class="col-start-1 row-start-1 w-full appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                             <option value="">-- Pilih Departemen --</option>
                             @foreach ($deptLists as $item)
-                                
+
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                             @endforeach
                         </select>
@@ -106,7 +106,7 @@
                   </div>
                   <div class="p-1 bg-gray-200 mt-2 grid lg:grid-cols-2 border-gray-200 rounded-md ">
                     <div class="relative mt-1 rounded-md">
-                    <span class="pl-3 font-semibold">Semester</span>  
+                    <span class="pl-3 font-semibold">Semester</span>
                     <div class="pl-2 mb-3">
                         <select name="semester" id="semester" class=" col-start-1 row-start-1 w-full appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                             <option value="">-- Semester --</option>
@@ -118,7 +118,7 @@
                     </div>
                   </div>
                   <div class="relative mt-1 rounded-md">
-                    <span class="pl-3 font-semibold">Tahun</span>  
+                    <span class="pl-3 font-semibold">Tahun</span>
                     <div class="pl-2 mb-3">
                         <select name="year" id="year" class="col-start-1 row-start-1 w-full appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                             <option value="">-- Tahun --</option>
@@ -130,13 +130,13 @@
                     <div class="absolute inset-y-0 right-0 flex items-center">
                     </div>
                   </div>
-                  <div class="relative mt-0 pl-3 rounded-md">  
+                  <div class="relative mt-0 pl-3 rounded-md">
                     <div class="absolute inset-y-0 right-0 flex items-center">
                     </div>
                   </div>
                   </div>
                 </div>
-                
+
                 <div class="relative mt-1 rounded-md">
                     <span class="pl-0.5 font-semibold">Search</span>
                     <div class="p-0">
@@ -144,8 +144,8 @@
                     </div>
                     <div class="absolute inset-y-0 right-0 flex items-center">
                     </div>
-                  </div>  
-                      
+                  </div>
+
             </div>
             <div class="mt-2 bg-gray-200 rounded-md min-h-[200px] mx-2">
                 <div class="flex justify-between">
@@ -167,7 +167,7 @@
                     <button id="viewTutorialBtn" class="text-white bg-blue-500 p-2 rounded-md">Panduan Aplikasi KPI</button>
                 </div>
             </div>
-            
+
             <div class="mb-2  bg-gray-200 rounded-md min-h-[200px]">
                 <div class="px-2 py-1">
                     <span class="p-4 font-bold text-xl">Daftar Karyawan</span>
@@ -179,10 +179,10 @@
                             <th style="width: 3%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
                             <th style="width: 45%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Nama</th>
                             <th style="width: 20%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Posisi</th>
-                            <th style="width: 15%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Dept</th> 
+                            <th style="width: 15%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Dept</th>
                         </tr>
                     </thead>
-                    
+
                     <tbody id="employeeTableBody">
 
                     </tbody>
@@ -196,7 +196,7 @@
                             <p class="p-0.5 font-bold text-xl">Notifikasi:</p>
                         </div>
                         <div class="flex justify-between gap-x-3">
-                            @if (auth()->user()->role == 'Superadmin' || auth()->user()->role == 'Approver' )   
+                            @if (auth()->user()->role == 'Superadmin' || auth()->user()->role == 'Approver' )
                             <a href="{{ route('notification.create') }}">
                                 <i class="ri-add-line bg-green-600 text-white text-base p-0.5 rounded-sm"></i>
                             </a>
@@ -206,7 +206,7 @@
                             </a>
                         </div>
                     </div>
-                    
+
                     <ul role="list" class="divide-y divide-gray-300 px-3 border">
                         <li x-data="{ open: false }" class="flex flex-col py-0 bg-gray-100 hover:bg-gray-300 p-2 rounded-lg shadow-lg shadow-black/15 mb-4" @click="open = !open">
                             <div class="flex justify-between mb-1 items-center">
@@ -282,7 +282,7 @@
                         </li>
                     </ul>
                 </div>
-            
+
             <!-- Modal -->
             <div id="documentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
             <div class="bg-white rounded-lg p-4 w-1/2">
@@ -306,7 +306,7 @@
                     <object id="pdfObjectTutorial" data="" type="application/pdf" width="100%" height="600px"></object>
                 </div>
             </div>
-        </div> 
+        </div>
 
 
          <div id="approvalModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
@@ -390,19 +390,19 @@
         <!-- End Modal -->
 
         </div>
-        
+
         </div>
         <div class="">
             <span class="text-gray-700 italic">Note: Klik pada kolom Departemen atau Nama untuk melihat detail</span>
         </div>
-        <div class=""> 
+        <div class="">
             <span class="text-red-600 text-xl">*</span>
             <span class="text-gray-700 italic">Pilih semester dan tahun untuk melihat detail KPI Individu</span>
         </div>
-        
+
     </div>
 
-    
+
     <script src="https://unpkg.com/pdfobject"></script>
 
     <script>
@@ -445,7 +445,7 @@
         tbody.innerHTML = '';
 
         if (data.length > 0) {
-          data.forEach((item, index) => { 
+          data.forEach((item, index) => {
             const row = `<tr class="${index % 2 === 0 ? 'bg-blue-100' : 'bg-white'}">
               <td class="border-2 border-gray-400 tracking-wide px-2 py-0 text-center">${index + 1}</td>
               <td class="border-2 border-gray-400 tracking-wide px-2 py-0">
@@ -519,8 +519,8 @@
                     if (data.length > 0) {
                         const pdfUrl = data[0].file;
                         console.log(pdfUrl);
-                        
-                        
+
+
                         document.getElementById('pdfObject').setAttribute('data', `kpi_requirement_files/${pdfUrl}`);
                         document.getElementById('documentModal').classList.remove('hidden');
                     } else {
@@ -528,10 +528,8 @@
                     }
                 })
                 .catch(error => console.error('Error fetching PDF URL:', error));
-                
-        });
 
-        
+        });
 
         document.getElementById('viewTutorialBtn').addEventListener('click', function() {
             fetch(`{{ route('requirement.index', 'status=Tutorial') }}`)
@@ -539,7 +537,7 @@
                 .then(data => {
                     if (data.length > 0) {
                         const pdfUrl = data[0].file;
-                        
+
                         document.getElementById('pdfObjectTutorial').setAttribute('data', `kpi_requirement_files/${pdfUrl}`);
                         document.getElementById('tutorialModal').classList.remove('hidden');
                     } else {
@@ -550,7 +548,6 @@
         });
 
         // Approval List
-
         document.getElementById('viewApprovalList').addEventListener('click', function() {
             document.getElementById('approvalModal').classList.remove('hidden');
 
@@ -567,6 +564,6 @@
         document.getElementById('closeApprovalDeptModal').addEventListener('click', function() {
             document.getElementById('approvalDeptModal').classList.add('hidden');
         });
-        
+
     </script>
 </x-app-layout>

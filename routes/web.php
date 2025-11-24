@@ -81,9 +81,6 @@ Route::get('/reset-password/{token}', function (string $token) {
 
 Route::post('/reset-password/update', [UserController::class, 'updatePassword'])->name('password.update');
 
-
-
-
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [EmployeeController::class, 'index'])->name('dashboard');
     Route::get('dashboard/filter', [EmployeeController::class, 'filter']);
@@ -215,7 +212,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/supporting-document-dept-list', [SupportingDocumentController::class, 'departmentSupportingDocumentList'])->name('deptSupportingDocumentList');
     Route::get('/supporting-document-file', [SupportingDocumentController::class, 'showFile'])->name('supportingDocumentFile');
     Route::get('/supporting-document-file-dept', [SupportingDocumentController::class, 'showFileDept'])->name('supportingDocumentFileDept');
+    Route::get('/master-supporting-document', [SupportingDocumentController::class, 'indexMaster'])->name('masterSupportingDocument');
+    Route::get('/input-master-supporting-document', [SupportingDocumentController::class, 'indexInputMaster'])->name('inputMasterSupportingDocument');
+    Route::post('/store-master-supporting-document', [SupportingDocumentController::class, 'storeMaster'])->name('storeMasterSupportingDocument');
+    Route::get('/show-master-supporting-document/{id}', [SupportingDocumentController::class, 'showDocument'])->name('showMasterSupportingDocument');
+    Route::get('/edit-master-supporting-document/{id}', [SupportingDocumentController::class, 'editMaster'])->name('editMasterSupportingDocument');
+    Route::put('/update-master-supporting-document/{id}', [SupportingDocumentController::class, 'updateMaster'])->name('updateMasterSupportingDocument');
+    Route::get('/delete-master-supporting-document/{id}', [SupportingDocumentController::class, 'destroyMaster'])->name('deleteMasterSupportingDocument');
 });
+
+Route::get('/get-user-data/{nik}', [UserController::class, 'getUserData'])->name('get.user.data');
 
 
 

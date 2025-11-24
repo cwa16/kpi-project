@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\UserEmp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -34,7 +34,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $department = $request->query('department');
-        $status = $request->query('status');
+        $status     = $request->query('status');
 
         // Subquery for employees table from the first database
         $employeesSubquery = DB::connection('mysql')->table('employees')
@@ -50,9 +50,9 @@ class UserController extends Controller
             ->where('users.kpi_id', '!=', null)
             ->get();
 
-        $deptList = DB::connection('mysql')->table('departments')->get();
+        $deptList   = DB::connection('mysql')->table('departments')->get();
         $statusList = DB::connection('mysql')->table('employees')->select('status')->distinct()->get();
-        $query = DB::connection('mysql')->table('employees')->where('is_active', 1);
+        $query      = DB::connection('mysql')->table('employees')->where('is_active', 1);
 
         if ($department && $status) {
             $users = $query->where('department_id', $department)->where('status', $status)->paginate(20);
@@ -65,52 +65,81 @@ class UserController extends Controller
         }
 
         return view('users.list-user', [
-            'title' => 'Employees',
-            'desc' => 'Master Employee',
-            'users' => $users,
-            'deptList' => $deptList,
-            'statusList' => $statusList
+            'title'      => 'Employees',
+            'desc'       => 'Master Employee',
+            'users'      => $users,
+            'deptList'   => $deptList,
+            'statusList' => $statusList,
         ]);
     }
 
     public function create()
     {
         $statusList = DB::table('employees')->select('status')->distinct()->get();
-        $deptList = DB::table('departments')->get();
+        $deptList   = DB::table('departments')->get();
 
-        return view('users.create-user', ['title' => 'Employees', 'desc' => 'Create Employee', 'statusList' => $statusList, 'deptList' => $deptList]);
+        $usersEmp = UserEmp::where('active', 'yes')->get();
+
+        return view('users.create-user', ['title' => 'Employees',
+            'desc'                                    => 'Create Employee',
+            'statusList'                              => $statusList,
+            'deptList'                                => $deptList,
+            'usersEmp'                                => $usersEmp]);
+    }
+
+    public function getUserData($nik)
+    {
+        $user = UserEmp::where('nik', $nik)->first();
+
+        if ($user) {
+            return response()->json([
+                'success' => true,
+                'data'    => [
+                    'name'          => $user->name,
+                    'status'        => $user->status,
+                    'occupation'    => $user->jabatan,
+                    'grade'         => $user->grade,
+                    'department_id' => $user->dept,
+                    'email'         => $user->email,
+                    'no_hp'          => $user->no_telpon,
+                ],
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'User not found.'], 404);
     }
 
     public function store(Request $request)
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'nik' => 'required',
-            'email' => 'required',
-            'department_id' => 'required',
+            'name'          => 'required',
+            'nik'           => 'required',
+            'email'         => 'required',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->with('error', 'Please fill all the fields.');
         }
 
+        $cek_dept = DB::table('departments')->where('name_dept', $request->department_id)->first()->id;
+
         $hashedPassword = Hash::make($request->password);
         // dd($hashedPassword);
 
         Employee::create([
-            'name' => $request->name,
-            'nik' => $request->nik,
-            'email' => $request->email,
-            'password' => $hashedPassword,
-            'department_id' => $request->department_id,
-            'status' => $request->status,
-            'occupation' => $request->occupation,
-            'grade' => $request->grade,
-            'input_type' => $request->input_type,
-            'role' => $request->role,
-            'is_active' => 1,
-            'phone' => $request->phone,
+            'name'          => $request->name,
+            'nik'           => $request->nik,
+            'email'         => $request->email,
+            'password'      => $hashedPassword,
+            'department_id' => $cek_dept,
+            'status'        => $request->status,
+            'occupation'    => $request->occupation,
+            'grade'         => $request->grade,
+            'input_type'    => $request->input_type,
+            'role'          => $request->role,
+            'is_active'     => 1,
+            'phone'         => $request->phone,
         ]);
 
         return redirect()->route('user.index')->with('success', 'Employee created successfully.');
@@ -118,9 +147,9 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $user = DB::table('employees')->leftJoin('departments', 'departments.id', '=', 'employees.department_id')->where('employees.id', $id)->select('departments.*', 'employees.*', 'employees.id as employee_id', 'departments.name as department', 'departments.id as department_id')->first();
+        $user       = DB::table('employees')->leftJoin('departments', 'departments.id', '=', 'employees.department_id')->where('employees.id', $id)->select('departments.*', 'employees.*', 'employees.id as employee_id', 'departments.name as department', 'departments.id as department_id')->first();
         $statusList = DB::table('employees')->select('status')->distinct()->get();
-        $deptList = DB::table('departments')->get();
+        $deptList   = DB::table('departments')->get();
         // dd($user->is_active);
 
         return view('users.edit-user', ['title' => 'Employees', 'desc' => 'Edit Employee', 'user' => $user, 'statusList' => $statusList, 'deptList' => $deptList]);
@@ -129,9 +158,9 @@ class UserController extends Controller
     public function update($id, Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'nik' => 'required',
-            'email' => 'required|email|unique:employees,email,' . $id,
+            'name'          => 'required',
+            'nik'           => 'required',
+            'email'         => 'required|email|unique:employees,email,' . $id,
             'department_id' => 'required',
         ]);
 
@@ -140,16 +169,16 @@ class UserController extends Controller
         }
 
         $data = [
-            'name' => $request->name,
-            'nik' => $request->nik,
-            'email' => $request->email,
+            'name'          => $request->name,
+            'nik'           => $request->nik,
+            'email'         => $request->email,
             'department_id' => $request->department_id,
-            'status' => $request->status,
-            'occupation' => $request->occupation,
-            'grade' => $request->grade,
-            'input_type' => $request->input_type,
-            'role' => $request->role,
-            'phone' => $request->phone,
+            'status'        => $request->status,
+            'occupation'    => $request->occupation,
+            'grade'         => $request->grade,
+            'input_type'    => $request->input_type,
+            'role'          => $request->role,
+            'phone'         => $request->phone,
         ];
 
         // Check if password is provided
@@ -173,9 +202,9 @@ class UserController extends Controller
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'token' => 'required',
-            'email' => 'required',
-            'password' => 'required',
+            'token'            => 'required',
+            'email'            => 'required',
+            'password'         => 'required',
             'confirm_password' => 'required',
         ]);
 
@@ -185,7 +214,7 @@ class UserController extends Controller
 
         Employee::where('email', $request->email)
             ->update([
-                'password' => Hash::make($request->password),
+                'password'               => Hash::make($request->password),
                 'last_password_reset_at' => now(),
             ]);
 

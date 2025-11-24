@@ -7,6 +7,7 @@ use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Models\DepartmentActual;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class SupportingDocumentController extends Controller
 {
@@ -136,5 +137,95 @@ class SupportingDocumentController extends Controller
             ->toArray();
 
         return response()->json($pdfUrls);
+    }
+
+    public function indexMaster(Request $request)
+    {
+        $data = DB::table('master_data_pendukung')->get();
+
+        return view('supporting-documents.master-supporting-document', [
+            'title' => 'Master Data Pendukung',
+            'desc' => 'Master Data Pendukung',
+            'data' => $data,
+        ]);
+    }
+
+    public function indexInputMaster(Request $request)
+    {
+        return view('supporting-documents.input-master-supporting-document', [
+            'title' => 'Input Master Data Pendukung',
+            'desc' => 'Input Master Data Pendukung',
+        ]);
+    }
+
+    public function storeMaster(Request $request)
+    {
+        $request->validate([
+            'no_kpi' => 'required|string',
+            'nama_kpi' => 'required|string',
+            'url_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
+
+        $filePath = $request->file('url_file')->store('master_data_pendukung', 'public');
+
+        DB::table('master_data_pendukung')->insert([
+            'no_kpi' => $request->input('no_kpi'),
+            'nama_kpi' => $request->input('nama_kpi'),
+            'url_file' => $filePath,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->route('masterSupportingDocument')->with('success', 'Master data pendukung berhasil ditambahkan.');
+    }
+
+    public function showDocument($id)
+    {
+        $data = DB::table('master_data_pendukung')->where('id', $id)->first();
+        $url = Storage::url($data->url_file);
+
+        return redirect()->to($url);
+    }
+
+    public function editMaster($id)
+    {
+        $data = DB::table('master_data_pendukung')->where('id', $id)->first();
+
+        return view('supporting-documents.edit-master-supporting-document', [
+            'title' => 'Edit Master Data Pendukung',
+            'desc' => 'Edit Master Data Pendukung',
+            'data' => $data,
+        ]);
+    }
+
+    public function updateMaster(Request $request, $id)
+    {
+        $request->validate([
+            'no_kpi' => 'required|string',
+            'nama_kpi' => 'required|string',
+            'url_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
+
+        $updateData = [
+            'no_kpi' => $request->input('no_kpi'),
+            'nama_kpi' => $request->input('nama_kpi'),
+            'updated_at' => now(),
+        ];
+
+        if ($request->hasFile('url_file')) {
+            $filePath = $request->file('url_file')->store('master_data_pendukung', 'public');
+            $updateData['url_file'] = $filePath;
+        }
+
+        DB::table('master_data_pendukung')->where('id', $id)->update($updateData);
+
+        return redirect()->route('masterSupportingDocument')->with('success', 'Master data pendukung berhasil diperbarui.');
+    }
+
+    public function destroyMaster($id)
+    {
+        DB::table('master_data_pendukung')->where('id', $id)->delete();
+
+        return redirect()->route('masterSupportingDocument')->with('success', 'Master data pendukung berhasil dihapus.');
     }
 }

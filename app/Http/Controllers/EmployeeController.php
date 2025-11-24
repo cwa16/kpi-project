@@ -663,7 +663,7 @@ class EmployeeController extends Controller
         $div2MngDept = DB::table('departments')->whereIn('name', ['Sub Div D', 'Sub Div E', 'Sub Div F', 'Div 2'])->select('id', 'name')->get();
         $individuals = DB::table('departments')->whereIn('name', ['HR Legal', 'IT', 'QA/QM', 'GA', 'Safety', 'Enviro', 'BSKP', 'SPID', 'Accounting', 'FAD', 'Div 1', 'Div 2', 'Finance'])->select('name')->select('id', 'name')->get();
         $dirMng = DB::table('employees')->whereIn('occupation', ['Mng', 'Dir'])->select('department_id', 'name')->get();
-        // dd($dirMng); 
+        // dd($dirMng);
 
         // dd($individual);
 
