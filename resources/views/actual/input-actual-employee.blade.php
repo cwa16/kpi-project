@@ -11,28 +11,28 @@
             @php
             $currentSemester = request()->query('semester');
             $months = [];
-        
+
             if ($currentSemester == 1) {
                 $months = [
-                    '1' => 'Jan', '2' => 'Feb', '3' => 'Mar', '4' => 'Apr', 
+                    '1' => 'Jan', '2' => 'Feb', '3' => 'Mar', '4' => 'Apr',
                     '5' => 'May', '6' => 'Jun'
                 ];
             } else {
                 $months = [
-                    '7' => 'Jul', '8' => 'Aug', '9' => 'Sep', '10' => 'Oct', 
+                    '7' => 'Jul', '8' => 'Aug', '9' => 'Sep', '10' => 'Oct',
                     '11' => 'Nov', '12' => 'Dec'
                 ];
             }
             @endphp
             <tr>
-                <th style="width: 3%;" class="border-2 border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">No.</th>
-                <th style="width: 4%" class="border-2 border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">Kode KPI</th>
-                <th class="border-2 border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">KPI</th>
-                <th class="border-2 border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">Periode</th>
+                <th style="width: 3%;" class="border border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">No.</th>
+                <th style="width: 4%" class="border border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">Kode KPI</th>
+                <th class="border border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">KPI</th>
+                <th class="border border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">Periode</th>
                 @foreach ($months as $monthName)
-                    <th class="border-2 border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">{{ $monthName }}</th>
+                    <th class="border border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">{{ $monthName }}</th>
                 @endforeach
-                <th class="border-2 border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">Aksi</th>
+                <th class="border border-gray-400 text-[13px] tracking-wide font-medium text-white py-1 bg-blue-700">Aksi</th>
             </tr>
             @php
                 $i = 0;
@@ -42,12 +42,12 @@
                     $i++;
                 @endphp
                 <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-blue-100'}}">
-                    <td class="border-2 border-gray-400 text-[10px] tracking-wide  py-0 px-2 text-center">{{ $i }}</td>
-                    <td class="border-2 border-gray-400 text-[10px] tracking-wide  py-0 px-2">{{ $target->code }}</td>
-                    <td class="border-2 border-gray-400 text-[10px] tracking-wide  py-0 px-2">{{ $target->indicator }}</td>
-                    <td class="border-2 border-gray-400 text-[10px] tracking-wide  py-0 px-2">{{ $target->period }}</td>
+                    <td class="border border-gray-400 text-[10px] tracking-wide  py-0 px-2 text-center">{{ $i }}</td>
+                    <td class="border border-gray-400 text-[10px] tracking-wide  py-0 px-2">{{ $target->code }}</td>
+                    <td class="border border-gray-400 text-[10px] tracking-wide  py-0 px-2">{{ $target->indicator }}</td>
+                    <td class="border border-gray-400 text-[10px] tracking-wide  py-0 px-2">{{ $target->period }}</td>
                     @php
-                        
+
                     if ($currentSemester == 1) {
                         $targetUnits = $targetUnits1;
                         $targetRange = range(1, 6);
@@ -74,28 +74,28 @@
                     });
 
                     $targetColumn = 'target_' . $month;
-                    
+
                     @endphp
 
                     @if ($actual !== null && $targetUnitCheck->$targetColumn !== null && $actual->status == 'Revise')
-                    <td style="width: 6%" class="border-2 border-gray-400 text-[10px] tracking-wide py-0 px-2 text-center">
+                    <td style="width: 6%" class="border border-gray-400 text-[10px] tracking-wide py-0 px-2 text-center">
                         <i class="ri-error-warning-fill text-xl text-yellow-500"></i>
                     </td>
-                    @elseif ($actual !== null && $targetUnitCheck->$targetColumn !== null)   
-                        <td style="width: 6%" class="border-2 border-gray-400 text-[10px] tracking-wide py-0 px-2 text-center">
+                    @elseif ($actual !== null && $targetUnitCheck->$targetColumn !== null)
+                        <td style="width: 6%" class="border border-gray-400 text-[10px] tracking-wide py-0 px-2 text-center">
                             <i class="ri-checkbox-circle-fill text-xl text-green-500"></i>
                         </td>
                     @elseif ($targetUnitCheck->$targetColumn !== null)
-                    <td style="width: 6%" class="border-2 border-gray-400 text-[10px] tracking-wide py-0 px-2 text-center">
+                    <td style="width: 6%" class="border border-gray-400 text-[10px] tracking-wide py-0 px-2 text-center">
                         <i class="ri-pencil-fill text-xl text-gray-500"></i>
                     </td>
                     @else
-                        <td style="width: 6%" class="border-2 border-gray-400 text-[10px] tracking-wide py-0 px-2 text-center">
-                            
+                        <td style="width: 6%" class="border border-gray-400 text-[10px] tracking-wide py-0 px-2 text-center">
+
                         </td>
                     @endif
                     @endforeach
-                    <td class="border-2 border-gray-400 text-[10px] tracking-wide  py-0 px-2 text-center">
+                    <td class="border border-gray-400 text-[10px] tracking-wide  py-0 px-2 text-center">
                         <div class="flex justify-center gap-2">
                             @php
                                 $year = request()->query('year');
@@ -108,7 +108,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="16" class="border-2 border-gray-400 tracking-wide  py-0 px-2 text-center">Data Tidak ditemukan</td>
+                    <td colspan="16" class="border border-gray-400 tracking-wide  py-0 px-2 text-center">Data Tidak ditemukan</td>
                 </tr>
             @endforelse
         </table>

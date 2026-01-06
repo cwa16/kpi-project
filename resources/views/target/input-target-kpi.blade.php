@@ -93,7 +93,7 @@
                     $now = Carbon\Carbon::now();
                     @endphp
                     @if (($now > $deadline->start_date && $now < $deadline->end_date) || $role == 'Approver')
-                 
+
                     <a href="{{ route('target.showImport', 'semester=' . $semesterQuery . '&employee=' . $employeeQuery . '&year=' . $yearQuery) }}&all={{ $all }}" class="p-1 mx-2 bg-green-600 py-2 items-center rounded-md">
                         <i class="ri-file-excel-2-line text-2xl text-white"></i>
                         <span class="font-medium text-white">Upload Excel</span>
@@ -111,38 +111,38 @@
        <div class="p-0">
         <table class="w-full table-auto">
             <tr>
-                <th style="width: 4%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Kode KPI</th>
-                <th style="width: 13%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700" style="width: 15%">KPI</th>
-                <th style="width: 22%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Cara Menghitung</th>
-                <th style="width: 22%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Data Pendukung</th>
-                <th style="width: 4%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Trend</th>
-                <th style="width: 4%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Periode Review</th>
-                <th style="width: 3%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Unit</th>
-                <th style="width: 3%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Bobot "%"</th>
+                <th style="width: 4%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Kode KPI</th>
+                <th style="width: 13%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700" style="width: 15%">KPI</th>
+                <th style="width: 22%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Cara Menghitung</th>
+                <th style="width: 22%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Data Pendukung</th>
+                <th style="width: 4%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Trend</th>
+                <th style="width: 4%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Periode Review</th>
+                <th style="width: 3%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Unit</th>
+                <th style="width: 3%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Bobot "%"</th>
                 @php
             $currentSemester = request()->query('semester');
             $months = [];
-        
+
             if ($currentSemester == 1) {
                 $months = [
-                    '1' => 'Jan', '2' => 'Feb', '3' => 'Mar', '4' => 'Apr', 
+                    '1' => 'Jan', '2' => 'Feb', '3' => 'Mar', '4' => 'Apr',
                     '5' => 'May', '6' => 'Jun'
                 ];
             } else {
                 $months = [
-                    '7' => 'Jul', '8' => 'Aug', '9' => 'Sep', '10' => 'Oct', 
+                    '7' => 'Jul', '8' => 'Aug', '9' => 'Sep', '10' => 'Oct',
                     '11' => 'Nov', '12' => 'Dec'
                 ];
             }
             @endphp
-            
+
             @foreach ($months as $month)
 
-                <th style="width: 4%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">{{ $month }}</th>
-                
+                <th style="width: 4%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">{{ $month }}</th>
+
             @endforeach
             @if ($role == 'Approver')
-            <th class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Aksi</th>
+            <th class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Aksi</th>
             @endif
             </tr>
             @php
@@ -153,8 +153,8 @@
             $i++
             @endphp
             <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-blue-100'}}">
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0">{{ $target->code }}</td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0">
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0">{{ $target->code }}</td>
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0">
                     <div class="flex items-center justify-between">
                         <div class="">
                             {{ $target->indicator }}
@@ -164,16 +164,16 @@
                         @endif
                     </div>
                 </td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0 text-justify">{{ $target->calculation }}</td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0">
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0 text-justify">{{ $target->calculation }}</td>
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0">
                     {{ $target->supporting_document }}
                 </td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0">
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0">
                     {{ $target->trend }}
                 </td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">{{ $target->period }}</td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0">{{ $target->unit }}</td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">{{ $target->weighting }}</td>
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">{{ $target->period }}</td>
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0">{{ $target->unit }}</td>
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">{{ $target->weighting }}</td>
 
                 @php
                 $isPercentage = $target->unit === '%';
@@ -211,7 +211,7 @@
                 @php
                 $targetColumn = 'target_' . $month;
                 @endphp
-                <td class="border-2 border-gray-400 text-[11px] tracking-wide px-2 py-0 text-center">
+                <td class="border border-gray-400 text-[11px] tracking-wide px-2 py-0 text-center">
                     @if ($target->{$targetColumn} !== null)
                     @php
                     $floatValue = floatval($target->{$targetColumn});
@@ -239,7 +239,7 @@
                 @php
                 $targetColumn = 'target_' . $month;
                 @endphp
-                <td class="border-2 border-gray-400 text-[11px] tracking-wide px-2 py-0 text-center">
+                <td class="border border-gray-400 text-[11px] tracking-wide px-2 py-0 text-center">
                     @if ($target->{$targetColumn} !== null)
                     @php
                     $floatValue = floatval($target->{$targetColumn});
@@ -264,7 +264,7 @@
                 @endforeach
                 @endif
                 @if ($role == 'Approver')
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">
                     <a href="{{ route('target.edit', ['id' => $target->id]) }}?semester={{ $semesterQuery }}&employee={{ $employeeQuery }}">
                         <i class="ri-edit-2-line bg-yellow-500 p-1 rounded-sm"></i>
                     </a>
@@ -273,7 +273,7 @@
                 </tr>
             @empty
             <tr>
-                <td colspan="16" class="border-2 border-gray-400 tracking-wide  py-0 px-2 text-center">Data Tidak ditemukan</td>
+                <td colspan="16" class="border border-gray-400 tracking-wide  py-0 px-2 text-center">Data Tidak ditemukan</td>
             </tr>
             @endforelse
         </table>
@@ -286,38 +286,38 @@
        <div class="p-0">
         <table class="w-full table-auto">
             <tr>
-                <th style="width: 4%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Kode KPI</th>
-                <th style="width: 13%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700" style="width: 15%">KPI</th>
-                <th style="width: 22%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Cara Menghitung</th>
-                <th style="width: 22%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Data Pendukung</th>
-                <th style="width: 4%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Trend</th>
-                <th style="width: 4%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Periode Review</th>
-                <th style="width: 3%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Unit</th>
-                <th style="width: 3%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Bobot "%"</th>
+                <th style="width: 4%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Kode KPI</th>
+                <th style="width: 13%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700" style="width: 15%">KPI</th>
+                <th style="width: 22%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Cara Menghitung</th>
+                <th style="width: 22%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Data Pendukung</th>
+                <th style="width: 4%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Trend</th>
+                <th style="width: 4%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Periode Review</th>
+                <th style="width: 3%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Unit</th>
+                <th style="width: 3%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Bobot "%"</th>
                 @php
             $currentSemester = request()->query('semester');
             $months = [];
-        
+
             if ($currentSemester == 1) {
                 $months = [
-                    '1' => 'Jan', '2' => 'Feb', '3' => 'Mar', '4' => 'Apr', 
+                    '1' => 'Jan', '2' => 'Feb', '3' => 'Mar', '4' => 'Apr',
                     '5' => 'May', '6' => 'Jun'
                 ];
             } else {
                 $months = [
-                    '7' => 'Jul', '8' => 'Aug', '9' => 'Sep', '10' => 'Oct', 
+                    '7' => 'Jul', '8' => 'Aug', '9' => 'Sep', '10' => 'Oct',
                     '11' => 'Nov', '12' => 'Dec'
                 ];
             }
             @endphp
-            
+
             @foreach ($months as $month)
 
-                <th style="width: 4%" class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">{{ $month }}</th>
-                
+                <th style="width: 4%" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">{{ $month }}</th>
+
             @endforeach
             @if ($role == 'Approver')
-            <th class="border-2 border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Aksi</th>
+            <th class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 bg-blue-700">Aksi</th>
             @endif
             </tr>
             @php
@@ -328,8 +328,8 @@
             $i++
             @endphp
             <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-blue-100'}}">
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0">{{ $target->code }}</td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0">
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0">{{ $target->code }}</td>
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0">
                     <div class="flex items-center justify-between">
                         <div class="">
                             {{ $target->indicator }}
@@ -339,16 +339,16 @@
                         @endif
                     </div>
                 </td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0 text-justify">{{ $target->calculation }}</td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0">
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0 text-justify">{{ $target->calculation }}</td>
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0">
                     {{ $target->supporting_document }}
                 </td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0">
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0">
                     {{ $target->trend }}
                 </td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">{{ $target->period }}</td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0">{{ $target->unit }}</td>
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">{{ $target->weighting }}</td>
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">{{ $target->period }}</td>
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0">{{ $target->unit }}</td>
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">{{ $target->weighting }}</td>
 
                 @php
                 $isPercentage = $target->unit === '%';
@@ -386,7 +386,7 @@
                 @php
                 $targetColumn = 'target_' . $month;
                 @endphp
-                <td class="border-2 border-gray-400 text-[11px] tracking-wide px-2 py-0 text-center">
+                <td class="border border-gray-400 text-[11px] tracking-wide px-2 py-0 text-center">
                     @if ($target->{$targetColumn} !== null)
                     @php
                     $floatValue = floatval($target->{$targetColumn});
@@ -414,7 +414,7 @@
                 @php
                 $targetColumn = 'target_' . $month;
                 @endphp
-                <td class="border-2 border-gray-400 text-[11px] tracking-wide px-2 py-0 text-center">
+                <td class="border border-gray-400 text-[11px] tracking-wide px-2 py-0 text-center">
                     @if ($target->{$targetColumn} !== null)
                     @php
                     $floatValue = floatval($target->{$targetColumn});
@@ -439,7 +439,7 @@
                 @endforeach
                 @endif
                 @if ($role == 'Approver')
-                <td class="border-2 border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">
+                <td class="border border-gray-400 text-[10px] tracking-wide px-2 py-0 text-center">
                     <a href="{{ route('target.edit', ['id' => $target->id]) }}?semester={{ $semesterQuery }}&employee={{ $employeeQuery }}">
                         <i class="ri-edit-2-line bg-yellow-500 p-1 rounded-sm"></i>
                     </a>
@@ -448,7 +448,7 @@
                 </tr>
             @empty
             <tr>
-                <td colspan="16" class="border-2 border-gray-400 tracking-wide  py-0 px-2 text-center">Data Tidak ditemukan</td>
+                <td colspan="16" class="border border-gray-400 tracking-wide  py-0 px-2 text-center">Data Tidak ditemukan</td>
             </tr>
             @endforelse
         </table>

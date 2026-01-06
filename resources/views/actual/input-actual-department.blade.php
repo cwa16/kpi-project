@@ -9,7 +9,7 @@
         <div class="p-0">
             <span class="font-bold text-2xl">Input Data Pencapaian KPI</span>
         </div>
-        <div class="flex justify-end mb-2"> 
+        <div class="flex justify-end mb-2">
             <div class="relative mt-0 rounded-md">
                 <div class="mt-0 mx-2">
                     <select name="year" id="year" class="col-start-1 row-start-1 w-full appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
@@ -44,10 +44,10 @@
         </div>
     </div>
     @if ($role != '' && $role != 'Inputer' && $role != 'Check 1')
-    
-    
+
+
     <div class="flex justify-between">
-        <div class="mt-0">   
+        <div class="mt-0">
             @if ($role == 'Approver')
             <div class="flex gap-x-2">
                  <div class="relative mt-0 rounded-md mb-1">
@@ -69,13 +69,13 @@
             </div>
             @endif
         </div>
-        
+
         <form action="{{ route('actual.department') }}" method="GET">
         <div class="flex justify-end mb-2">
             <div class="mt-2 mb-1 mx-2">
                 <select name="department" id="department" class="col-start-1 row-start-1 w-full appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                     <option value="">-- Departemen --</option>
-                    @foreach ($allDept as $item)  
+                    @foreach ($allDept as $item)
                     <option value="{{ $item->id }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
@@ -96,12 +96,12 @@
     <div class="flex justify-center">
         <table class="w-full">
             <tr>
-                <th style="width: 3%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
-                <th style="width: 9%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">NIK</th>
-                <th style="width: 28%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Nama</th>
-                <th class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Department</th>
-                <th class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Jabatan</th>
-                <th class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Aksi</th>
+                <th style="width: 3%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
+                <th style="width: 9%" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">NIK</th>
+                <th style="width: 28%" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Nama</th>
+                <th class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Department</th>
+                <th class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Jabatan</th>
+                <th class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Aksi</th>
             </tr>
 
             @forelse ($departments as $department)
@@ -109,12 +109,12 @@
             $i++
             @endphp
            <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-blue-100'}}">
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">{{ $i }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->nik }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->employee }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->department }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->occupation }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">{{ $i }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->nik }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->employee }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->department }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->occupation }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">
                     <div class="flex justify-center gap-2 text-[12px]">
                         <a id="employee-link-{{ $department->employee_id }}" href="{{ route('actual.show', 'employee=' . $department->employee_id . '&semester=&year='  ) }}">
                             <span class="hover:underline text-blue-600">Input Aktual Individu</span>
@@ -124,7 +124,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="16" class="border-2 border-gray-400 tracking-wide py-0 px-2 text-center">Data Tidak ditemukan</td>
+                <td colspan="16" class="border border-gray-400 tracking-wide py-0 px-2 text-center">Data Tidak ditemukan</td>
             </tr>
             @endforelse
         </table>

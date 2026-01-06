@@ -2,7 +2,7 @@
     <div class="ml-64 mt-4 overflow-x-auto p-2 bg-white border border-gray-100 shadow-md shadow-black/10 rounded-md">
         @php
         $currentYear = Carbon\Carbon::now()->year;
-        $startYear = 2024; 
+        $startYear = 2024;
         $endYear = $currentYear + 2;
         $role = auth()->user()->role;
         $email = auth()->user()->email;
@@ -24,7 +24,7 @@
                                 @if ($role == 'Approver' || $email == 'johari@bskp.co.id' || $email == 'surya-sp@bskp.co.id')
                                 <option value="all">All Dept</option>
                                 @endif
-                                @foreach ($deptList as $item)  
+                                @foreach ($deptList as $item)
                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
@@ -39,9 +39,9 @@
                             <select name="status" id="status" class="col-start-1 row-start-1 w-full appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 <option value="">-- Status --</option>
                                 @foreach ($listStatus as $item)
-                                <option value="{{ $item->status }}">{{ $item->status }}</option>    
+                                <option value="{{ $item->status }}">{{ $item->status }}</option>
                                 @endforeach
-        
+
                             </select>
                         </div>
                         <div class="absolute inset-y-0 right-0 flex items-center">
@@ -87,18 +87,18 @@
         <div class="flex justify-center">
         <table class="w-[1100px] table-auto">
             <tr>
-                <th style="width: 5%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
-                <th style="width: 20%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">NIK</th>
-                <th style="width: 28%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Nama</th>
-                <th style="width: 14%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Department</th>
-                <th style="width: 20%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Jabatan</th>
-                <th class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Aksi</th>
+                <th style="width: 5%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
+                <th style="width: 20%" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">NIK</th>
+                <th style="width: 28%" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Nama</th>
+                <th style="width: 14%" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Department</th>
+                <th style="width: 20%" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Jabatan</th>
+                <th class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Aksi</th>
             </tr>
 
             @php
 
             $employeeQuery = request()->query('employee');
-            
+
             if (!$employeeQuery) {
                 $startIndex = ($departments->currentPage() - 1) * $departments->perPage();
             } else {
@@ -115,12 +115,12 @@
             }
             @endphp
             <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-blue-100'}}">
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">{{ $i }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->nik }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->employee }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->department }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->occupation }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">{{ $i }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->nik }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->employee }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->department }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->occupation }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">
                     <div class="flex justify-center gap-2 text-[12px]">
                         <a id="employee-link-{{ $department->employee_id }}" href="{{ route('report.show', $department->employee_id) }}?semester=&year=">
                             <span class="hover:underline text-blue-600">Summary</span>
@@ -130,7 +130,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="16" class="border-2 border-gray-400 tracking-wide  py-0 px-2 text-center">Data Tidak ditemukan</td>
+                <td colspan="16" class="border border-gray-400 tracking-wide  py-0 px-2 text-center">Data Tidak ditemukan</td>
             </tr>
             @endforelse
         </table>
@@ -171,7 +171,7 @@
                                     </svg>
                                 </a>
                             @endif
-        
+
                             @foreach ($departments->getUrlRange(1, $departments->lastPage()) as $page => $url)
                                 @if ($page == $departments->currentPage())
                                     <span aria-current="page" class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{{ $page }}</span>
@@ -181,7 +181,7 @@
                                     <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 cursor-default">...</span>
                                 @endif
                             @endforeach
-        
+
                             @if ($departments->hasMorePages())
                                 <a href="{{ $departments->nextPageUrl() }}" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
                                     <span class="sr-only">Next</span>
@@ -210,7 +210,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const yearDropdown = document.getElementById('year');
         const semesterDropdown = document.getElementById('semester');
-        
+
         // Set the dropdown values from localStorage if they exist
         const savedYear = localStorage.getItem('selectedYear');
         const savedSemester = localStorage.getItem('selectedSemester');

@@ -176,10 +176,10 @@
                     <table class="table-auto w-full">
                         <thead>
                         <tr>
-                            <th style="width: 3%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
-                            <th style="width: 45%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Nama</th>
-                            <th style="width: 20%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Posisi</th>
-                            <th style="width: 15%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Dept</th>
+                            <th style="width: 3%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
+                            <th style="width: 45%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Nama</th>
+                            <th style="width: 20%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Posisi</th>
+                            <th style="width: 15%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Dept</th>
                         </tr>
                     </thead>
 
@@ -318,9 +318,9 @@
                 <div class="mt-4 max-h-[500px] overflow-y-auto">
                     <table class="w-full">
                         <tr>
-                            <th style="width: 3%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
-                            <th style="width: 70%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Dept</th>
-                            <th style="width: 27%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Number of Requests</th>
+                            <th style="width: 3%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
+                            <th style="width: 70%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Dept</th>
+                            <th style="width: 27%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Number of Requests</th>
                         </tr>
                         @php
                         $i = 0;
@@ -330,15 +330,15 @@
                         $i++;
                         @endphp
                         <tr>
-                            <td class="border-2 border-gray-400 tracking-wide px-2 py-0 text-center">
+                            <td class="border border-gray-400 tracking-wide px-2 py-0 text-center">
                                 {{ $i }}
                             </td>
-                            <td class="border-2 border-gray-400 tracking-wide px-2 py-0">
+                            <td class="border border-gray-400 tracking-wide px-2 py-0">
                                 <a href="{{ route('report.index') . '?department=' . $item->department_id . '&role=' . $role }}" class="hover:underline hover:text-blue-500">
                                     {{ $item->department }}
                                 </a>
                             </td>
-                            <td class="border-2 border-gray-400 tracking-wide px-2 py-0 text-center">
+                            <td class="border border-gray-400 tracking-wide px-2 py-0 text-center">
                                 {{ $item->total }}
                             </td>
                         </tr>
@@ -357,9 +357,9 @@
                 <div class="mt-4">
                     <table class="w-full">
                         <tr>
-                            <th style="width: 3%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
-                            <th style="width: 70%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Dept</th>
-                            <th style="width: 27%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Number of Requests</th>
+                            <th style="width: 3%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
+                            <th style="width: 70%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Dept</th>
+                            <th style="width: 27%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Number of Requests</th>
                         </tr>
                         @php
                         $i = 0;
@@ -369,15 +369,15 @@
                         $i++;
                         @endphp
                         <tr>
-                            <td class="border-2 border-gray-400 tracking-wide px-2 py-0 text-center">
+                            <td class="border border-gray-400 tracking-wide px-2 py-0 text-center">
                                 {{ $i }}
                             </td>
-                            <td class="border-2 border-gray-400 tracking-wide px-2 py-0">
+                            <td class="border border-gray-400 tracking-wide px-2 py-0">
                                 <a href="{{ route('report.department', $item->department_id) . '?semester=' . $currentSemester . '&year=' . $currentYear }}" class="hover:underline hover:text-blue-500">
                                     {{ $item->department }}
                                 </a>
                             </td>
-                            <td class="border-2 border-gray-400 tracking-wide px-2 py-0 text-center">
+                            <td class="border border-gray-400 tracking-wide px-2 py-0 text-center">
                                 {{ $item->total }}
                             </td>
                         </tr>
@@ -447,19 +447,19 @@
         if (data.length > 0) {
           data.forEach((item, index) => {
             const row = `<tr class="${index % 2 === 0 ? 'bg-blue-100' : 'bg-white'}">
-              <td class="border-2 border-gray-400 tracking-wide px-2 py-0 text-center">${index + 1}</td>
-              <td class="border-2 border-gray-400 tracking-wide px-2 py-0">
+              <td class="border border-gray-400 tracking-wide px-2 py-0 text-center">${index + 1}</td>
+              <td class="border border-gray-400 tracking-wide px-2 py-0">
                 <a href="${getReportUrl(item.id, semester, year)}" class="hover:underline">${item.name}</a>
               </td>
-              <td class="border-2 border-gray-400 tracking-wide px-2 py-0" >${item.occupation}</td>
-              <td class="border-2 border-gray-400 tracking-wide px-2 py-0">
+              <td class="border border-gray-400 tracking-wide px-2 py-0" >${item.occupation}</td>
+              <td class="border border-gray-400 tracking-wide px-2 py-0">
                <a href="${getReportDeptUrl(item.department_id, semester, year)}" class="hover:underline">${item.department}</a>
               </td>
             </tr>`;
             tbody.innerHTML += row;
           });
         } else {
-          tbody.innerHTML = '<tr><td colspan="4" class="border-2 border-gray-400 tracking-wide px-2 py-0 text-center">No data found</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="4" class="border border-gray-400 tracking-wide px-2 py-0 text-center">No data found</td></tr>';
         }
       });
   }

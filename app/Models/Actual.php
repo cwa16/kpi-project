@@ -29,6 +29,8 @@ class Actual extends Model
         'detail',
         'trend',
         'status',
+        'invalid_weight',
+        'is_valid',
         'deadline',
         'input_by',
         'input_at',

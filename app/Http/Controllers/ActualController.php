@@ -553,6 +553,8 @@ class ActualController extends Controller
             'status'              => $request->status,
             'semester'            => $semester,
             'detail'              => $request->detail,
+            'is_valid'            => 1,
+            'invalid_weight'      => null,
             'input_by'            => $input_by,
             'input_at'            => now(),
         ];

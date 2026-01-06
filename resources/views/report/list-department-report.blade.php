@@ -3,7 +3,7 @@
         @php
         $i = 0;
         $currentYear = Carbon\Carbon::now()->year;
-        $startYear = 2024; 
+        $startYear = 2024;
         $endYear = $currentYear + 2;
         @endphp
         <div class="flex justify-between">
@@ -40,10 +40,10 @@
         <div class="flex justify-center">
         <table class="w-1/2">
             <tr>
-                <th style="width: 3%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
-                <th class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Departemen</th>
-                <th class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Kode Departemen</th>
-                <th class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Aksi</th>
+                <th style="width: 3%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
+                <th class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Departemen</th>
+                <th class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Kode Departemen</th>
+                <th class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Aksi</th>
             </tr>
 
             @forelse ($deptList as $department)
@@ -51,10 +51,10 @@
             $i++
             @endphp
             <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-blue-100'}}">
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">{{ $i }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->name }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->code }}</td>
-                <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">{{ $i }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->name }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->code }}</td>
+                <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">
                     <div class="flex justify-center gap-2 text-[12px]">
                         <a id="employee-link-{{ $department->id }}" href="{{ route('report.department', $department->id) }}?semester=&year=">
                             <span class="hover:underline text-blue-600">Summary</span>
@@ -64,7 +64,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="16" class="border-2 border-gray-400 tracking-wide  py-0 px-2 text-center">Data Tidak ditemukan</td>
+                <td colspan="16" class="border border-gray-400 tracking-wide  py-0 px-2 text-center">Data Tidak ditemukan</td>
             </tr>
             @endforelse
         </table>
@@ -75,7 +75,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const yearDropdown = document.getElementById('year');
         const semesterDropdown = document.getElementById('semester');
-        
+
         // Set the dropdown values from localStorage if they exist
         const savedYear = localStorage.getItem('selectedYear');
         const savedSemester = localStorage.getItem('selectedSemester');

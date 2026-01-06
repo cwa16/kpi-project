@@ -3,7 +3,7 @@
         <div class="p-0">
             <span class="font-bold text-2xl">Daftar Data Pendukung Karyawan</span>
         </div>
-        
+
 
         @php
         $months = [
@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="p-0 mt-2">
-            <button type="button" class="p-2 bg-blue-500 text-white rounded-md" onclick="history.back()">   
+            <button type="button" class="p-2 bg-blue-500 text-white rounded-md" onclick="history.back()">
                 Back
             </button>
         </div>
@@ -61,11 +61,11 @@
         <div class="mt-2">
             <table class="table-auto">
                 <tr>
-                    <th style="width: 3%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
-                    <th style="width: 40%" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Item KPI</th>
-    
+                    <th style="width: 3%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">No.</th>
+                    <th style="width: 40%" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">Item KPI</th>
+
                     @foreach ($months as $month)
-                    <th style="width: 4%;" class="border-2 border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">
+                    <th style="width: 4%;" class="border border-gray-400 text-[14px] tracking-wide font-medium text-white py-1 px-4 bg-blue-700">
                         {{ $month }}
                     </th>
                     @endforeach
@@ -78,8 +78,8 @@
                     $i++;
                 @endphp
                 <tr class="{{ $i % 2 === 0 ? 'bg-white' : 'bg-blue-100'}}">
-                    <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">{{ $i }}</td>
-                    <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $target->indicator }}</td>
+                    <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">{{ $i }}</td>
+                    <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $target->indicator }}</td>
                     @foreach ($months as $month => $monthName)
                     @php
                         $targetUnitField = 'target_' . $month;
@@ -89,7 +89,7 @@
                     @endphp
                     @if ($target->$targetUnitField !== null)
                     @if ($actual)
-                    <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">
+                    <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">
                         <button id="open-modal-{{ $actual->id }}" data-month="{{ $month }}" data-actual-id="{{ $actual->id }}" data-file="{{ asset('record_files/' . $actual->record_file) }}" class="open-modal">
                             <i class="ri-eye-fill text-sm p-0.5  text-blue-500 rounded-sm"></i>
                         </button>
@@ -109,15 +109,15 @@
                                 </div>
                             </div>
                         </div>
-            
+
                     </div>
                     @else
-                    <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">
-                        
+                    <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">
+
                     </td>
                     @endif
                     @else
-                    <td class="border-2 border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">
+                    <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0 text-center">
                         <span class="text-red-500">N/A</span>
                     </td>
                     @endif
@@ -125,14 +125,14 @@
                 </tr>
                 @empty
                 <tr>
-                    <td class="border-2 border-gray-400 text-[16px] tracking-wide px-2 py-0 text-center" colspan="20">Data tidak ditemukan</td>
+                    <td class="border border-gray-400 text-[16px] tracking-wide px-2 py-0 text-center" colspan="20">Data tidak ditemukan</td>
                 </tr>
                 @endforelse
-                    
+
             </table>
         </div>
 
-        
+
 
     </div>
 </x-app-layout>
