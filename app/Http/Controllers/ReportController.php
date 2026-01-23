@@ -263,74 +263,142 @@ class ReportController extends Controller
             // dd($groupedData);
             // dd($targets, $groupedData);
             // dd($groupedData->get('Meeting KPI'));
+            $groupedActuals = $actuals->groupBy('kpi_item');
 
             // Hitung total target dan actual untuk setiap kelompok
-            $totals = $groupedData->map(function ($group) {
-                $firstItem = $group->first();
-                $unitItem  = $firstItem->kpi_unit;
+            $totals = $targets->mapWithKeys(function ($target) use ($groupedActuals, $semester) {
 
-                if ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == '%' || $unitItem == 'Kg/Tap' || $unitItem == 'Rp/Kg' || $unitItem == 'mm' || $unitItem == 'M3' || $unitItem == 'Hari' || $unitItem == 'Jam') {
-                    $totalTarget = $group->avg(function ($item) {
-                        return (float) $item->target;
-                    });
+                $kpiItem = $target->indicator;
+                $weight  = (float) str_replace('%', '', $target->weighting);
 
-                    $totalActual = $group->avg(function ($item) {
-                        return $item->is_valid ? (float) $item->actual : 0;
-                    });
+                // Ambil actual semester (kalau ada)
+                $group = $groupedActuals->get($kpiItem);
 
-                    $totalPercentage = $group->avg(function ($item) {
-                        return $item->is_valid ? (float) $item->kpi_percentage : 0;
-                    });
+                // ================================
+                // RANGE BULAN SEMESTER
+                // ================================
+                $startMonth = ($semester == 1) ? 1 : 7;
+                $endMonth   = ($semester == 1) ? 6 : 12;
 
-                    $totalInvalidWeight = $group->sum(function ($item) {
-                        return ! $item->is_valid ? (float) $item->invalid_weight : 0;
+                // ================================
+                // HITUNG TARGET SEMESTER
+                // ================================
+                $semesterTargetSum   = 0;
+                $hasTargetInSemester = false;
+
+                for ($m = $startMonth; $m <= $endMonth; $m++) {
+                    $col = 'target_' . $m;
+
+                    if (property_exists($target, $col)) {
+                        $val = $target->$col;
+
+                        if ($val !== null && $val !== '' && $val !== 'N/A' && (float) $val != 0) {
+                            $semesterTargetSum   += (float) $val;
+                            $hasTargetInSemester  = true;
+                        }
+                    }
+                }
+
+                // ================================
+                // CEK ACTUAL SEMESTER
+                // ================================
+                $hasActualInSemester = false;
+
+                if ($group && $group->isNotEmpty()) {
+                    $hasActualInSemester = $group->contains(function ($item) {
+                        return $item->is_valid && (float) $item->actual != 0;
                     });
+                }
+
+                // =========================================================
+                // 🔥 LOGIKA FULL BOBOT (SAMA DENGAN DEPARTMENT)
+                // =========================================================
+                // Jika TARGET SEMESTER TIDAK ADA
+                // DAN ACTUAL SEMESTER TIDAK ADA / 0
+                // → KPI N/A → FULL BOBOT
+                // =========================================================
+                if (! $hasTargetInSemester && ! $hasActualInSemester) {
+                    return [
+                        $kpiItem => [
+                            'total_target'             => null,
+                            'total_actual'             => null,
+                            'percentageCalc'           => 100,
+                            'weight'                   => $weight,
+                            'total_achievement_weight' => $weight,
+                            'trend'                    => $target->trend ?? null,
+                        ],
+                    ];
+                }
+
+                // ================================
+                // DATA DASAR UNTUK HITUNG NORMAL
+                // ================================
+                $firstItem = $group ? $group->first() : null;
+                $unitItem  = $firstItem->kpi_unit ?? $target->unit ?? 'Freq';
+                $trendItem = $firstItem->trend ?? $target->trend ?? 'Positif';
+
+                // ================================
+                // HITUNG TARGET & ACTUAL SEMESTER
+                // ================================
+                if (in_array($unitItem, ['Tgl', 'tgl', '%', 'Kg/Tap', 'Rp/Kg', 'mm', 'M3', 'Hari', 'Jam'])) {
+
+                    // MODE RATA-RATA
+                    $totalTarget = $hasTargetInSemester
+                        ? ($semesterTargetSum / max(1, ($endMonth - $startMonth + 1)))
+                        : 0;
+
+                    $totalActual = $group
+                        ? $group->avg(fn($i) => $i->is_valid ? (float) ($i->actual ?? 0) : 0)
+                        : 0;
 
                 } else {
-                    $totalTarget = $group->sum(function ($item) {
-                        return (float) $item->target;
-                    });
 
-                    $totalActual = $group->sum(function ($item) {
-                        return $item->is_valid ? (float) $item->actual : 0;
-                    });
+                    // MODE AKUMULASI
+                    $totalTarget = $semesterTargetSum;
 
-                    $totalPercentage = $group->avg(function ($item) {
-                        return $item->is_valid ? (float) $item->kpi_percentage : 0;
-                    });
-
-                    $totalInvalidWeight = $group->sum(function ($item) {
-                        return $item->is_valid == 0 ? (float) $item->invalid_weight : 0;
-                    });
+                    $totalActual = $group
+                        ? $group->sum(fn($i) => $i->is_valid ? (float) ($i->actual ?? 0) : 0)
+                        : 0;
                 }
 
-                $trendItem      = $firstItem->trend;
-                $recordFileItem = $firstItem->record_file;
-                $periodItem     = $firstItem->review_period;
-                $target         = $firstItem->target;
-                $percentageCalc = $this->calculation($target, $totalTarget, $totalActual, $trendItem, $unitItem, $totalPercentage);
+                $totalPercentage = $group
+                    ? $group->avg(fn($i) => $i->is_valid ? (float) ($i->kpi_percentage ?? 0) : 0)
+                    : 0;
 
-                $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+                // ================================
+                // HITUNG KPI
+                // ================================
+                $percentageCalc = $this->calculation(
+                    $semesterTargetSum,
+                    $totalTarget,
+                    $totalActual,
+                    $trendItem,
+                    $unitItem,
+                    $totalPercentage
+                );
 
-                if ($convertedCalc > 120 && ($unitItem == 'Kg/Tap' || $unitItem == 'Rp' || $unitItem == 'Rp/Kg' || $unitItem == 'Hari' || $unitItem == 'Jam')) {
-                    $convertedCalc = 120; // Batasi nilai lebih dari 120 menjadi 120
-                } elseif ($convertedCalc > 110 && ($unitItem == 'Tgl' || $unitItem == 'tgl' || $unitItem == 'Freq')) {
-                    $convertedCalc = 110; // Batasi nilai lebih dari 110 menjadi 110
-                } elseif ($convertedCalc > 150 && $unitItem == '%') {
-                    $convertedCalc = 150; // Batasi nilai lebih dari 150 menjadi 150
+                $convertedCalc = (float) str_replace('%', '', $percentageCalc);
+
+                // CAPPING
+                if ($convertedCalc > 120 && in_array($unitItem, ['Kg/Tap', 'Rp', 'Rp/Kg', 'Hari', 'Jam'])) {
+                    $convertedCalc = 120;
+                } elseif ($convertedCalc > 110 && in_array($unitItem, ['Tgl', 'tgl', 'Freq'])) {
+                    $convertedCalc = 110;
+                } elseif ($convertedCalc > 150 && $unitItem === '%') {
+                    $convertedCalc = 150;
                 }
 
-                $weight = floatval($group->first()->kpi_weighting); // Ambil bobot dari item pertama dalam grup dikurangi invalid weight
-
-                $totalAchievementWeight = ($convertedCalc * $weight / 100) - $totalInvalidWeight;
+                $totalAchievementWeight = ($convertedCalc * $weight / 100);
 
                 return [
-                    'total_target'             => $totalTarget,
-                    'total_actual'             => $totalActual,
-                    'percentageCalc'           => $convertedCalc,
-                    'weight'                   => $weight,
-                    'total_achievement_weight' => $totalAchievementWeight,
-                    'trend'                    => $trendItem,
+                    $kpiItem => [
+                        'total_target'             => $totalTarget,
+                        'total_actual'             => $totalActual,
+                        'percentageCalc'           => $convertedCalc,
+                        'weight'                   => $weight,
+                        'total_achievement_weight' => $totalAchievementWeight,
+                        'trend'                    => $trendItem,
+                    ],
                 ];
             });
 
