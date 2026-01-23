@@ -162,6 +162,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/kpi-department-report', [ReportController::class, 'departmentTargetReport'])->name('report.departmentTargetReport');
         Route::post('/set-invalid', [ReportController::class, 'setDataInvalid'])->name('report.setInvalid');
         Route::post('/set-invalid-dept', [ReportController::class, 'setDataInvalidDept'])->name('report.setInvalidDept');
+        Route::get('/employee-report-pdf/{id}/{semester}/{year}', [ReportController::class, 'show_pdf'])->name('report.show_pdf');
     });
 
     Route::prefix('logs')->group(function () {

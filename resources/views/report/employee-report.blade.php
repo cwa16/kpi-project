@@ -99,6 +99,7 @@
                             Batch Approve
                         </button>
                     @endif
+                    <a href="{{ route('report.show_pdf', ['id' => $idParam, 'semester' => $semester, 'year' => $year]) }}" class="p-1.5 px-3 rounded-md text-white bg-red-500 text-sm">PDF</a>
                 </div>
             </div>
         </div>
@@ -124,6 +125,10 @@
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 25%"
                             class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">KPI</th>
+                        <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
+                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 5%"
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
+                            rowspan="2">Data Pendukung</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 3%"
                             class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
@@ -200,7 +205,7 @@
                         @php
                             $i++;
 
-                            $trend = ($target->trend === 'Negatif') ? "N" : "P";
+                            $trend = $target->trend === 'Negatif' ? 'N' : 'P';
 
                         @endphp
                         <tr class="{{ $i % 2 === 0 ? 'bg-gray-50' : 'bg-blue-100' }}">
@@ -228,6 +233,10 @@
                                     {{ $target->detail }}
                                 </div>
                             </td>
+                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
+                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-3"
+                                rowspan="4">{{ $target->supporting_document }}</td>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                                 data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
                                 class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-3"
@@ -843,7 +852,7 @@
         <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
             data-f-color="FFFFFFFF"
             class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
-            id="changeColSpan" colspan="6">Total</td>
+            id="changeColSpan" colspan="7">Total</td>
         <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
             data-f-color="FFFFFFFF"
             class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center">
@@ -907,7 +916,7 @@
                     <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                         data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
                         class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        rowspan="2">Bobot Pencapaian</th>
+                        rowspan="2">Acv. %</th>
                 </tr>
                 @php
                     $months = [];
@@ -943,7 +952,7 @@
                     <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                         data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 7%"
                         class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700">
-                        Total</th>
+                        Total/<br>Avg</th>
                 </tr>
             </thead>
             <tbody>
@@ -1574,8 +1583,8 @@
             data-f-color="FFFFFFFF"
             class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
             colspan="8"></td>
-        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
-            data-f-color="FFFFFFFF"
+        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
+            data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
             class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
             colspan="1">{{ number_format($sumTotalWeightingAchievement, 1) }}%</td>
 

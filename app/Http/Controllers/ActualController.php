@@ -132,24 +132,13 @@ class ActualController extends Controller
         }
 
         if ($department && $employee) {
+
             $departments = DB::table('departments')
-            // Mengganti 'employees' dengan 'mysql2.users'
-            // dan menyesuaikan kolom join serta select
-                ->leftJoin('mysql2.users', 'mysql2.users.department_id', '=', 'departments.id')
-                ->select(
-                                                      // Sesuaikan alias untuk kolom dari tabel 'users'
-                    'mysql2.users.id as employee_id', // Misal: ID pengguna sebagai employee_id
-                    'mysql2.users.nik as nik',
-                    'mysql2.users.name as employee',         // Misal: Nama pengguna sebagai employee
-                    'mysql2.users.occupation as occupation', // Kolom ini mungkin tidak ada di tabel users, sesuaikan!
-                    'departments.name as department',
-                    'departments.id as department_id'
-                )
+                ->leftJoin('employees', 'employees.department_id', '=', 'departments.id')
+                ->select('employees.id as employee_id', 'employees.nik as nik', 'employees.name as employee', 'employees.occupation as occupation', 'departments.name as department', 'departments.id as department_id')
+                ->where('employees.id', $employee)
                 ->where('departments.id', $department)
-            // Sesuaikan klausa where agar merujuk ke tabel 'users'
-                ->where('mysql2.users.id', $employee)
-            // Sesuaikan klausa where is_active jika ada di tabel 'users'
-                ->where('mysql2.users.is_active', 1)
+                ->where('employees.is_active', 1)
                 ->get();
 
             return view('actual.input-actual-department', [
@@ -164,21 +153,12 @@ class ActualController extends Controller
             //     abort(403, 'Unauthorized');
             // }
 
-            $departments = DB::table('departments')
-            // Ganti 'employees' dengan 'bskp_attendance.users'
-                ->leftJoin('bskp_attendance.users', 'bskp_attendance.users.department_id', '=', 'departments.id')
-                ->select(
-                    // Sesuaikan alias kolom untuk merujuk ke tabel users
-                    'bskp_attendance.users.id as employee_id',
-                    'bskp_attendance.users.nik as nik',
-                    'bskp_attendance.users.name as employee',
-                    'bskp_attendance.users.occupation as occupation', // Kolom ini mungkin perlu dicek/disesuaikan
-                    'departments.name as department',
-                    'departments.id as department_id'
-                )
+           $departments = DB::table('departments')
+                ->leftJoin('employees', 'employees.department_id', '=', 'departments.id')
+                ->select('employees.id as employee_id', 'employees.nik as nik', 'employees.name as employee', 'employees.occupation as occupation', 'departments.name as department', 'departments.id as department_id')
+
+                ->where('employees.is_active', 1)
                 ->where('departments.id', $department)
-                                                           // Sesuaikan klausa where agar merujuk ke tabel users
-                ->where('bskp_attendance.users.is_active', 1) // Kolom ini mungkin perlu dicek/disesuaikan
                 ->get();
 
             return view('actual.input-actual-department', [
