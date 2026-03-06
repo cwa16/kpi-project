@@ -16,6 +16,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Password;
 use App\Http\Controllers\ActualController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReportYearController;
 use App\Http\Controllers\TargetController;
 use App\Http\Controllers\PreviewController;
 use App\Http\Controllers\EmployeeController;
@@ -165,6 +166,22 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/employee-report-pdf/{id}/{semester}/{year}', [ReportController::class, 'show_pdf'])->name('report.show_pdf');
     });
 
+    Route::prefix('report-year')->group(function () {
+        Route::get('/list-employee-report-year', [ReportYearController::class, 'index'])->name('report-year.index');
+        Route::get('list-department-report-year', [ReportYearController::class, 'indexDept'])->name('report-year.indexDept');
+        Route::get('/list-kpi-department-report-year', [ReportYearController::class, 'indexDeptTargetReport'])->name('report-year.indexDeptTargetReport');
+        Route::get('/employee-report-year/{id}', [ReportYearController::class, 'show'])->name('report-year.show');
+        Route::get('/summary-department-report-year', [ReportYearController::class, 'summaryDept'])->name('report-year.summaryDept');
+        Route::get('/department-report-year/{id}', [ReportYearController::class, 'department'])->name('report-year.department');
+        Route::get('/file-preview', [ReportYearController::class, 'showFile'])->name('report-year.showFile');
+        Route::get('/file-preview-dept', [ReportYearController::class, 'showFileDept'])->name('report-year.showFileDept');
+        Route::get('/kpi-department-report-year', [ReportYearController::class, 'departmentTargetReport'])->name('report-year.departmentTargetReport');
+        Route::post('/set-invalid', [ReportYearController::class, 'setDataInvalid'])->name('report-year.setInvalid');
+        Route::post('/set-invalid-dept', [ReportYearController::class, 'setDataInvalidDept'])->name('report-year.setInvalidDept');
+        Route::get('/employee-report-year-pdf/{id}/{semester}/{year}', [ReportYearController::class, 'show_pdf'])->name('report-year.show_pdf');
+        Route::get('/report-year/summary-dept-annual/export', [ReportYearController::class, 'exportSummaryDept'])->name('report-year.summaryDept.export');
+    });
+
     Route::prefix('logs')->group(function () {
         Route::get('/log-check', [LogController::class, 'index'])->name('log-check.index');
         Route::get('/log-input', [LogController::class, 'indexInput'])->name('log-input.indexInput');
@@ -214,6 +231,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/supporting-document-file', [SupportingDocumentController::class, 'showFile'])->name('supportingDocumentFile');
     Route::get('/supporting-document-file-dept', [SupportingDocumentController::class, 'showFileDept'])->name('supportingDocumentFileDept');
     Route::get('/master-supporting-document', [SupportingDocumentController::class, 'indexMaster'])->name('masterSupportingDocument');
+    Route::get('/master-supporting-document-index', [SupportingDocumentController::class, 'listMaster'])->name('masterSupportingDocumentIndex');
     Route::get('/input-master-supporting-document', [SupportingDocumentController::class, 'indexInputMaster'])->name('inputMasterSupportingDocument');
     Route::post('/store-master-supporting-document', [SupportingDocumentController::class, 'storeMaster'])->name('storeMasterSupportingDocument');
     Route::get('/show-master-supporting-document/{id}', [SupportingDocumentController::class, 'showDocument'])->name('showMasterSupportingDocument');
@@ -222,6 +240,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/delete-master-supporting-document/{id}', [SupportingDocumentController::class, 'destroyMaster'])->name('deleteMasterSupportingDocument');
 
      Route::get('/master-supporting-document-dept', [SupportingDocumentController::class, 'indexMasterDept'])->name('masterSupportingDocumentDept');
+     Route::get('/master-supporting-document-dept-index', [SupportingDocumentController::class, 'listMasterDept'])->name('masterSupportingDocumentDeptIndex');
     Route::get('/input-master-supporting-document-dept', [SupportingDocumentController::class, 'indexInputMasterDept'])->name('inputMasterSupportingDocumentDept');
     Route::post('/store-master-supporting-document-dept', [SupportingDocumentController::class, 'storeMasterDept'])->name('storeMasterSupportingDocumentDept');
     Route::get('/show-master-supporting-document-dept/{id}', [SupportingDocumentController::class, 'showDocumentDept'])->name('showMasterSupportingDocumentDept');

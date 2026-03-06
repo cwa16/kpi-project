@@ -16,14 +16,8 @@
         <div class="flex justify-center mt-2 mb-2">
             <form action="{{ route('storeMasterSupportingDocumentDept') }}" method="post" enctype="multipart/form-data" class="flex items-center gap-2">
                 @csrf
-                <input type="text" name="no_kpi" id="no_kpi" placeholder="No. KPI" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
                 <input type="text" name="nama_kpi" id="nama_kpi" placeholder="Nama KPI" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
-                 <select name="dept" id="dept" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
-                    <option value="" disabled selected>Pilih Dept.</option>
-                    <option value="all">All</option>
-                    @foreach ($dept as $item)
-                        <option value="{{ $item->name_dept }}">{{ $item->name_dept }}</option>
-                    @endforeach
+                <input type="text" name="nama_file" id="nama_file" placeholder="Nama Data Pendukung" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
                 <input type="file" name="url_file" id="url_file" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
                 <button type="submit" class="p-2 bg-green-600 text-white rounded-md">Submit</button>
             </form>

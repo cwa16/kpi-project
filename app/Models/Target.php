@@ -11,6 +11,7 @@ class Target extends Model
 
     protected $fillable = [
         'id',
+        'nik',
         'code',
         'indicator',
         'calculation',

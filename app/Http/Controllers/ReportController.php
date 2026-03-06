@@ -5,7 +5,6 @@ use App\Models\Actual;
 use App\Models\Department;
 use App\Models\DepartmentActual;
 use App\Models\Employee;
-use Barryvdh\DomPDF\Facade\Pdf;
 use function Laravel\Prompts\select;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -195,7 +194,6 @@ class ReportController extends Controller
 
         return $percentageValue;
     }
-
     public function show($id, Request $request)
     {
 
@@ -235,7 +233,6 @@ class ReportController extends Controller
                 ->leftJoin('departments', 'employees.department_id', '=', 'departments.id')
                 ->select('actuals.date as date', 'actuals.employee_id as employee_id', 'actuals.kpi_item', 'actuals.kpi_code as kpi_code', 'actuals.kpi_weighting', 'actuals.kpi_percentage as achievement', 'actuals.*', 'employees.name as name', 'employees.email as email', 'departments.name as department', 'employees.occupation as occupation', 'employees.nik as nik', 'actuals.semester as semester', 'actuals.date as year', 'actuals.target', 'actuals.actual', 'actuals.kpi_percentage', 'actuals.record_file', 'actuals.id as actual_id', 'actuals.status as status', 'actuals.trend', 'actuals.kpi_unit', 'actuals.review_period', 'departments.id as department_id')
                 ->where('actuals.employee_id', $id)
-                ->where('actuals.semester', $semester)
                 ->where(DB::raw('YEAR(actuals.date)'), $year)
                 ->orderBy(DB::raw('MONTH(actuals.date)'), 'desc')
                 ->get();
@@ -245,219 +242,6 @@ class ReportController extends Controller
             $targetWeightingSum = DB::table('targets')
                 ->select('weighting')
                 ->where('employee_id', $id)
-                ->where(DB::raw('YEAR(targets.date)'), $year)
-                ->get();
-
-            $targetWeightingSum->transform(function ($item) {
-                $item->weighting = floatval(str_replace('%', '', $item->weighting));
-                return $item;
-            });
-
-            $sumWeighting = $targetWeightingSum->sum('weighting');
-
-            // if ($actuals->isEmpty()) {
-            //     return view('components/404-page-report');
-            // }
-
-            $groupedData = $actuals->groupBy('kpi_item');
-            // dd($groupedData);
-            // dd($targets, $groupedData);
-            // dd($groupedData->get('Meeting KPI'));
-            $groupedActuals = $actuals->groupBy('kpi_item');
-
-            // Hitung total target dan actual untuk setiap kelompok
-            $totals = $targets->mapWithKeys(function ($target) use ($groupedActuals, $semester) {
-
-                $kpiItem = $target->indicator;
-                $weight  = (float) str_replace('%', '', $target->weighting);
-
-                // Ambil actual semester (kalau ada)
-                $group = $groupedActuals->get($kpiItem);
-
-                // ================================
-                // RANGE BULAN SEMESTER
-                // ================================
-                $startMonth = ($semester == 1) ? 1 : 7;
-                $endMonth   = ($semester == 1) ? 6 : 12;
-
-                // ================================
-                // HITUNG TARGET SEMESTER
-                // ================================
-                $semesterTargetSum   = 0;
-                $hasTargetInSemester = false;
-
-                for ($m = $startMonth; $m <= $endMonth; $m++) {
-                    $col = 'target_' . $m;
-
-                    if (property_exists($target, $col)) {
-                        $val = $target->$col;
-
-                        if ($val !== null && $val !== '' && $val !== 'N/A' && (float) $val != 0) {
-                            $semesterTargetSum   += (float) $val;
-                            $hasTargetInSemester  = true;
-                        }
-                    }
-                }
-
-                // ================================
-                // CEK ACTUAL SEMESTER
-                // ================================
-                $hasActualInSemester = false;
-
-                if ($group && $group->isNotEmpty()) {
-                    $hasActualInSemester = $group->contains(function ($item) {
-                        return $item->is_valid && (float) $item->actual != 0;
-                    });
-                }
-
-                // =========================================================
-                // 🔥 LOGIKA FULL BOBOT (SAMA DENGAN DEPARTMENT)
-                // =========================================================
-                // Jika TARGET SEMESTER TIDAK ADA
-                // DAN ACTUAL SEMESTER TIDAK ADA / 0
-                // → KPI N/A → FULL BOBOT
-                // =========================================================
-                if (! $hasTargetInSemester && ! $hasActualInSemester) {
-                    return [
-                        $kpiItem => [
-                            'total_target'             => null,
-                            'total_actual'             => null,
-                            'percentageCalc'           => 100,
-                            'weight'                   => $weight,
-                            'total_achievement_weight' => $weight,
-                            'trend'                    => $target->trend ?? null,
-                        ],
-                    ];
-                }
-
-                // ================================
-                // DATA DASAR UNTUK HITUNG NORMAL
-                // ================================
-                $firstItem = $group ? $group->first() : null;
-                $unitItem  = $firstItem->kpi_unit ?? $target->unit ?? 'Freq';
-                $trendItem = $firstItem->trend ?? $target->trend ?? 'Positif';
-
-                // ================================
-                // HITUNG TARGET & ACTUAL SEMESTER
-                // ================================
-                if (in_array($unitItem, ['Tgl', 'tgl', '%', 'Kg/Tap', 'Rp/Kg', 'mm', 'M3', 'Hari', 'Jam'])) {
-
-                    // MODE RATA-RATA
-                    $totalTarget = $hasTargetInSemester
-                        ? ($semesterTargetSum / max(1, ($endMonth - $startMonth + 1)))
-                        : 0;
-
-                    $totalActual = $group
-                        ? $group->avg(fn($i) => $i->is_valid ? (float) ($i->actual ?? 0) : 0)
-                        : 0;
-
-                } else {
-
-                    // MODE AKUMULASI
-                    $totalTarget = $semesterTargetSum;
-
-                    $totalActual = $group
-                        ? $group->sum(fn($i) => $i->is_valid ? (float) ($i->actual ?? 0) : 0)
-                        : 0;
-                }
-
-                $totalPercentage = $group
-                    ? $group->avg(fn($i) => $i->is_valid ? (float) ($i->kpi_percentage ?? 0) : 0)
-                    : 0;
-
-                // ================================
-                // HITUNG KPI
-                // ================================
-                $percentageCalc = $this->calculation(
-                    $semesterTargetSum,
-                    $totalTarget,
-                    $totalActual,
-                    $trendItem,
-                    $unitItem,
-                    $totalPercentage
-                );
-
-                $convertedCalc = (float) str_replace('%', '', $percentageCalc);
-
-                // CAPPING
-                if ($convertedCalc > 120 && in_array($unitItem, ['Kg/Tap', 'Rp', 'Rp/Kg', 'Hari', 'Jam'])) {
-                    $convertedCalc = 120;
-                } elseif ($convertedCalc > 110 && in_array($unitItem, ['Tgl', 'tgl', 'Freq'])) {
-                    $convertedCalc = 110;
-                } elseif ($convertedCalc > 150 && $unitItem === '%') {
-                    $convertedCalc = 150;
-                }
-
-                $totalAchievementWeight = ($convertedCalc * $weight / 100);
-
-                return [
-                    $kpiItem => [
-                        'total_target'             => $totalTarget,
-                        'total_actual'             => $totalActual,
-                        'percentageCalc'           => $convertedCalc,
-                        'weight'                   => $weight,
-                        'total_achievement_weight' => $totalAchievementWeight,
-                        'trend'                    => $trendItem,
-                    ],
-                ];
-            });
-
-            return view('report.employee-report', ['title' => 'Report', 'desc' => 'Employee Report', 'employee' => $employee, 'actuals' => $actuals, 'targets' => $targets, 'totals' => $totals, 'sumWeighting' => $sumWeighting, 'userCreds' => $userCreds, 'idParam' => $id, 'inactiveTargets' => $inactiveTarget]);
-        } else {
-
-            return view('components/404-page-report');
-        }
-    }
-
-    public function show_pdf($idParam, $semester, $year)
-    {
-
-        $semester  = $semester;
-        $year      = $year;
-        $employee  = Employee::find($idParam);
-        $userCreds = DB::table('employees')->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
-            ->where('employees.id', $idParam)
-            ->select('employees.*', 'departments.name as department', 'employees.name as employee', 'employees.id as employee_id')
-            ->first();
-        // dd($userCreds);
-
-        // if (!$employee) {
-        //     abort(404, 'Employee not found');
-        // }
-
-        if ($semester && $year) {
-
-            $targets = DB::table('targets')
-                ->leftJoin('target_units', 'targets.target_unit_id', '=', 'target_units.id')
-                ->select('targets.*', 'target_units.*')
-                ->where('employee_id', $idParam)
-                ->where('targets.is_active', '=', true)
-                ->where(DB::raw('YEAR(targets.date)'), $year)
-                ->get();
-
-            $inactiveTarget = DB::table('targets')
-                ->leftJoin('target_units', 'targets.target_unit_id', '=', 'target_units.id')
-                ->select('targets.*', 'target_units.*')
-                ->where('employee_id', $idParam)
-                ->where('targets.is_active', '=', false)
-                ->where(DB::raw('YEAR(targets.date)'), $year)
-                ->get();
-
-            $actuals = DB::table('actuals')
-                ->leftJoin('employees', 'actuals.employee_id', '=', 'employees.id')
-                ->leftJoin('departments', 'employees.department_id', '=', 'departments.id')
-                ->select('actuals.date as date', 'actuals.employee_id as employee_id', 'actuals.kpi_item', 'actuals.kpi_code as kpi_code', 'actuals.kpi_weighting', 'actuals.kpi_percentage as achievement', 'actuals.*', 'employees.name as name', 'employees.email as email', 'departments.name as department', 'employees.occupation as occupation', 'employees.nik as nik', 'actuals.semester as semester', 'actuals.date as year', 'actuals.target', 'actuals.actual', 'actuals.kpi_percentage', 'actuals.record_file', 'actuals.id as actual_id', 'actuals.status as status', 'actuals.trend', 'actuals.kpi_unit', 'actuals.review_period', 'departments.id as department_id')
-                ->where('actuals.employee_id', $idParam)
-                ->where('actuals.semester', $semester)
-                ->where(DB::raw('YEAR(actuals.date)'), $year)
-                ->orderBy(DB::raw('MONTH(actuals.date)'), 'desc')
-                ->get();
-
-            // dd($targets, $actuals);
-            // sum bobot
-            $targetWeightingSum = DB::table('targets')
-                ->select('weighting')
-                ->where('employee_id', $idParam)
                 ->where(DB::raw('YEAR(targets.date)'), $year)
                 ->get();
 
@@ -547,9 +331,9 @@ class ReportController extends Controller
                 ];
             });
 
-            $pdf = Pdf::loadView('report.employee-report-pdf', ['title' => 'Report', 'desc' => 'Employee Report', 'employee' => $employee, 'actuals' => $actuals, 'targets' => $targets, 'totals' => $totals, 'sumWeighting' => $sumWeighting, 'userCreds' => $userCreds, 'idParam' => $idParam, 'inactiveTargets' => $inactiveTarget, 'semester' => $semester, 'year' => $year]);
+            // dd($totals);
 
-            return $pdf->setPaper('a4', 'landscape')->stream('employee-report.pdf');
+            return view('report.employee-report', ['title' => 'Report', 'desc' => 'Employee Report', 'employee' => $employee, 'actuals' => $actuals, 'targets' => $targets, 'totals' => $totals, 'sumWeighting' => $sumWeighting, 'userCreds' => $userCreds, 'idParam' => $id, 'inactiveTargets' => $inactiveTarget]);
         } else {
 
             return view('components/404-page-report');
@@ -612,97 +396,53 @@ class ReportController extends Controller
 
             $groupedActuals = $actuals->groupBy('kpi_code');
 
-            $totals = $targets->mapWithKeys(function ($target) use ($groupedActuals, $semester) {
-
+            $totals = $targets->mapWithKeys(function ($target) use ($groupedActuals) {
                 $kpiCode = $target->code;
-                $weight  = (float) str_replace('%', '', $target->weighting);
-                $group   = $groupedActuals->get($kpiCode);
 
-                // ================================
-                // 1. Range bulan semester
-                // ================================
-                $startMonth = ($semester == 1) ? 1 : 7;
-                $endMonth   = ($semester == 1) ? 6 : 12;
+                // Weight dari tabel department_targets (bukan dari actuals)
+                $weight = (float) str_replace('%', '', $target->weighting);
 
-                // ================================
-                // 2. Hitung TARGET SEMESTER SAJA
-                // ================================
-                $semesterTargetSum   = 0;
-                $hasTargetInSemester = false;
-
-                for ($i = $startMonth; $i <= $endMonth; $i++) {
-                    $column = 'target_' . $i;
-
-                    if (property_exists($target, $column)) {
-                        $val = $target->$column;
-
-                        if ($val !== null && $val !== '' && $val !== 'N/A') {
-                            $semesterTargetSum   += (float) $val;
-                            $hasTargetInSemester  = true;
-                        }
-                    }
-                }
-
-                // ================================
-                // 3. Actual SEMESTER (sudah difilter)
-                // ================================
-                $hasActualRecords = $group && $group->isNotEmpty();
+                // Ambil group actual untuk KPI ini (kalau ada)
+                $group = $groupedActuals->get($kpiCode);
 
                 // =========================================================
-                // FULL BOBOT → KPI N/A (TARGET & ACTUAL TIDAK ADA DI SEMESTER)
+                // CASE 1: TIDAK ADA ACTUAL → KPI N/A → bobot = weighting penuh
                 // =========================================================
-                if (! $hasTargetInSemester && ! $hasActualRecords) {
+                if (! $group || $group->isEmpty()) {
                     return [
                         $kpiCode => [
                             'total_target'             => null,
                             'total_actual'             => null,
                             'weight'                   => $weight,
-                            'percentageCalc'           => 100,
-                            'total_achievement_weight' => $weight,
+                            'percentageCalc'           => null,
+                            'total_achievement_weight' => $weight, // <<< INI YANG ANDA MAU
                         ],
                     ];
                 }
 
                 // =========================================================
-                // DATA DASAR
+                // CASE 2: ADA ACTUAL → pakai perhitungan biasa
                 // =========================================================
-                $firstItem = $hasActualRecords ? $group->first() : null;
-                $unitItem  = $firstItem->kpi_unit ?? $target->unit ?? 'Freq';
-                $trendItem = $firstItem->trend ?? $target->trend ?? 'Positif';
+                $firstItem = $group->first();
+                $unitItem  = $firstItem->kpi_unit;
 
-                // =========================================================
-                // 4. HITUNG TOTAL TARGET & ACTUAL (PER SEMESTER)
-                // =========================================================
                 if (in_array($unitItem, ['Tgl', 'tgl', '%', 'Kg/Tap', 'Rp/Kg', 'mm', 'M3', 'Hari', 'Jam'])) {
-
-                    // MODE RATA-RATA
-                    $totalTarget = $hasTargetInSemester
-                        ? ($semesterTargetSum / max(1, ($endMonth - $startMonth + 1)))
-                        : 0;
-
-                    $totalActual = $hasActualRecords
-                        ? $group->avg(fn($item) => $item->is_valid ? (float) ($item->actual ?? 0) : 0)
-                        : 0;
-
+                    $totalTarget     = $group->avg(fn($item) => (float) $item->target);
+                    $totalActual     = $group->avg(fn($item) => $item->is_valid ? (float) $item->actual : 0);
+                    $totalPercentage = $group->avg(fn($item) => $item->is_valid ? (float) $item->kpi_percentage : 0);
                 } else {
-
-                    // MODE AKUMULASI
-                    $totalTarget = $semesterTargetSum;
-
-                    $totalActual = $hasActualRecords
-                        ? $group->sum(fn($item) => $item->is_valid ? (float) ($item->actual ?? 0) : 0)
-                        : 0;
+                    $totalTarget     = $group->sum(fn($item) => (float) $item->target);
+                    $totalActual     = $group->sum(fn($item) => $item->is_valid ? (float) $item->actual : 0);
+                    $totalPercentage = $group->avg(fn($item) => $item->is_valid ? (float) $item->kpi_percentage : 0);
                 }
 
-                $totalPercentage = $hasActualRecords
-                    ? $group->avg(fn($item) => $item->is_valid ? (float) ($item->kpi_percentage ?? 0) : 0)
-                    : 0;
+                $trendItem  = $firstItem->trend;
+                $periodItem = $firstItem->review_period;
+                $targetVal  = $firstItem->target;
 
-                // =========================================================
-                // 5. HITUNG KPI (PER SEMESTER)
-                // =========================================================
+                // hitung % KPI seperti biasa (pakai function Anda)
                 $percentageCalc = $this->calculation(
-                    $semesterTargetSum,
+                    $targetVal,
                     $totalTarget,
                     $totalActual,
                     $trendItem,
@@ -710,19 +450,18 @@ class ReportController extends Controller
                     $totalPercentage
                 );
 
-                $convertedCalc = (float) str_replace('%', '', $percentageCalc);
+                $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
 
-                // =========================================================
-                // 6. CAPPING
-                // =========================================================
+                // capping
                 if ($convertedCalc > 120 && in_array($unitItem, ['Kg/Tap', 'Rp', 'Rp/Kg', 'Hari', 'Jam'])) {
                     $convertedCalc = 120;
                 } elseif ($convertedCalc > 110 && in_array($unitItem, ['Tgl', 'tgl', 'Freq'])) {
                     $convertedCalc = 110;
-                } elseif ($convertedCalc > 150 && $unitItem === '%') {
+                } elseif ($convertedCalc > 150 && $unitItem == '%') {
                     $convertedCalc = 150;
                 }
 
+                // achievement weight normal (kalau mau, di sini bisa dikurangi penalti)
                 $totalAchievementWeight = ($convertedCalc * $weight / 100);
 
                 return [
@@ -1159,8 +898,8 @@ class ReportController extends Controller
                 ->select('id', 'employee_id', 'indicator', 'code', 'is_active')
                 ->where('is_active', false);
 
-            $employeeIds    = $employees->pluck('employee_id');
-            $departmentIdsx = $employees->pluck('department_id');
+            $employeeIds         = $employees->pluck('employee_id');
+            $departmentIdsx       = $employees->pluck('department_id');
             if ($departmentIdsx->contains(11)) {
                 $departmentIds = collect([13, 14, 15, 16, 17, 18]);
             } elseif ($departmentIdsx->contains(21)) {
@@ -2654,11 +2393,11 @@ class ReportController extends Controller
         $reviewPeriod = DB::table('actuals')->where('id', $actualId)->value('review_period');
 
         $mapPeriod = [
-            'Monthly'        => 12,
-            'Quarterly'      => 4,
-            'Semesterly'     => 2,
-            'Yearly'         => 1,
-            'Every 2 Months' => 6,
+            'M'        => 12,
+            'Q'      => 4,
+            'S'     => 2,
+            'A'         => 1,
+            'BM' => 6,
         ];
 
         $divider = $mapPeriod[$reviewPeriod] ?? 1;

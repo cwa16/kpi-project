@@ -7,6 +7,9 @@
             $statusQuery = request()->query('status');
             $email = auth()->user()->email;
         @endphp
+        <div class="p-1">
+            <span class="text-gray-600 font-bold text-lg">PT BRIDGESTONE KALIMANTAN PLANTATION</span>
+        </div>
         <div class="justify-center flex flex-col items-center">
             <div class="">
                 <span class="text-gray-600 font-bold text-lg text-center">KPI Report {{ '(Employees)' }}</span>
@@ -103,13 +106,13 @@
         </div>
 
         {{-- Main Content --}}
-        <div class="mx-1 overflow-y-auto max-h-[80vh] relative">
-            <table id="exportTable" class="w-full table-auto border-separate border-spacing-0">
+        <div class="mx-1">
+            <table id="exportTable" class="w-full table-auto">
                 <thead>
                     <tr>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 3%;"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700 exclude-from-export"
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700 exclude-from-export"
                             rowspan="2">
                             <input id="select-all" type="checkbox"
                                 class="appearance-none w-4 h-4 border border-gray-400 rounded-sm bg-white text-green-500"
@@ -117,43 +120,43 @@
                         </th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 3%;"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">No. KPI</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 25%"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">KPI</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 5%"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
+                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 35%"
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">Data Pendukung</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 3%"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">Trend</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 4%"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                            rowspan="2">Periode Review</th>
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
+                            rowspan="2">Rev.</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 3%"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">Unit</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 4%"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">Bobot "%"</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 6%"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
+                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 2%"
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-0 px-0.5 bg-blue-700"
                             rowspan="2"></th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 40%"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                            colspan="7">Target & Actual KPI</th>
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
+                            colspan="13">Target & Actual KPI</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">Acv. %</th>
                     </tr>
                     @php
@@ -168,9 +171,21 @@
                                 '4' => 'Apr',
                                 '5' => 'May',
                                 '6' => 'Jun',
+                                '7' => 'Jul',
+                                '8' => 'Aug',
+                                '9' => 'Sep',
+                                '10' => 'Oct',
+                                '11' => 'Nov',
+                                '12' => 'Dec',
                             ];
                         } else {
                             $months = [
+                                '1' => 'Jan',
+                                '2' => 'Feb',
+                                '3' => 'Mar',
+                                '4' => 'Apr',
+                                '5' => 'May',
+                                '6' => 'Jun',
                                 '7' => 'Jul',
                                 '8' => 'Aug',
                                 '9' => 'Sep',
@@ -183,13 +198,13 @@
                     <tr>
                         @foreach ($months as $month)
                             <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 7%"
-                                class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700">
+                                data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 4%"
+                                class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700">
                                 {{ $month }}</th>
                         @endforeach
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 7%"
-                            class="sticky top-0 z-20 border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700">
+                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700">
                             Total/ <br>Avg</th>
                     </tr>
                 </thead>
@@ -202,6 +217,8 @@
                     @foreach ($targets as $target)
                         @php
                             $i++;
+
+                            $trend = $target->trend === 'Negatif' ? 'N' : 'P';
 
                         @endphp
                         <tr class="{{ $i % 2 === 0 ? 'bg-gray-50' : 'bg-blue-100' }}">
@@ -236,7 +253,7 @@
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                                 data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
                                 class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-3"
-                                rowspan="4">{{ $target->trend }}</td>
+                                rowspan="4">{{ $trend }}</td>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                                 data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
                                 class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
@@ -254,7 +271,7 @@
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                                 data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
                                 class="border bg-blue-100  border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                                Target</td>
+                                T</td>
                             @php
                                 $sumTarget = 0;
                             @endphp
@@ -353,7 +370,7 @@
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                                 data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
                                 class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                                Act</td>
+                                A</td>
                             @foreach ($months as $month => $monthName)
                                 @php
                                     $actual = $actuals->first(function ($item) use ($target, $month) {
@@ -829,7 +846,6 @@
         </div>
     </div>
     </div>
-
 @else
     <span class="text-red-500">No</span>
     @endif
@@ -857,7 +873,7 @@
         <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
             data-f-color="FFFFFFFF"
             class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
-            colspan="8"></td>
+            colspan="14"></td>
         <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
             data-f-color="FFFFFFFF"
             class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
@@ -893,7 +909,7 @@
                     <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                         data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 4%"
                         class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        rowspan="2">Periode Review</th>
+                        rowspan="2">Rev.</th>
                     <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                         data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 3%"
                         class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
@@ -909,7 +925,7 @@
                     <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                         data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 40%"
                         class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        colspan="7">Target & Actual KPI</th>
+                        colspan="13">Target & Actual KPI</th>
                     <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                         data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
                         class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
@@ -927,9 +943,21 @@
                             '4' => 'Apr',
                             '5' => 'May',
                             '6' => 'Jun',
+                            '7' => 'Jul',
+                            '8' => 'Aug',
+                            '9' => 'Sep',
+                            '10' => 'Oct',
+                            '11' => 'Nov',
+                            '12' => 'Dec',
                         ];
                     } else {
                         $months = [
+                            '1' => 'Jan',
+                            '2' => 'Feb',
+                            '3' => 'Mar',
+                            '4' => 'Apr',
+                            '5' => 'May',
+                            '6' => 'Jun',
                             '7' => 'Jul',
                             '8' => 'Aug',
                             '9' => 'Sep',
@@ -1579,7 +1607,7 @@
         <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
             data-f-color="FFFFFFFF"
             class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
-            colspan="8"></td>
+            colspan="14"></td>
         <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
             data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
             class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"

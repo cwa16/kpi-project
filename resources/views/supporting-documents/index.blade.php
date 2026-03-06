@@ -8,22 +8,33 @@
         @endphp
         <div class="flex justify-between">
             <div class="">
-                <span class="font-bold text-2xl">Edit Data Pendukung</span>
+                <span class="font-bold text-2xl">Master Data Pendukung</span>
             </div>
         </div>
 
 
-        <div class="flex justify-center mt-2 mb-2">
-            <form action="{{ route('updateMasterSupportingDocument', ['id' => $data->id]) }}" method="post" enctype="multipart/form-data" class="flex items-center gap-2">
-                @csrf
-                @method('PUT')
-                <input type="text" name="nama_kpi" id="nama_kpi" placeholder="Nama KPI" value="{{ $data->nama_kpi }}" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
-                <input type="text" name="nama_file" id="nama_file" placeholder="Nama Data Pendukung" value="{{ $data->nama_file }}" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
-                <input type="file" name="url_file" id="url_file" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
-                <button type="submit" class="p-2 bg-green-600 text-white rounded-md">Update</button>
-            </form>
-        </div>
+        <div class="flex justify-center items-center gap-3 mt-4 mb-2">
+            @php
+                $isDept = request()->routeIs('masterSupportingDocumentDeptIndex');
+                $isIndividu = request()->routeIs('masterSupportingDocumentIndex');
+            @endphp
 
+            <a href="{{ route('masterSupportingDocumentDeptIndex') }}"
+                class="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200
+       {{ $isDept
+           ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+           : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                Data Pendukung Dept.
+            </a>
+
+            <a href="{{ route('masterSupportingDocumentIndex') }}"
+                class="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200
+       {{ $isIndividu
+           ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+           : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                Data Pendukung Individu
+            </a>
+        </div>
     </div>
 </x-app-layout>
 

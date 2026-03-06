@@ -126,6 +126,13 @@
                         <span class="ml-3">Summary KPI Report {{ '(Employees)' }}</span>
                     </a>
                 </li>
+                  <li>
+                    <a href="{{ route('report-year.summaryDept', 'year=' . $currentYear) }}"
+                        class="flex items-center py-1.5 px-6 text-gray-300 hover:bg-gray-700">
+                        <i class="ri-line-chart-line text-2xl"></i>
+                        <span class="ml-3">Summary KPI Report {{ '(Employees)' }} Full Year</span>
+                    </a>
+                </li>
                 <li>
                     <a href="{{ route('report.departmentTargetReport', 'year=' . $currentYear) }}"
                         class="flex items-center py-1.5 px-6 text-gray-300 hover:bg-gray-700">

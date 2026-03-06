@@ -365,9 +365,9 @@ class TargetController extends Controller
             'code' => $row['kode_kpi'],
             'indicator' => $row['kpi'],
             'calculation' => $row['cara_menghitung'],
-            'supporting_document' => $row['data_pendukung_harus_di_isi'],
+            'supporting_document' => $row['data_pendukung'],
             'trend' => $row['trend'],
-            'period' => $row['periode_review'],
+            'period' => $row['rev'],
             'unit' => $row['unit'],
             'weighting' => $weighting,
             'detail' => $row['keterangan'],
@@ -422,9 +422,9 @@ class TargetController extends Controller
             // 'code' => $row['kode_kpi'],
             'indicator' => $row['kpi'],
             'calculation' => $row['cara_menghitung'],
-            'supporting_document' => $row['data_pendukung_harus_di_isi'],
+            'supporting_document' => $row['data_pendukung'],
             'trend' => $row['trend'],
-            'period' => $row['periode_review'],
+            'period' => $row['rev'],
             'unit' => $row['unit'],
             'weighting' => $weighting,
             'detail' => $row['penjelasan'],
@@ -604,6 +604,7 @@ class TargetController extends Controller
         $targetUnitId = DB::table('target_units')->latest()->first()->id;
 
         Target::create([
+            'nik' => $request->nik,
             'code' => $request->code,
             'indicator' => $request->indicator,
             'calculation' => $request->calculation,

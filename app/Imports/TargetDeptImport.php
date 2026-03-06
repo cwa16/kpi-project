@@ -52,14 +52,14 @@ class TargetDeptImport implements ToCollection, WithHeadingRow, WithSkipDuplicat
                 'target_2' => $row['feb'],
                 'target_3' => $row['mar'],
                 'target_4' => $row['apr'],
-                'target_5' => $row['mei'],
+                'target_5' => $row['may'],
                 'target_6' => $row['jun'],
                 'target_7' => $row['jul'],
-                'target_8' => $row['agu'],
+                'target_8' => $row['aug'],
                 'target_9' => $row['sep'],
-                'target_10' => $row['okt'],
+                'target_10' => $row['oct'],
                 'target_11' => $row['nov'],
-                'target_12' => $row['des'],
+                'target_12' => $row['dec'],
             ];
 
             $targetUnit = TargetUnit::Create($data);

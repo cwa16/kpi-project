@@ -14,9 +14,9 @@
                         <div class="mt-1 mb-1 mx-2">
                             <select name="department" id="department" class="col-start-1 row-start-1 w-full appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 <option value="">-- Departemen --</option>
-            
+
                                 <option value="all">All Dept</option>
-                                @foreach ($deptList as $item)  
+                                @foreach ($deptList as $item)
                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
@@ -30,9 +30,9 @@
                             <select name="status" id="status" class="col-start-1 row-start-1 w-full appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 <option value="">-- Status --</option>
                                 @foreach ($statusList as $item)
-                                <option value="{{ $item->status }}">{{ $item->status }}</option>    
+                                <option value="{{ $item->status }}">{{ $item->status }}</option>
                                 @endforeach
-        
+
                             </select>
                         </div>
                         <div class="absolute inset-y-0 right-0 flex items-center">
@@ -189,7 +189,7 @@
                                 </svg>
                             </a>
                         @endif
-    
+
                         @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
                             @if ($page == $users->currentPage())
                                 <span aria-current="page" class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{{ $page }}</span>
@@ -199,7 +199,7 @@
                                 <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 cursor-default">...</span>
                             @endif
                         @endforeach
-    
+
                         @if ($users->hasMorePages())
                             <a href="{{ $users->nextPageUrl() }}" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
                                 <span class="sr-only">Next</span>

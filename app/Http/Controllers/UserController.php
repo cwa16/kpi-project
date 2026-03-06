@@ -52,7 +52,7 @@ class UserController extends Controller
 
         $deptList   = DB::connection('mysql')->table('departments')->get();
         $statusList = DB::connection('mysql')->table('employees')->select('status')->distinct()->get();
-        $query      = DB::connection('mysql')->table('employees')->where('is_active', 1);
+        $query      = DB::connection('mysql')->table('employees');
 
         if ($department && $status) {
             $users = $query->where('department_id', $department)->where('status', $status)->paginate(20);
@@ -160,8 +160,6 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name'          => 'required',
             'nik'           => 'required',
-            'email'         => 'required|email|unique:employees,email,' . $id,
-            'department_id' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -179,6 +177,7 @@ class UserController extends Controller
             'input_type'    => $request->input_type,
             'role'          => $request->role,
             'phone'         => $request->phone,
+            'is_active'     => ($request->is_active === 'aktif' ? 1 : 0),
         ];
 
         // Check if password is provided

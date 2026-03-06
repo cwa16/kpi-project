@@ -12,14 +12,25 @@
             </div>
         </div>
 
-
         <div class="flex justify-center mt-2 mb-2">
-            <form action="{{ route('updateMasterSupportingDocument', ['id' => $data->id]) }}" method="post" enctype="multipart/form-data" class="flex items-center gap-2">
+            <form action="{{ route('updateMasterSupportingDocument', ['id' => $data->id]) }}" method="post"
+                enctype="multipart/form-data" class="flex items-center gap-2">
                 @csrf
                 @method('PUT')
-                <input type="text" name="no_kpi" id="no_kpi" placeholder="No. KPI" value="{{ $data->no_kpi }}" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
-                <input type="text" name="nama_kpi" id="nama_kpi" placeholder="Nama KPI" value="{{ $data->nama_kpi }}" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
-                <input type="file" name="url_file" id="url_file" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
+                <select name="dept" id="dept" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
+                    <option value="all">All</option>
+                    @foreach ($dept as $item)
+                        <option value="{{ $item->name }}" {{ $data->dept == $item->name ? 'selected' : '' }}>
+                            {{ $item->name }}</option>
+                    @endforeach
+                </select>
+
+                <input type="text" name="nama_kpi" id="nama_kpi" placeholder="Nama KPI"
+                    value="{{ $data->nama_kpi }}" class="border border-gray-300 rounded-md px-2 py-1 mr-2">
+                <input type="text" name="nama_file" id="nama_file" placeholder="Nama Data Pendukung" value="{{ $data->nama_file }}"
+                    class="border border-gray-300 rounded-md px-2 py-1 mr-2">
+                <input type="file" name="url_file" id="url_file"
+                    class="border border-gray-300 rounded-md px-2 py-1 mr-2">
                 <button type="submit" class="p-2 bg-green-600 text-white rounded-md">Update</button>
             </form>
         </div>

@@ -81,6 +81,7 @@ class ActualController extends Controller
             ->select('department_actuals.kpi_code as kpi_code', 'department_targets.code as code', 'department_actuals.date as actual_date', 'department_targets.date as target_date', 'department_targets.indicator as indicator', 'department_actuals.status')
         // ->where(DB::raw('MONTH(actuals.date)'), '<=', $now->month)
             ->where('department_actuals.department_id', '=', $departmentID)
+            ->where(DB::raw('YEAR(department_actuals.date)'), '=', $year)
             ->get();
 
         $targetUnits1 = DB::table('target_units')->leftJoin('department_targets', 'department_targets.target_unit_id', '=', 'target_units.id')->select('target_1', 'target_2', 'target_3', 'target_4', 'target_5', 'target_6', 'department_targets.id as target_id', 'department_targets.date as month')->where('department_id', '=', $departmentID)->whereYear('department_targets.date', '=', $year)->get();

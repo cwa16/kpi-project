@@ -1,168 +1,252 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Models\Department;
-use App\Models\Employee;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class LogController extends Controller
 {
+    // public function index(Request $request)
+    // {
+    //     // $currentMonth = Carbon::now()->month;
+    //     $semester = $request->query('semester');
+    //     $year = $request->query('year');
+
+    //     if ($semester === '1') {
+    //         $months = range(1, 6); // January to June
+    //     } else {
+    //         $months = range(7, 12); // July to December
+    //     }
+
+    //     $departments = Department::all();
+
+    //     $targetCounts = DB::table('targets')
+    //         ->leftJoin('employees', 'targets.employee_id', '=', 'employees.id')
+    //         ->leftJoin('departments', 'employees.department_id', '=', 'departments.id')
+    //         ->where(DB::raw('YEAR(targets.date)'), $year)
+    //         ->select('departments.code as code', DB::raw('count(targets.id) as total'))
+    //         ->groupBy('departments.code')
+    //         ->get();
+
+    //     $targetCountsDept = DB::table('department_targets')
+    //         ->leftJoin('departments', 'department_targets.department_id', '=', 'departments.id')
+    //         ->where(DB::raw('YEAR(department_targets.date)'), $year)
+    //         ->select('departments.code as code', DB::raw('count(department_targets.id) as total'))
+    //         ->groupBy('departments.code')
+    //         ->get();
+
+    //     $targetUnitCounts1 = DB::table('target_units')
+    //         ->leftJoin('targets', 'target_units.id', '=', 'targets.target_unit_id')
+    //         ->leftJoin('employees', 'targets.employee_id', '=', 'employees.id')
+    //         ->leftJoin('departments', 'employees.department_id', '=', 'departments.id')
+    //         ->whereYear('targets.date', '=', $year)
+    //         // ->whereNotNull('target_units.id')
+    //         ->select(
+    //             'departments.id as department_id',
+    //             DB::raw('count(target_units.target_1) as total_1'),
+    //             DB::raw('count(target_units.target_2) as total_2'),
+    //             DB::raw('count(target_units.target_3) as total_3'),
+    //             DB::raw('count(target_units.target_4) as total_4'),
+    //             DB::raw('count(target_units.target_5) as total_5'),
+    //             DB::raw('count(target_units.target_6) as total_6'),
+    //         )
+    //         ->groupBy('departments.id')
+    //         ->get();
+
+    //     $targetUnitCounts2 = DB::table('target_units')
+    //         ->leftJoin('targets', 'target_units.id', '=', 'targets.target_unit_id')
+    //         ->leftJoin('employees', 'targets.employee_id', '=', 'employees.id')
+    //         ->leftJoin('departments', 'employees.department_id', '=', 'departments.id')
+    //         ->whereYear('targets.date', '=', $year)
+    //         ->select(
+    //             'departments.id as department_id',
+    //             DB::raw('count(target_units.target_7) as total_7'),
+    //             DB::raw('count(target_units.target_8) as total_8'),
+    //             DB::raw('count(target_units.target_9) as total_9'),
+    //             DB::raw('count(target_units.target_10) as total_10'),
+    //             DB::raw('count(target_units.target_11) as total_11'),
+    //             DB::raw('count(target_units.target_12) as total_12')
+    //         )
+    //         ->groupBy('departments.id')
+    //         ->get();
+
+    //     $targetUnitCountsDept1 = DB::table('target_units')
+    //         ->leftJoin('department_targets', 'target_units.id', '=', 'department_targets.target_unit_id')
+    //         ->leftJoin('departments', 'department_targets.department_id', '=', 'departments.id')
+
+    //         ->whereYear('department_targets.date', '=', $year)
+    //         // ->whereNotNull('target_units.id')
+    //         ->select(
+    //             'departments.id as department_id',
+    //             DB::raw('count(target_units.target_1) as total_1'),
+    //             DB::raw('count(target_units.target_2) as total_2'),
+    //             DB::raw('count(target_units.target_3) as total_3'),
+    //             DB::raw('count(target_units.target_4) as total_4'),
+    //             DB::raw('count(target_units.target_5) as total_5'),
+    //             DB::raw('count(target_units.target_6) as total_6'),
+    //         )
+    //         ->groupBy('departments.id')
+    //         ->get();
+
+    //     $targetUnitCountsDept2 = DB::table('target_units')
+    //         ->leftJoin('department_targets', 'target_units.id', '=', 'department_targets.target_unit_id')
+    //         ->leftJoin('departments', 'department_targets.department_id', '=', 'departments.id')
+    //         ->whereYear('department_targets.date', '=', $year)
+    //         ->select(
+    //             'departments.id as department_id',
+    //             DB::raw('count(target_units.target_7) as total_7'),
+    //             DB::raw('count(target_units.target_8) as total_8'),
+    //             DB::raw('count(target_units.target_9) as total_9'),
+    //             DB::raw('count(target_units.target_10) as total_10'),
+    //             DB::raw('count(target_units.target_11) as total_11'),
+    //             DB::raw('count(target_units.target_12) as total_12')
+    //         )
+    //         ->groupBy('departments.id')
+    //         ->get();
+
+    //     // dd($targetUnitCounts1, $targetUnitCountsDept1, $targetUnitCounts2, $targetUnitCountsDept2);
+
+    //     $actualCounts = DB::table('actuals')
+    //         ->leftJoin('employees', 'employees.id', '=', 'actuals.employee_id')
+    //         ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
+    //         ->select('departments.code as department_code', DB::raw('MONTH(actuals.date) as month'), DB::raw('count(actuals.status) as total'))
+    //         ->where('actuals.status', 'Approved')
+    //         ->where(DB::raw('YEAR(actuals.date)'), $year)
+    //         ->whereIn(DB::raw('MONTH(actuals.date)'), $months)
+    //         ->groupBy('departments.code', DB::raw('MONTH(actuals.date)'))
+    //         ->get();
+
+    //     $actualCountsDept = DB::table('department_actuals')
+    //         ->leftJoin('departments', 'departments.id', '=', 'department_actuals.department_id')
+    //         ->select('departments.code as department_code', DB::raw('MONTH(department_actuals.date) as month'), DB::raw('count(department_actuals.status) as total'))
+    //         ->where('department_actuals.status', 'Approved')
+    //         ->where(DB::raw('YEAR(department_actuals.date)'), $year)
+    //         ->whereIn(DB::raw('MONTH(department_actuals.date)'), $months)
+    //         ->groupBy('departments.code', DB::raw('MONTH(department_actuals.date)'))
+    //         ->get();
+
+    //     // dd($actualCounts, $actualCountsDept);
+
+    //     return view('logs/log-check', [
+    //         'title' => 'Log Check',
+    //         'desc' => 'History',
+    //         'departments' => $departments,
+    //         'months' => $months,
+    //         'targetCounts' => $targetCounts,
+    //         'targetCountsDept' => $targetCountsDept,
+    //         'actualCounts' => $actualCounts,
+    //         'actualCountsDept' => $actualCountsDept,
+    //         'targetUnitCounts1' => $targetUnitCounts1,
+    //         'targetUnitCounts2' => $targetUnitCounts2,
+    //         'targetUnitCountsDept1' => $targetUnitCountsDept1,
+    //         'targetUnitCountsDept2' => $targetUnitCountsDept2,
+
+    //     ]);
+    // }
+
     public function index(Request $request)
     {
-        // $currentMonth = Carbon::now()->month;
-        $semester = $request->query('semester');
-        $year = $request->query('year');
+        $year  = $request->query('year', date('Y'));
+        $month = $request->query('month', date('m')); // Tambahkan filter bulan agar data spesifik
 
-        if ($semester === '1') {
-            $months = range(1, 6); // January to June
-        } else {
-            $months = range(7, 12); // July to December
-        }
-
-        $departments = Department::all();
-
-        $targetCounts = DB::table('targets')
-            ->leftJoin('employees', 'targets.employee_id', '=', 'employees.id')
-            ->leftJoin('departments', 'employees.department_id', '=', 'departments.id')
-            ->where(DB::raw('YEAR(targets.date)'), $year)
-            ->select('departments.code as code', DB::raw('count(targets.id) as total'))
-            ->groupBy('departments.code')
-            ->get();
-
-        $targetCountsDept = DB::table('department_targets')
-            ->leftJoin('departments', 'department_targets.department_id', '=', 'departments.id')
-            ->where(DB::raw('YEAR(department_targets.date)'), $year)
-            ->select('departments.code as code', DB::raw('count(department_targets.id) as total'))
-            ->groupBy('departments.code')
-            ->get();
-
-
-        $targetUnitCounts1 = DB::table('target_units')
-            ->leftJoin('targets', 'target_units.id', '=', 'targets.target_unit_id')
-            ->leftJoin('employees', 'targets.employee_id', '=', 'employees.id')
-            ->leftJoin('departments', 'employees.department_id', '=', 'departments.id')
-            ->whereYear('targets.date', '=', $year)
-            // ->whereNotNull('target_units.id')
+        // 1. DATA UNTUK TABEL BAWAH (Per Employee)
+        $employeeLogs = DB::table('actuals')
+            ->join('employees', 'actuals.employee_id', '=', 'employees.id')
+            ->join('departments', 'employees.department_id', '=', 'departments.id')
+            ->whereYear('actuals.date', $year)
+            ->when($month, function ($query, $month) {
+                return $query->whereMonth('actuals.date', $month);
+            })
             ->select(
-                'departments.id as department_id',
-                DB::raw('count(target_units.target_1) as total_1'),
-                DB::raw('count(target_units.target_2) as total_2'),
-                DB::raw('count(target_units.target_3) as total_3'),
-                DB::raw('count(target_units.target_4) as total_4'),
-                DB::raw('count(target_units.target_5) as total_5'),
-                DB::raw('count(target_units.target_6) as total_6'),
+                'employees.name as employee_name',
+                'employees.occupation as position',
+                'departments.name as department_code',
+
+                // Total KPI
+                DB::raw('COUNT(actuals.id) as total_kpi'),
+
+                // CEK 1: asst_mng_checked_by
+                DB::raw('MAX(actuals.asst_mng_checked_by) as cek1_by'),
+                DB::raw('SUM(CASE WHEN actuals.asst_mng_checked_at IS NOT NULL THEN 1 ELSE 0 END) as cek1_count'),
+
+                // CEK 2: checked_by
+                DB::raw('MAX(actuals.checked_by) as cek2_by'),
+                DB::raw('SUM(CASE WHEN actuals.checked_at IS NOT NULL THEN 1 ELSE 0 END) as cek2_count'),
+
+                // APPROVED: mng_approved_by
+                DB::raw('MAX(actuals.mng_approved_by) as app_by'),
+                DB::raw('SUM(CASE WHEN actuals.mng_approved_at IS NOT NULL THEN 1 ELSE 0 END) as app_count'),
+
+                // VERIFIKASI: approved_by (Sesuai mapping Anda)
+                DB::raw('MAX(actuals.approved_by) as ver_by'),
+                DB::raw('SUM(CASE WHEN actuals.approved_at IS NOT NULL THEN 1 ELSE 0 END) as ver_count'),
+
+                // Invalid Count (Opsional, untuk menampilkan jika ada yg invalid)
+                DB::raw('SUM(CASE WHEN actuals.is_valid = 0 THEN 1 ELSE 0 END) as invalid_count')
             )
-            ->groupBy('departments.id')
+            ->groupBy('employees.id', 'employees.name', 'employees.occupation', 'departments.name')
             ->get();
 
-
-        $targetUnitCounts2 = DB::table('target_units')
-            ->leftJoin('targets', 'target_units.id', '=', 'targets.target_unit_id')
-            ->leftJoin('employees', 'targets.employee_id', '=', 'employees.id')
-            ->leftJoin('departments', 'employees.department_id', '=', 'departments.id')
-            ->whereYear('targets.date', '=', $year)
+        // 2. DATA UNTUK TABEL ATAS (Per Department)
+        // Logikanya mirip, tapi di-group by department saja
+        $deptLogs = DB::table('department_actuals')
+            ->join('departments', 'department_actuals.department_id', '=', 'departments.id')
+            ->whereYear('department_actuals.date', $year)
+            ->when($month, function ($query, $month) {
+                return $query->whereMonth('department_actuals.date', $month);
+            })
             ->select(
-                'departments.id as department_id',
-                DB::raw('count(target_units.target_7) as total_7'),
-                DB::raw('count(target_units.target_8) as total_8'),
-                DB::raw('count(target_units.target_9) as total_9'),
-                DB::raw('count(target_units.target_10) as total_10'),
-                DB::raw('count(target_units.target_11) as total_11'),
-                DB::raw('count(target_units.target_12) as total_12')
+                'departments.name as department_code',
+
+                // Total KPI (Hitung jumlah item aktual dept)
+                DB::raw('COUNT(department_actuals.id) as total_kpi'),
+
+                // CEK 1: asst_mng_checked_by
+                DB::raw('MAX(department_actuals.asst_mng_checked_by) as cek1_by'),
+                DB::raw('SUM(CASE WHEN department_actuals.asst_mng_checked_at IS NOT NULL THEN 1 ELSE 0 END) as cek1_count'),
+
+                // CEK 2: checked_by
+                DB::raw('MAX(department_actuals.checked_by) as cek2_by'),
+                DB::raw('SUM(CASE WHEN department_actuals.checked_at IS NOT NULL THEN 1 ELSE 0 END) as cek2_count'),
+
+                // APPROVED (Manager): mng_approved_by
+                DB::raw('MAX(department_actuals.mng_approved_by) as app_by'),
+                DB::raw('SUM(CASE WHEN department_actuals.mng_approved_at IS NOT NULL THEN 1 ELSE 0 END) as app_count'),
+
+                // VERIFIKASI (Data Pendukung): approved_by
+                DB::raw('MAX(department_actuals.approved_by) as ver_by'),
+                DB::raw('SUM(CASE WHEN department_actuals.approved_at IS NOT NULL THEN 1 ELSE 0 END) as ver_count'),
+
+                // Hitung Invalid jika ada
+                DB::raw('SUM(CASE WHEN department_actuals.is_valid = 0 THEN 1 ELSE 0 END) as invalid_count')
             )
-            ->groupBy('departments.id')
+            ->groupBy('departments.name')
             ->get();
 
-        $targetUnitCountsDept1 = DB::table('target_units')
-            ->leftJoin('department_targets', 'target_units.id', '=', 'department_targets.target_unit_id')
-            ->leftJoin('departments', 'department_targets.department_id', '=', 'departments.id')
-
-            ->whereYear('department_targets.date', '=', $year)
-            // ->whereNotNull('target_units.id')
-            ->select(
-                'departments.id as department_id',
-                DB::raw('count(target_units.target_1) as total_1'),
-                DB::raw('count(target_units.target_2) as total_2'),
-                DB::raw('count(target_units.target_3) as total_3'),
-                DB::raw('count(target_units.target_4) as total_4'),
-                DB::raw('count(target_units.target_5) as total_5'),
-                DB::raw('count(target_units.target_6) as total_6'),
-            )
-            ->groupBy('departments.id')
-            ->get();
-
-        $targetUnitCountsDept2 = DB::table('target_units')
-            ->leftJoin('department_targets', 'target_units.id', '=', 'department_targets.target_unit_id')
-            ->leftJoin('departments', 'department_targets.department_id', '=', 'departments.id')
-            ->whereYear('department_targets.date', '=', $year)
-            ->select(
-                'departments.id as department_id',
-                DB::raw('count(target_units.target_7) as total_7'),
-                DB::raw('count(target_units.target_8) as total_8'),
-                DB::raw('count(target_units.target_9) as total_9'),
-                DB::raw('count(target_units.target_10) as total_10'),
-                DB::raw('count(target_units.target_11) as total_11'),
-                DB::raw('count(target_units.target_12) as total_12')
-            )
-            ->groupBy('departments.id')
-            ->get();
-
-
-        // dd($targetUnitCounts1, $targetUnitCountsDept1, $targetUnitCounts2, $targetUnitCountsDept2);
-
-        $actualCounts = DB::table('actuals')
-            ->leftJoin('employees', 'employees.id', '=', 'actuals.employee_id')
-            ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
-            ->select('departments.code as department_code', DB::raw('MONTH(actuals.date) as month'), DB::raw('count(actuals.status) as total'))
-            ->where('actuals.status', 'Approved')
-            ->where(DB::raw('YEAR(actuals.date)'), $year)
-            ->whereIn(DB::raw('MONTH(actuals.date)'), $months)
-            ->groupBy('departments.code', DB::raw('MONTH(actuals.date)'))
-            ->get();
-
-        $actualCountsDept = DB::table('department_actuals')
-            ->leftJoin('departments', 'departments.id', '=', 'department_actuals.department_id')
-            ->select('departments.code as department_code', DB::raw('MONTH(department_actuals.date) as month'), DB::raw('count(department_actuals.status) as total'))
-            ->where('department_actuals.status', 'Approved')
-            ->where(DB::raw('YEAR(department_actuals.date)'), $year)
-            ->whereIn(DB::raw('MONTH(department_actuals.date)'), $months)
-            ->groupBy('departments.code', DB::raw('MONTH(department_actuals.date)'))
-            ->get();
-
-        // dd($actualCounts, $actualCountsDept);
-
+        $desc = 'Log data for ' . ($month ? 'Month: ' . $month . ', ' : '') . 'Year: ' . $year;
 
         return view('logs/log-check', [
-            'title' => 'Log Check',
-            'desc' => 'History',
-            'departments' => $departments,
-            'months' => $months,
-            'targetCounts' => $targetCounts,
-            'targetCountsDept' => $targetCountsDept,
-            'actualCounts' => $actualCounts,
-            'actualCountsDept' => $actualCountsDept,
-            'targetUnitCounts1' => $targetUnitCounts1,
-            'targetUnitCounts2' => $targetUnitCounts2,
-            'targetUnitCountsDept1' => $targetUnitCountsDept1,
-            'targetUnitCountsDept2' => $targetUnitCountsDept2,
-
-
+            'title'         => 'Log Check',
+            'empLogs'       => $employeeLogs,
+            'deptLogs'      => $deptLogs,
+            'months'        => range(1, 12),
+            'selectedYear'  => $year,
+            'selectedMonth' => $month,
+            'desc'          => $desc,
         ]);
     }
 
     public function indexInput(Request $request)
     {
 
-        $department = $request->query('department');
-        $month = $request->query('month');
-        $year = $request->query('year');
-        $user = Auth::user();
-        $role = $user->role;
-        $authDept = Auth::user()->department_id;
+        $department      = $request->query('department');
+        $month           = $request->query('month');
+        $year            = $request->query('year');
+        $user            = Auth::user();
+        $role            = $user->role;
+        $authDept        = Auth::user()->department_id;
         $departmentNames = [];
         if ($role == 'Checker Div 1' || $role == 'Checker Div 2') {
             $titlePage = 'Log Check';
@@ -183,25 +267,25 @@ class LogController extends Controller
             }
             $departmentNames = ['Sub Div D', 'Sub Div E', 'Sub Div F'];
         } elseif ($role == 'Approver' || ($role == 'Mng Approver' && $department == 'All Dept')) {
-            $allDept = Department::all();
+            $allDept        = Department::all();
             $departmentName = DB::table('departments')->pluck('name')->toArray();
             if ($departmentName) {
                 $departmentNames = $departmentName;
-                $deptList = $departmentName;
+                $deptList        = $departmentName;
             }
         } elseif ($role == 'Approver' || $role == 'Mng Approver') {
-            $allDept = Department::all();
+            $allDept        = Department::all();
             $departmentName = DB::table('departments')->where('id', '=', $department)->value('name');
             if ($departmentName) {
                 $departmentNames = [$departmentName];
-                $deptList = $departmentName;
+                $deptList        = $departmentName;
             }
         } elseif ($role == 'Inputer') {
-            $allDept = DB::table('departments')->where('id', $authDept)->get();
+            $allDept        = DB::table('departments')->where('id', $authDept)->get();
             $departmentName = DB::table('departments')->where('id', '=', $authDept)->value('name');
             if ($departmentName) {
                 $departmentNames = [$departmentName];
-                $deptList = [$departmentName];
+                $deptList        = [$departmentName];
             }
             // dd($deptList);
         } else {
@@ -340,7 +424,7 @@ class LogController extends Controller
                 ->groupBy('departments.id')
                 ->get();
 
-            if (!empty($departmentNames)) {
+            if (! empty($departmentNames)) {
                 $actualCheckedCount = DB::table('actuals')
                     ->join('employees', 'actuals.employee_id', '=', 'employees.id')
                     ->join('departments', 'employees.department_id', '=', 'departments.id')
@@ -366,7 +450,7 @@ class LogController extends Controller
                     ->whereMonth('actuals.date', $month)
                     ->whereYear('actuals.date', $year)
                     ->select('departments.name as department_name', DB::raw('count(actuals.id) as total_not_checked'), 'kpi_code')
-                    ->groupBy('departments.name',)
+                    ->groupBy('departments.name', )
                     ->get();
 
                 $actualCheckedCountDeptGroup = DB::table('department_actuals')
@@ -376,7 +460,7 @@ class LogController extends Controller
                     ->whereMonth('department_actuals.date', $month)
                     ->whereYear('department_actuals.date', $year)
                     ->select('departments.name as department_name', DB::raw('count(department_actuals.id) as total_not_checked'), 'kpi_code')
-                    ->groupBy('departments.name',)
+                    ->groupBy('departments.name', )
                     ->get();
                 // dd($actualCheckedCountGroup, $actualCheckedCountDeptGroup);
 
@@ -431,15 +515,15 @@ class LogController extends Controller
                 // dd($departmentNames, $actualCheckedCount, $actualCheckedCountDept, $targetUnitCountAll, $targetUnitCountAllDept, $actualFilledCount, $actualFilledCountDept);
 
                 $totals = [
-                    'total_1' => 0,
-                    'total_2' => 0,
-                    'total_3' => 0,
-                    'total_4' => 0,
-                    'total_5' => 0,
-                    'total_6' => 0,
-                    'total_7' => 0,
-                    'total_8' => 0,
-                    'total_9' => 0,
+                    'total_1'  => 0,
+                    'total_2'  => 0,
+                    'total_3'  => 0,
+                    'total_4'  => 0,
+                    'total_5'  => 0,
+                    'total_6'  => 0,
+                    'total_7'  => 0,
+                    'total_8'  => 0,
+                    'total_9'  => 0,
                     'total_10' => 0,
                     'total_11' => 0,
                     'total_12' => 0,
@@ -447,30 +531,30 @@ class LogController extends Controller
 
                 // Sum the values for each target column
                 foreach ($targetUnitCountAll as $item) {
-                    $totals['total_1'] += $item->total_1;
-                    $totals['total_2'] += $item->total_2;
-                    $totals['total_3'] += $item->total_3;
-                    $totals['total_4'] += $item->total_4;
-                    $totals['total_5'] += $item->total_5;
-                    $totals['total_6'] += $item->total_6;
-                    $totals['total_7'] += $item->total_7;
-                    $totals['total_8'] += $item->total_8;
-                    $totals['total_9'] += $item->total_9;
+                    $totals['total_1']  += $item->total_1;
+                    $totals['total_2']  += $item->total_2;
+                    $totals['total_3']  += $item->total_3;
+                    $totals['total_4']  += $item->total_4;
+                    $totals['total_5']  += $item->total_5;
+                    $totals['total_6']  += $item->total_6;
+                    $totals['total_7']  += $item->total_7;
+                    $totals['total_8']  += $item->total_8;
+                    $totals['total_9']  += $item->total_9;
                     $totals['total_10'] += $item->total_10;
                     $totals['total_11'] += $item->total_11;
                     $totals['total_12'] += $item->total_12;
                 }
 
                 foreach ($targetUnitCountAllDept as $item) {
-                    $totals['total_1'] += $item->total_1;
-                    $totals['total_2'] += $item->total_2;
-                    $totals['total_3'] += $item->total_3;
-                    $totals['total_4'] += $item->total_4;
-                    $totals['total_5'] += $item->total_5;
-                    $totals['total_6'] += $item->total_6;
-                    $totals['total_7'] += $item->total_7;
-                    $totals['total_8'] += $item->total_8;
-                    $totals['total_9'] += $item->total_9;
+                    $totals['total_1']  += $item->total_1;
+                    $totals['total_2']  += $item->total_2;
+                    $totals['total_3']  += $item->total_3;
+                    $totals['total_4']  += $item->total_4;
+                    $totals['total_5']  += $item->total_5;
+                    $totals['total_6']  += $item->total_6;
+                    $totals['total_7']  += $item->total_7;
+                    $totals['total_8']  += $item->total_8;
+                    $totals['total_9']  += $item->total_9;
                     $totals['total_10'] += $item->total_10;
                     $totals['total_11'] += $item->total_11;
                     $totals['total_12'] += $item->total_12;
@@ -507,7 +591,7 @@ class LogController extends Controller
                     ->whereMonth('actuals.date', $month)
                     ->whereYear('actuals.date', $year)
                     ->select('departments.name as department_name', DB::raw('count(actuals.id) as total_not_checked'), 'kpi_code')
-                    ->groupBy('departments.name',)
+                    ->groupBy('departments.name', )
                     ->get();
 
                 $actualCheckedCountDeptGroup = DB::table('department_actuals')
@@ -517,7 +601,7 @@ class LogController extends Controller
                     ->whereMonth('department_actuals.date', $month)
                     ->whereYear('department_actuals.date', $year)
                     ->select('departments.name as department_name', DB::raw('count(department_actuals.id) as total_not_checked'), 'kpi_code')
-                    ->groupBy('departments.name',)
+                    ->groupBy('departments.name', )
                     ->get();
                 // dd($actualCheckedCountGroup, $actualCheckedCountDeptGroup);
 
@@ -571,12 +655,11 @@ class LogController extends Controller
                     ->first();
             }
 
-
-            $departments = DB::table('departments')->get();
+            $departments    = DB::table('departments')->get();
             $countEmployees = DB::table('employees')
                 ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')->select(DB::raw('count(employees.id) as total_employee'), 'departments.name as department_name', 'departments.id as department_id')->whereIn('departments.name', $deptList)->groupBy(['departments.name', 'departments.id'])->get();
 
-            $acc = $actualCheckedCount;
+            $acc  = $actualCheckedCount;
             $accd = $actualCheckedCountDept;
             // dd($actualFilled);
             // dd($acc, $accd);
@@ -588,25 +671,25 @@ class LogController extends Controller
 
             // dd($actualFilledCheck, $actualCheckedCheck, $actualApproved, $actualChecked, $countEmployees);
             return view('logs/log-input', [
-                'title' => 'Log Input',
-                'desc' => 'History',
-                'actualFilledCheck' => $actualFilledCheck,
-                'actualCheckedCheck' => $actualCheckedCheck,
-                'actualApproved' => $actualApproved,
-                'actualFilled' => $actualFilled,
-                'actualChecked' => $actualChecked,
-                'departments' => $departments,
-                'countEmployees' => $countEmployees,
-                'actualFilledCount' => $actualFilledCount,
-                'actualFilledCountDept' => $actualFilledCountDept,
-                'actualCheckedCount' => $acc,
-                'actualCheckedCountDept' => $accd,
-                'totalTgUnitAll' => $totalTgUnitAll,
-                'targetUnitCountAll' => $targetUnitFilledCountAll,
-                'targetUnitCountAllDept' => $targetUnitFilledCountAllDept,
-                'allDept' => $allDept,
-                'titlePage' => $titlePage,
-                'actualCheckedCountGroup' => $actualCheckedCountGroup,
+                'title'                       => 'Log Input',
+                'desc'                        => 'History',
+                'actualFilledCheck'           => $actualFilledCheck,
+                'actualCheckedCheck'          => $actualCheckedCheck,
+                'actualApproved'              => $actualApproved,
+                'actualFilled'                => $actualFilled,
+                'actualChecked'               => $actualChecked,
+                'departments'                 => $departments,
+                'countEmployees'              => $countEmployees,
+                'actualFilledCount'           => $actualFilledCount,
+                'actualFilledCountDept'       => $actualFilledCountDept,
+                'actualCheckedCount'          => $acc,
+                'actualCheckedCountDept'      => $accd,
+                'totalTgUnitAll'              => $totalTgUnitAll,
+                'targetUnitCountAll'          => $targetUnitFilledCountAll,
+                'targetUnitCountAllDept'      => $targetUnitFilledCountAllDept,
+                'allDept'                     => $allDept,
+                'titlePage'                   => $titlePage,
+                'actualCheckedCountGroup'     => $actualCheckedCountGroup,
                 'actualCheckedCountDeptGroup' => $actualCheckedCountDeptGroup,
             ]);
         } elseif ($department && $month && $year) {
@@ -688,7 +771,6 @@ class LogController extends Controller
 
             // dd($actualFilledCount, $actualFilledCountDept);
 
-
             $targetUnitFilledCountAll = DB::table('target_units')
                 ->leftJoin('targets', 'target_units.id', '=', 'targets.target_unit_id')
                 ->leftJoin('employees', 'targets.employee_id', '=', 'employees.id')
@@ -738,7 +820,7 @@ class LogController extends Controller
                 ->groupBy('departments.id')
                 ->first();
 
-            if (!empty($departmentNames)) {
+            if (! empty($departmentNames)) {
                 $actualCheckedCount = DB::table('actuals')
                     ->join('employees', 'actuals.employee_id', '=', 'employees.id')
                     ->join('departments', 'employees.department_id', '=', 'departments.id')
@@ -765,7 +847,7 @@ class LogController extends Controller
                     ->whereMonth('actuals.date', $month)
                     ->whereYear('actuals.date', $year)
                     ->select('departments.name as department_name', DB::raw('count(actuals.id) as total_not_checked'), 'kpi_code')
-                    ->groupBy('departments.name',)
+                    ->groupBy('departments.name', )
                     ->get();
 
                 $actualCheckedCountDeptGroup = DB::table('department_actuals')
@@ -775,7 +857,7 @@ class LogController extends Controller
                     ->whereMonth('department_actuals.date', $month)
                     ->whereYear('department_actuals.date', $year)
                     ->select('departments.name as department_name', DB::raw('count(department_actuals.id) as total_not_checked'), 'kpi_code')
-                    ->groupBy('departments.name',)
+                    ->groupBy('departments.name', )
                     ->get();
                 // dd($actualCheckedCountGroup, $actualCheckedCountDeptGroup);
 
@@ -828,20 +910,18 @@ class LogController extends Controller
                     ->groupBy('departments.id')
                     ->get();
 
-
-
                 // dd($departmentNames, $actualCheckedCount, $actualCheckedCountDept, $targetUnitCountAll, $targetUnitCountAllDept, $actualFilledCount, $actualFilledCountDept);
 
                 $totals = [
-                    'total_1' => 0,
-                    'total_2' => 0,
-                    'total_3' => 0,
-                    'total_4' => 0,
-                    'total_5' => 0,
-                    'total_6' => 0,
-                    'total_7' => 0,
-                    'total_8' => 0,
-                    'total_9' => 0,
+                    'total_1'  => 0,
+                    'total_2'  => 0,
+                    'total_3'  => 0,
+                    'total_4'  => 0,
+                    'total_5'  => 0,
+                    'total_6'  => 0,
+                    'total_7'  => 0,
+                    'total_8'  => 0,
+                    'total_9'  => 0,
                     'total_10' => 0,
                     'total_11' => 0,
                     'total_12' => 0,
@@ -849,30 +929,30 @@ class LogController extends Controller
 
                 // Sum the values for each target column
                 foreach ($targetUnitCountAll as $item) {
-                    $totals['total_1'] += $item->total_1;
-                    $totals['total_2'] += $item->total_2;
-                    $totals['total_3'] += $item->total_3;
-                    $totals['total_4'] += $item->total_4;
-                    $totals['total_5'] += $item->total_5;
-                    $totals['total_6'] += $item->total_6;
-                    $totals['total_7'] += $item->total_7;
-                    $totals['total_8'] += $item->total_8;
-                    $totals['total_9'] += $item->total_9;
+                    $totals['total_1']  += $item->total_1;
+                    $totals['total_2']  += $item->total_2;
+                    $totals['total_3']  += $item->total_3;
+                    $totals['total_4']  += $item->total_4;
+                    $totals['total_5']  += $item->total_5;
+                    $totals['total_6']  += $item->total_6;
+                    $totals['total_7']  += $item->total_7;
+                    $totals['total_8']  += $item->total_8;
+                    $totals['total_9']  += $item->total_9;
                     $totals['total_10'] += $item->total_10;
                     $totals['total_11'] += $item->total_11;
                     $totals['total_12'] += $item->total_12;
                 }
 
                 foreach ($targetUnitCountAllDept as $item) {
-                    $totals['total_1'] += $item->total_1;
-                    $totals['total_2'] += $item->total_2;
-                    $totals['total_3'] += $item->total_3;
-                    $totals['total_4'] += $item->total_4;
-                    $totals['total_5'] += $item->total_5;
-                    $totals['total_6'] += $item->total_6;
-                    $totals['total_7'] += $item->total_7;
-                    $totals['total_8'] += $item->total_8;
-                    $totals['total_9'] += $item->total_9;
+                    $totals['total_1']  += $item->total_1;
+                    $totals['total_2']  += $item->total_2;
+                    $totals['total_3']  += $item->total_3;
+                    $totals['total_4']  += $item->total_4;
+                    $totals['total_5']  += $item->total_5;
+                    $totals['total_6']  += $item->total_6;
+                    $totals['total_7']  += $item->total_7;
+                    $totals['total_8']  += $item->total_8;
+                    $totals['total_9']  += $item->total_9;
                     $totals['total_10'] += $item->total_10;
                     $totals['total_11'] += $item->total_11;
                     $totals['total_12'] += $item->total_12;
@@ -909,7 +989,7 @@ class LogController extends Controller
                     ->whereMonth('actuals.date', $month)
                     ->whereYear('actuals.date', $year)
                     ->select('departments.name as department_name', DB::raw('count(actuals.id) as total_not_checked'), 'kpi_code')
-                    ->groupBy('departments.name',)
+                    ->groupBy('departments.name', )
                     ->get();
 
                 $actualCheckedCountDeptGroup = DB::table('department_actuals')
@@ -919,7 +999,7 @@ class LogController extends Controller
                     ->whereMonth('department_actuals.date', $month)
                     ->whereYear('department_actuals.date', $year)
                     ->select('departments.name as department_name', DB::raw('count(department_actuals.id) as total_not_checked'), 'kpi_code')
-                    ->groupBy('departments.name',)
+                    ->groupBy('departments.name', )
                     ->get();
                 // dd($actualCheckedCountGroup, $actualCheckedCountDeptGroup);
 
@@ -973,14 +1053,12 @@ class LogController extends Controller
                     ->first();
             }
 
-
-            $departments = DB::table('departments')->where('departments.id', '=', $department)->get();
+            $departments    = DB::table('departments')->where('departments.id', '=', $department)->get();
             $countEmployees = DB::table('employees')
                 ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')->select(DB::raw('count(employees.id) as total_employee'), 'departments.name as department_name', 'departments.id as department_id')->whereIn('departments.name', $deptList)->groupBy(['departments.name', 'departments.id'])->get();
             // dd($deptList, $countEmployees);
 
-
-            $acc = $actualCheckedCount ?? 0;
+            $acc  = $actualCheckedCount ?? 0;
             $accd = $actualCheckedCountDept ?? 0;
             // dd($actualFilled);
             // dd($acc, $accd);
@@ -995,25 +1073,25 @@ class LogController extends Controller
 
             // dd($actualFilledCheck, $actualCheckedCheck, $actualApproved, $actualChecked, $countEmployees);
             return view('logs/log-input', [
-                'title' => 'Log Input',
-                'desc' => 'History',
-                'actualFilledCheck' => $actualFilledCheck,
-                'actualCheckedCheck' => $actualCheckedCheck,
-                'actualApproved' => $actualApproved,
-                'actualFilled' => $actualFilled,
-                'actualChecked' => $actualChecked,
-                'departments' => $departments,
-                'countEmployees' => $countEmployees,
-                'actualFilledCount' => $actualFilledCount,
-                'actualFilledCountDept' => $actualFilledCountDept,
-                'actualCheckedCount' => $acc,
-                'actualCheckedCountDept' => $accd,
-                'totalTgUnitAll' => $totalTgUnitAll,
-                'targetUnitCountAll' => $targetUnitFilledCountAll,
-                'targetUnitCountAllDept' => $targetUnitFilledCountAllDept,
-                'allDept' => $allDept,
-                'titlePage' => $titlePage,
-                'actualCheckedCountGroup' => $actualCheckedCountGroup,
+                'title'                       => 'Log Input',
+                'desc'                        => 'History',
+                'actualFilledCheck'           => $actualFilledCheck,
+                'actualCheckedCheck'          => $actualCheckedCheck,
+                'actualApproved'              => $actualApproved,
+                'actualFilled'                => $actualFilled,
+                'actualChecked'               => $actualChecked,
+                'departments'                 => $departments,
+                'countEmployees'              => $countEmployees,
+                'actualFilledCount'           => $actualFilledCount,
+                'actualFilledCountDept'       => $actualFilledCountDept,
+                'actualCheckedCount'          => $acc,
+                'actualCheckedCountDept'      => $accd,
+                'totalTgUnitAll'              => $totalTgUnitAll,
+                'targetUnitCountAll'          => $targetUnitFilledCountAll,
+                'targetUnitCountAllDept'      => $targetUnitFilledCountAllDept,
+                'allDept'                     => $allDept,
+                'titlePage'                   => $titlePage,
+                'actualCheckedCountGroup'     => $actualCheckedCountGroup,
                 'actualCheckedCountDeptGroup' => $actualCheckedCountDeptGroup,
             ]);
         } elseif ($month && $year) {
@@ -1118,7 +1196,6 @@ class LogController extends Controller
 
             // dd($actualFilledCountGroup, $actualFilledCountDeptGroup);
 
-
             $targetUnitFilledCountAll = DB::table('target_units')
                 ->leftJoin('targets', 'target_units.id', '=', 'targets.target_unit_id')
                 ->leftJoin('employees', 'targets.employee_id', '=', 'employees.id')
@@ -1168,7 +1245,7 @@ class LogController extends Controller
                 ->groupBy('departments.id')
                 ->first();
 
-            if (!empty($departmentNames)) {
+            if (! empty($departmentNames)) {
                 $actualCheckedCount = DB::table('actuals')
                     ->join('employees', 'actuals.employee_id', '=', 'employees.id')
                     ->join('departments', 'employees.department_id', '=', 'departments.id')
@@ -1195,7 +1272,7 @@ class LogController extends Controller
                     ->whereMonth('actuals.date', $month)
                     ->whereYear('actuals.date', $year)
                     ->select('departments.name as department_name', DB::raw('count(actuals.id) as total_not_checked'), 'kpi_code')
-                    ->groupBy('departments.name',)
+                    ->groupBy('departments.name', )
                     ->get();
 
                 $actualCheckedCountDeptGroup = DB::table('department_actuals')
@@ -1205,7 +1282,7 @@ class LogController extends Controller
                     ->whereMonth('department_actuals.date', $month)
                     ->whereYear('department_actuals.date', $year)
                     ->select('departments.name as department_name', DB::raw('count(department_actuals.id) as total_not_checked'), 'kpi_code')
-                    ->groupBy('departments.name',)
+                    ->groupBy('departments.name', )
                     ->get();
                 // dd($actualCheckedCountGroup, $actualCheckedCountDeptGroup);
 
@@ -1260,15 +1337,15 @@ class LogController extends Controller
                 // dd($departmentNames, $actualCheckedCount, $actualCheckedCountDept, $targetUnitCountAll, $targetUnitCountAllDept, $actualFilledCount, $actualFilledCountDept);
 
                 $totals = [
-                    'total_1' => 0,
-                    'total_2' => 0,
-                    'total_3' => 0,
-                    'total_4' => 0,
-                    'total_5' => 0,
-                    'total_6' => 0,
-                    'total_7' => 0,
-                    'total_8' => 0,
-                    'total_9' => 0,
+                    'total_1'  => 0,
+                    'total_2'  => 0,
+                    'total_3'  => 0,
+                    'total_4'  => 0,
+                    'total_5'  => 0,
+                    'total_6'  => 0,
+                    'total_7'  => 0,
+                    'total_8'  => 0,
+                    'total_9'  => 0,
                     'total_10' => 0,
                     'total_11' => 0,
                     'total_12' => 0,
@@ -1276,30 +1353,30 @@ class LogController extends Controller
 
                 // Sum the values for each target column
                 foreach ($targetUnitCountAll as $item) {
-                    $totals['total_1'] += $item->total_1;
-                    $totals['total_2'] += $item->total_2;
-                    $totals['total_3'] += $item->total_3;
-                    $totals['total_4'] += $item->total_4;
-                    $totals['total_5'] += $item->total_5;
-                    $totals['total_6'] += $item->total_6;
-                    $totals['total_7'] += $item->total_7;
-                    $totals['total_8'] += $item->total_8;
-                    $totals['total_9'] += $item->total_9;
+                    $totals['total_1']  += $item->total_1;
+                    $totals['total_2']  += $item->total_2;
+                    $totals['total_3']  += $item->total_3;
+                    $totals['total_4']  += $item->total_4;
+                    $totals['total_5']  += $item->total_5;
+                    $totals['total_6']  += $item->total_6;
+                    $totals['total_7']  += $item->total_7;
+                    $totals['total_8']  += $item->total_8;
+                    $totals['total_9']  += $item->total_9;
                     $totals['total_10'] += $item->total_10;
                     $totals['total_11'] += $item->total_11;
                     $totals['total_12'] += $item->total_12;
                 }
 
                 foreach ($targetUnitCountAllDept as $item) {
-                    $totals['total_1'] += $item->total_1;
-                    $totals['total_2'] += $item->total_2;
-                    $totals['total_3'] += $item->total_3;
-                    $totals['total_4'] += $item->total_4;
-                    $totals['total_5'] += $item->total_5;
-                    $totals['total_6'] += $item->total_6;
-                    $totals['total_7'] += $item->total_7;
-                    $totals['total_8'] += $item->total_8;
-                    $totals['total_9'] += $item->total_9;
+                    $totals['total_1']  += $item->total_1;
+                    $totals['total_2']  += $item->total_2;
+                    $totals['total_3']  += $item->total_3;
+                    $totals['total_4']  += $item->total_4;
+                    $totals['total_5']  += $item->total_5;
+                    $totals['total_6']  += $item->total_6;
+                    $totals['total_7']  += $item->total_7;
+                    $totals['total_8']  += $item->total_8;
+                    $totals['total_9']  += $item->total_9;
                     $totals['total_10'] += $item->total_10;
                     $totals['total_11'] += $item->total_11;
                     $totals['total_12'] += $item->total_12;
@@ -1378,12 +1455,11 @@ class LogController extends Controller
                     ->first();
             }
 
-
-            $departments = DB::table('departments')->where('departments.id', '=', $authDept)->get();
+            $departments    = DB::table('departments')->where('departments.id', '=', $authDept)->get();
             $countEmployees = DB::table('employees')
                 ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')->select(DB::raw('count(employees.id) as total_employee'), 'departments.name as department_name', 'departments.id as department_id')->whereIn('departments.name', $deptList)->groupBy(['departments.name', 'departments.id'])->get();
 
-            $acc = $actualCheckedCount;
+            $acc  = $actualCheckedCount;
             $accd = $actualCheckedCountDept;
 
             // // Step 1: Get all KPI codes from the targets table
@@ -1413,7 +1489,6 @@ class LogController extends Controller
             // $missingKpiCodes = array_diff($allKpiCodes, $inputtedKpiCodes);
             // dd($missingKpiCodes, $allKpiCodes, $inputtedKpiCodes);
 
-
             // dd($actualCheckedCountGroup, $actualCheckedCountDeptGroup, $targetUnitCountAll, $targetUnitCountAllDept);
 
             // dd($acc, $accd, $totals);
@@ -1429,31 +1504,31 @@ class LogController extends Controller
 
             // dd($actualFilledCheck, $actualCheckedCheck, $actualApproved, $actualChecked, $countEmployees);
             return view('logs/log-input', [
-                'title' => 'Log Input',
-                'desc' => 'History',
-                'actualFilledCheck' => $actualFilledCheck,
-                'actualCheckedCheck' => $actualCheckedCheck,
-                'actualApproved' => $actualApproved,
-                'actualFilled' => $actualFilled,
-                'actualChecked' => $actualChecked,
-                'departments' => $departments,
-                'countEmployees' => $countEmployees,
-                'actualFilledCount' => $actualFilledCount,
-                'actualFilledCountDept' => $actualFilledCountDept,
-                'actualCheckedCount' => $acc,
-                'actualCheckedCountDept' => $accd,
-                'totalTgUnitAll' => $totalTgUnitAll,
-                'targetUnitCountAll' => $targetUnitFilledCountAll,
-                'targetUnitCountAllDept' => $targetUnitFilledCountAllDept,
-                'allDept' => $allDept,
-                'titlePage' => $titlePage,
-                'actualCheckedCountGroup' => $actualCheckedCountGroup,
+                'title'                       => 'Log Input',
+                'desc'                        => 'History',
+                'actualFilledCheck'           => $actualFilledCheck,
+                'actualCheckedCheck'          => $actualCheckedCheck,
+                'actualApproved'              => $actualApproved,
+                'actualFilled'                => $actualFilled,
+                'actualChecked'               => $actualChecked,
+                'departments'                 => $departments,
+                'countEmployees'              => $countEmployees,
+                'actualFilledCount'           => $actualFilledCount,
+                'actualFilledCountDept'       => $actualFilledCountDept,
+                'actualCheckedCount'          => $acc,
+                'actualCheckedCountDept'      => $accd,
+                'totalTgUnitAll'              => $totalTgUnitAll,
+                'targetUnitCountAll'          => $targetUnitFilledCountAll,
+                'targetUnitCountAllDept'      => $targetUnitFilledCountAllDept,
+                'allDept'                     => $allDept,
+                'titlePage'                   => $titlePage,
+                'actualCheckedCountGroup'     => $actualCheckedCountGroup,
                 'actualCheckedCountDeptGroup' => $actualCheckedCountDeptGroup,
             ]);
         } else if ($department) {
             return view('logs/log-input', [
-                'title' => 'Log Input',
-                'desc' => 'History',
+                'title'     => 'Log Input',
+                'desc'      => 'History',
                 'titlePage' => $titlePage,
             ]);
         }
@@ -1463,16 +1538,15 @@ class LogController extends Controller
     {
 
         $department = $request->query('department');
-        $month = $request->query('month');
-        $year = $request->query('year');
-        $allDept = Department::all();
+        $month      = $request->query('month');
+        $year       = $request->query('year');
+        $allDept    = Department::all();
 
         if ($department == 'All Dept' && $month && $year) {
             $employees = DB::table('employees')->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
                 ->select('employees.*', 'departments.name as department')
                 ->paginate(20)
                 ->appends(['department' => $department, 'month' => $month, 'year' => $year]);
-
 
             $employeesInput = DB::table('actuals')
                 ->leftJoin('employees', 'employees.id', '=', 'actuals.employee_id')
@@ -1484,27 +1558,22 @@ class LogController extends Controller
                 ->orderBy('latest_input_at', 'desc')
                 ->get();
 
-
             // dd($employeesInput);
 
-
-
-
             return view('logs/log-input-individual', [
-                'title' => 'Log Input Individual',
-                'desc' => 'History',
+                'title'          => 'Log Input Individual',
+                'desc'           => 'History',
                 'employeesInput' => $employeesInput,
-                'employees' => $employees,
-                'department' => $allDept,
+                'employees'      => $employees,
+                'department'     => $allDept,
 
             ]);
         } elseif ($department && $month && $year) {
 
             $employees = DB::table('employees')->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
                 ->select('employees.*', 'departments.name as department')
-                ->where('employees.department_id',  '=', $department)->paginate(20)
+                ->where('employees.department_id', '=', $department)->paginate(20)
                 ->appends(['department' => $department, 'month' => $month, 'year' => $year]);
-
 
             $employeesInput = DB::table('actuals')
                 ->leftJoin('employees', 'employees.id', '=', 'actuals.employee_id')
@@ -1517,20 +1586,18 @@ class LogController extends Controller
                 ->orderBy('latest_input_at', 'desc')
                 ->get();
 
-
-
             return view('logs/log-input-individual', [
-                'title' => 'Log Input Individual',
-                'desc' => 'History',
+                'title'          => 'Log Input Individual',
+                'desc'           => 'History',
                 'employeesInput' => $employeesInput,
-                'employees' => $employees,
-                'department' => $allDept,
+                'employees'      => $employees,
+                'department'     => $allDept,
 
             ]);
         } else if ($department) {
             return view('logs/log-input-individual', [
                 'title' => 'Log Input',
-                'desc' => 'History',
+                'desc'  => 'History',
             ]);
         }
     }
@@ -1538,14 +1605,14 @@ class LogController extends Controller
     public function indexMonitoringEmployee(Request $request)
     {
         $semesterQuery = $request->query('semester');
-        $yearQuery = $request->query('year');
-        $statusQuery = $request->query('status');
-        $deptList = DB::table('departments')->select('name', 'id')->get();
-        $statusList = DB::table('employees')->select('status')->distinct()->get();
-        $year = $request->year;
-        $department = $request->department;
-        $semester = $request->semester;
-        $status = $request->status;
+        $yearQuery     = $request->query('year');
+        $statusQuery   = $request->query('status');
+        $deptList      = DB::table('departments')->select('name', 'id')->get();
+        $statusList    = DB::table('employees')->select('status')->distinct()->get();
+        $year          = $request->year;
+        $department    = $request->department;
+        $semester      = $request->semester;
+        $status        = $request->status;
 
         $totalTarget = DB::table('target_units')
             ->leftJoin('targets', 'target_units.id', '=', 'targets.target_unit_id')
@@ -1576,7 +1643,7 @@ class LogController extends Controller
         if ($department == 'all' && $year && $semester && $status) {
             $employees = DB::table('employees')
                 ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
-                ->select('employees.*', 'departments.name as department',)
+                ->select('employees.*', 'departments.name as department', )
                 ->where('employees.status', '=', $status)
                 ->where('is_active', '=', 1)
                 ->orderBy('departments.id', 'asc')
@@ -1593,7 +1660,7 @@ class LogController extends Controller
         } elseif ($department == 'all' && $year && $semester) {
             $employees = DB::table('employees')
                 ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
-                ->select('employees.*', 'departments.name as department',)
+                ->select('employees.*', 'departments.name as department', )
                 ->where('is_active', '=', 1)
                 ->orderBy('departments.id', 'asc')
                 ->orderBy('employees.id', 'asc')
@@ -1609,7 +1676,7 @@ class LogController extends Controller
         } elseif ($department && $year && $semester && $status) {
             $employees = DB::table('employees')
                 ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
-                ->select('employees.*', 'departments.name as department',)
+                ->select('employees.*', 'departments.name as department', )
                 ->where('departments.id', '=', $department)
                 ->where('employees.status', '=', $status)
                 ->where('is_active', '=', 1)
@@ -1627,7 +1694,7 @@ class LogController extends Controller
         } elseif ($department && $year && $semester) {
             $employees = DB::table('employees')
                 ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
-                ->select('employees.*', 'departments.name as department',)
+                ->select('employees.*', 'departments.name as department', )
                 ->where('departments.id', '=', $department)
                 ->where('is_active', '=', 1)
                 ->orderBy('departments.id', 'asc')
@@ -1644,7 +1711,7 @@ class LogController extends Controller
         } elseif ($semester && $year && $status) {
             $employees = DB::table('employees')
                 ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
-                ->select('employees.*', 'departments.name as department',)
+                ->select('employees.*', 'departments.name as department', )
                 ->where('employees.status', '=', $status)
                 ->where('is_active', '=', 1)
                 ->orderBy('departments.id', 'asc')
@@ -1661,7 +1728,7 @@ class LogController extends Controller
         } else {
             $employees = DB::table('employees')
                 ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
-                ->select('employees.*', 'departments.name as department',)
+                ->select('employees.*', 'departments.name as department', )
                 ->where('is_active', '=', 1)
                 ->orderBy('departments.id', 'asc')
                 ->orderBy('employees.id', 'asc')
@@ -1680,22 +1747,20 @@ class LogController extends Controller
 
         // dd($employees, $actuals, $actualsCount, $totalTarget);
 
-
-
         return view('logs.log-monitoring-input-employee', [
-            'title' => 'Log Monitoring Aktual Employee',
-            'desc' => 'History',
-            'actuals' => $actuals,
+            'title'       => 'Log Monitoring Aktual Employee',
+            'desc'        => 'History',
+            'actuals'     => $actuals,
             'totalTarget' => $totalTarget,
-            'employees' => $employees,
-            'deptList' => $deptList,
-            'statusList' => $statusList,
+            'employees'   => $employees,
+            'deptList'    => $deptList,
+            'statusList'  => $statusList,
         ]);
     }
     public function indexMonitoringDept(Request $request)
     {
         $semesterQuery = $request->query('semester');
-        $yearQuery = $request->query('year');
+        $yearQuery     = $request->query('year');
 
         $totalTarget = DB::table('target_units')
             ->leftJoin('department_targets', 'target_units.id', '=', 'department_targets.target_unit_id')
@@ -1723,7 +1788,7 @@ class LogController extends Controller
         // dd($totalTarget);
 
         $departments = DB::table('departments')->get();
-        $actuals = DB::table('department_actuals')
+        $actuals     = DB::table('department_actuals')
             ->where('department_actuals.semester', '=', $semesterQuery)
             ->whereNotNull('record_file')
             ->whereYear('department_actuals.date', $yearQuery)
@@ -1734,9 +1799,9 @@ class LogController extends Controller
         // dd($actuals, $totalTarget);
 
         return view('logs.log-monitoring-input-dept', [
-            'title' => 'Log Monitoring Aktual Department',
-            'desc' => 'History',
-            'actuals' => $actuals,
+            'title'       => 'Log Monitoring Aktual Department',
+            'desc'        => 'History',
+            'actuals'     => $actuals,
             'totalTarget' => $totalTarget,
             'departments' => $departments,
         ]);
@@ -1744,10 +1809,10 @@ class LogController extends Controller
 
     public function jobsLog()
     {
-        $logPath = storage_path('logs/laravel-worker.log');
-        $inputLines = [];
-        $check1Lines = [];
-        $check2Lines = [];
+        $logPath      = storage_path('logs/laravel-worker.log');
+        $inputLines   = [];
+        $check1Lines  = [];
+        $check2Lines  = [];
         $approveLines = [];
 
         if (file_exists($logPath)) {
@@ -1780,11 +1845,11 @@ class LogController extends Controller
         }
 
         return view('logs.jobs-log', [
-            'title' => 'Jobs Log',
-            'desc' => 'History',
-            'inputLines' => $inputLines,
-            'check1Lines' => $check1Lines,
-            'check2Lines' => $check2Lines,
+            'title'        => 'Jobs Log',
+            'desc'         => 'History',
+            'inputLines'   => $inputLines,
+            'check1Lines'  => $check1Lines,
+            'check2Lines'  => $check2Lines,
             'approveLines' => $approveLines,
         ]);
     }

@@ -1,11 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Actual;
-use App\Models\Department;
-use Illuminate\Http\Request;
 use App\Models\DepartmentActual;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -27,14 +25,14 @@ class SupportingDocumentController extends Controller
         } else {
             return view('supporting-documents.employee-list', [
                 'title' => 'Lihat Data Pendukung',
-                'desc' => 'Employee List',
+                'desc'  => 'Employee List',
             ]);
         }
 
         return view('supporting-documents.employee-list', [
-            'title' => 'Lihat Data Pendukung',
-            'desc' => 'Employee List',
-            'employees' => $employees,
+            'title'       => 'Lihat Data Pendukung',
+            'desc'        => 'Employee List',
+            'employees'   => $employees,
             'departments' => $departments,
         ]);
     }
@@ -45,8 +43,8 @@ class SupportingDocumentController extends Controller
             ->get();
 
         return view('supporting-documents.department-list', [
-            'title' => 'Lihat Data Pendukung',
-            'desc' => 'Department List',
+            'title'       => 'Lihat Data Pendukung',
+            'desc'        => 'Department List',
             'departments' => $departments,
         ]);
     }
@@ -54,7 +52,7 @@ class SupportingDocumentController extends Controller
     public function employeeSupportingDocumentList(Request $request)
     {
         $employeeQuery = $request->query('employee');
-        $yearQuery = $request->query('year');
+        $yearQuery     = $request->query('year');
 
         $employeeDetail = DB::table('employees')
             ->leftJoin('departments', 'departments.id', '=', 'employees.department_id')
@@ -75,10 +73,10 @@ class SupportingDocumentController extends Controller
             ->get();
 
         return view('supporting-documents.employee-supporting-document', [
-            'title' => 'Lihat Data Pendukung',
-            'desc' => 'Employee',
-            'targets' => $targets,
-            'actuals' => $actuals,
+            'title'    => 'Lihat Data Pendukung',
+            'desc'     => 'Employee',
+            'targets'  => $targets,
+            'actuals'  => $actuals,
             'employee' => $employeeDetail,
         ]);
     }
@@ -86,7 +84,7 @@ class SupportingDocumentController extends Controller
     public function departmentSupportingDocumentList(Request $request)
     {
         $departmentQuery = $request->query('department');
-        $yearQuery = $request->query('year');
+        $yearQuery       = $request->query('year');
 
         $departmentDetail = DB::table('departments')
             ->where('departments.id', $departmentQuery)
@@ -106,17 +104,17 @@ class SupportingDocumentController extends Controller
             ->get();
 
         return view('supporting-documents.department-supporting-document', [
-            'title' => 'Lihat Data Pendukung',
-            'desc' => 'Department',
-            'targets' => $targets,
-            'actuals' => $actuals,
+            'title'      => 'Lihat Data Pendukung',
+            'desc'       => 'Department',
+            'targets'    => $targets,
+            'actuals'    => $actuals,
             'department' => $departmentDetail,
         ]);
     }
 
     public function showFile(Request $request)
     {
-        $month = $request->query('month');
+        $month    = $request->query('month');
         $actualId = $request->query('actual_id');
 
         $pdfUrls = Actual::whereMonth('date', $month)
@@ -128,7 +126,7 @@ class SupportingDocumentController extends Controller
     }
     public function showFileDept(Request $request)
     {
-        $month = $request->query('month');
+        $month    = $request->query('month');
         $actualId = $request->query('actual_id');
 
         $pdfUrls = DepartmentActual::whereMonth('date', $month)
@@ -141,13 +139,26 @@ class SupportingDocumentController extends Controller
 
     public function indexMaster(Request $request)
     {
-        $data = DB::table('master_data_pendukung')->where('kind', 'individu')->get();
+        $data      = DB::table('master_data_pendukung')->where('kind', 'individu')->get();
+        $auth_dept = auth()->user()->department_id;
+
+        return view('supporting-documents.index', [
+            'title'     => 'Master Data Pendukung',
+            'desc'      => 'Master Data Pendukung',
+            'data'      => $data,
+            'auth_dept' => $auth_dept,
+        ]);
+    }
+
+    public function listMaster(Request $request)
+    {
+        $data      = DB::table('master_data_pendukung')->where('kind', 'individu')->get();
         $auth_dept = auth()->user()->department_id;
 
         return view('supporting-documents.master-supporting-document', [
-            'title' => 'Master Data Pendukung',
-            'desc' => 'Master Data Pendukung',
-            'data' => $data,
+            'title'     => 'Master Data Pendukung',
+            'desc'      => 'Master Data Pendukung',
+            'data'      => $data,
             'auth_dept' => $auth_dept,
         ]);
     }
@@ -156,30 +167,43 @@ class SupportingDocumentController extends Controller
     {
         $dept = DB::table('departments')->get();
 
+        $departments = [
+            'Main Dept'    => [
+                ['id' => 'all', 'name' => 'All'],
+                ['id' => 'field', 'name' => 'Field (A,B,C,D,E,F)'],
+                ['id' => 'hrd', 'name' => 'HRD'],
+                ['id' => 'finance', 'name' => 'Finance'],
+            ],
+            'Sub Division' => [
+                ['id' => 'sub_a', 'name' => 'Sub Div A'],
+                ['id' => 'sub_b', 'name' => 'Sub Div B'],
+                ['id' => 'sub_c', 'name' => 'Sub Div C'],
+            ],
+            'Others'       => [
+                ['id' => 'security', 'name' => 'Security'],
+                ['id' => 'lab', 'name' => 'Laboratory'],
+            ],
+        ];
+
         return view('supporting-documents.input-master-supporting-document', [
             'title' => 'Input Master Data Pendukung',
-            'desc' => 'Input Master Data Pendukung',
-            'dept' => $dept,
+            'desc'  => 'Input Master Data Pendukung',
+            'dept'  => $dept,
+            'departments' => $departments,
         ]);
     }
 
     public function storeMaster(Request $request)
     {
-        $request->validate([
-            'no_kpi' => 'required|string',
-            'nama_kpi' => 'required|string',
-            'dept' => 'required|string',
-            'url_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        ]);
-
         $filePath = $request->file('url_file')->store('master_data_pendukung', 'public');
 
         DB::table('master_data_pendukung')->insert([
-            'no_kpi' => $request->input('no_kpi'),
-            'nama_kpi' => $request->input('nama_kpi'),
-            'dept' => $request->input('dept'),
-            'kind' => 'individu',
-            'url_file' => $filePath,
+            'no_kpi'     => null,
+            'nama_kpi'   => $request->input('nama_kpi'),
+            'dept'       => $request->input('dept'),
+            'nama_file'  => $request->input('nama_file'),
+            'kind'       => 'individu',
+            'url_file'   => $filePath,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -190,7 +214,7 @@ class SupportingDocumentController extends Controller
     public function showDocument($id)
     {
         $data = DB::table('master_data_pendukung')->where('id', $id)->first();
-        $url = Storage::url($data->url_file);
+        $url  = Storage::url($data->url_file);
 
         return redirect()->to($url);
     }
@@ -198,31 +222,29 @@ class SupportingDocumentController extends Controller
     public function editMaster($id)
     {
         $data = DB::table('master_data_pendukung')->where('id', $id)->first();
+        $dept = DB::table('departments')->get();
 
         return view('supporting-documents.edit-master-supporting-document', [
             'title' => 'Edit Master Data Pendukung',
-            'desc' => 'Edit Master Data Pendukung',
-            'data' => $data,
+            'desc'  => 'Edit Master Data Pendukung',
+            'data'  => $data,
+            'dept'  => $dept,
         ]);
     }
 
     public function updateMaster(Request $request, $id)
     {
-        $request->validate([
-            'no_kpi' => 'required|string',
-            'nama_kpi' => 'required|string',
-            'url_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        ]);
 
         $updateData = [
-            'no_kpi' => $request->input('no_kpi'),
-            'nama_kpi' => $request->input('nama_kpi'),
-            'dept' => $request->input('dept'),
+            'no_kpi'     => null,
+            'nama_kpi'   => $request->input('nama_kpi'),
+            'dept'       => $request->input('dept'),
+            'nama_file'  => $request->input('nama_file'),
             'updated_at' => now(),
         ];
 
         if ($request->hasFile('url_file')) {
-            $filePath = $request->file('url_file')->store('master_data_pendukung', 'public');
+            $filePath               = $request->file('url_file')->store('master_data_pendukung', 'public');
             $updateData['url_file'] = $filePath;
         }
 
@@ -240,13 +262,26 @@ class SupportingDocumentController extends Controller
 
     public function indexMasterDept(Request $request)
     {
-        $data = DB::table('master_data_pendukung')->where('kind', 'department')->get();
+        $data      = DB::table('master_data_pendukung')->where('kind', 'department')->get();
         $auth_dept = auth()->user()->department_id;
 
-        return view('supporting-documents.master-supporting-document-dept', [
-            'title' => 'Master Data Pendukung Dept.',
-            'desc' => 'Master Data Pendukung Dept.',
-            'data' => $data,
+        return view('supporting-documents.list-master-supporting-document-dept', [
+            'title'     => 'Master Data Pendukung Dept.',
+            'desc'      => 'Master Data Pendukung Dept.',
+            'data'      => $data,
+            'auth_dept' => $auth_dept,
+        ]);
+    }
+
+    public function listMasterDept(Request $request)
+    {
+        $data      = DB::table('master_data_pendukung')->where('kind', 'department')->get();
+        $auth_dept = auth()->user()->department_id;
+
+        return view('supporting-documents.list-master-supporting-document-dept', [
+            'title'     => 'Master Data Pendukung Dept.',
+            'desc'      => 'Master Data Pendukung Dept.',
+            'data'      => $data,
             'auth_dept' => $auth_dept,
         ]);
     }
@@ -257,28 +292,23 @@ class SupportingDocumentController extends Controller
 
         return view('supporting-documents.input-master-supporting-document-dept', [
             'title' => 'Input Master Data Pendukung Dept.',
-            'desc' => 'Input Master Data Pendukung Dept.',
-            'dept' => $dept,
+            'desc'  => 'Input Master Data Pendukung Dept.',
+            'dept'  => $dept,
         ]);
     }
 
     public function storeMasterDept(Request $request)
     {
-        $request->validate([
-            'no_kpi' => 'required|string',
-            'nama_kpi' => 'required|string',
-            'dept' => 'required|string',
-            'url_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        ]);
 
         $filePath = $request->file('url_file')->store('master_data_pendukung', 'public');
 
         DB::table('master_data_pendukung')->insert([
-            'no_kpi' => $request->input('no_kpi'),
-            'nama_kpi' => $request->input('nama_kpi'),
-            'dept' => $request->input('dept'),
-            'kind' => 'department',
-            'url_file' => $filePath,
+            'no_kpi'     => null,
+            'nama_kpi'   => $request->input('nama_kpi'),
+            'nama_file'  => $request->input('nama_file'),
+            'dept'       => null,
+            'kind'       => 'department',
+            'url_file'   => $filePath,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -289,7 +319,7 @@ class SupportingDocumentController extends Controller
     public function showDocumentDept($id)
     {
         $data = DB::table('master_data_pendukung')->where('id', $id)->first();
-        $url = Storage::url($data->url_file);
+        $url  = Storage::url($data->url_file);
 
         return redirect()->to($url);
     }
@@ -300,27 +330,23 @@ class SupportingDocumentController extends Controller
 
         return view('supporting-documents.edit-master-supporting-document-dept', [
             'title' => 'Edit Master Data Pendukung Dept.',
-            'desc' => 'Edit Master Data Pendukung Dept.',
-            'data' => $data,
+            'desc'  => 'Edit Master Data Pendukung Dept.',
+            'data'  => $data,
         ]);
     }
 
     public function updateMasterDept(Request $request, $id)
     {
-        $request->validate([
-            'no_kpi' => 'required|string',
-            'nama_kpi' => 'required|string',
-            'url_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        ]);
 
         $updateData = [
-            'no_kpi' => $request->input('no_kpi'),
-            'nama_kpi' => $request->input('nama_kpi'),
+            'no_kpi'     => null,
+            'nama_kpi'   => $request->input('nama_kpi'),
+            'nama_file'  => $request->input('nama_file'),
             'updated_at' => now(),
         ];
 
         if ($request->hasFile('url_file')) {
-            $filePath = $request->file('url_file')->store('master_data_pendukung', 'public');
+            $filePath               = $request->file('url_file')->store('master_data_pendukung', 'public');
             $updateData['url_file'] = $filePath;
         }
 
