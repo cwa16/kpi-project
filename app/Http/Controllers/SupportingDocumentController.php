@@ -168,27 +168,45 @@ class SupportingDocumentController extends Controller
         $dept = DB::table('departments')->get();
 
         $departments = [
-            'Main Dept'    => [
+            'Field Dept.' => [
                 ['id' => 'all', 'name' => 'All'],
                 ['id' => 'field', 'name' => 'Field (A,B,C,D,E,F)'],
-                ['id' => 'hrd', 'name' => 'HRD'],
-                ['id' => 'finance', 'name' => 'Finance'],
-            ],
-            'Sub Division' => [
                 ['id' => 'sub_a', 'name' => 'Sub Div A'],
                 ['id' => 'sub_b', 'name' => 'Sub Div B'],
                 ['id' => 'sub_c', 'name' => 'Sub Div C'],
+                ['id' => 'sub_a', 'name' => 'Sub Div D'],
+                ['id' => 'sub_b', 'name' => 'Sub Div E'],
+                ['id' => 'sub_c', 'name' => 'Sub Div F'],
+                ['id' => 'fad', 'name' => 'FAD'],
+                ['id' => 'fsd', 'name' => 'FSD'],
             ],
-            'Others'       => [
+            'Others'      => [
+                ['id' => 'hrd', 'name' => 'HRD'],
+                ['id' => 'safety_dp', 'name' => 'Safety & DP'],
+                ['id' => 'enviro', 'name' => 'Environment'],
+                ['id' => 'it', 'name' => 'IT'],
                 ['id' => 'security', 'name' => 'Security'],
-                ['id' => 'lab', 'name' => 'Laboratory'],
+                ['id' => 'ws', 'name' => 'Workshop'],
+                ['id' => 'fac', 'name' => 'Factory'],
+                ['id' => 'store', 'name' => 'Store'],
+                ['id' => 'ga', 'name' => 'GA'],
+            ],
+            'Acc. & Fin.' => [
+                ['id' => 'acc', 'name' => 'Accounting'],
+                ['id' => 'fin', 'name' => 'Finance'],
+            ],
+            'SPID'        => [
+                ['id' => 'spid', 'name' => 'SPID'],
+                ['id' => 'sal', 'name' => 'Sales'],
+                ['id' => 'pur', 'name' => 'Purchasing'],
+                ['id' => 'civ', 'name' => 'Civil'],
             ],
         ];
 
         return view('supporting-documents.input-master-supporting-document', [
-            'title' => 'Input Master Data Pendukung',
-            'desc'  => 'Input Master Data Pendukung',
-            'dept'  => $dept,
+            'title'       => 'Input Master Data Pendukung',
+            'desc'        => 'Input Master Data Pendukung',
+            'dept'        => $dept,
             'departments' => $departments,
         ]);
     }
@@ -196,11 +214,12 @@ class SupportingDocumentController extends Controller
     public function storeMaster(Request $request)
     {
         $filePath = $request->file('url_file')->store('master_data_pendukung', 'public');
+        $dept     = json_encode($request->input('dept'));
 
         DB::table('master_data_pendukung')->insert([
             'no_kpi'     => null,
             'nama_kpi'   => $request->input('nama_kpi'),
-            'dept'       => $request->input('dept'),
+            'dept'       => $dept,
             'nama_file'  => $request->input('nama_file'),
             'kind'       => 'individu',
             'url_file'   => $filePath,
@@ -224,21 +243,59 @@ class SupportingDocumentController extends Controller
         $data = DB::table('master_data_pendukung')->where('id', $id)->first();
         $dept = DB::table('departments')->get();
 
+        $departments = [
+            'Field Dept.' => [
+                ['id' => 'all', 'name' => 'All'],
+                ['id' => 'field', 'name' => 'Field (A,B,C,D,E,F)'],
+                ['id' => 'sub_a', 'name' => 'Sub Div A'],
+                ['id' => 'sub_b', 'name' => 'Sub Div B'],
+                ['id' => 'sub_c', 'name' => 'Sub Div C'],
+                ['id' => 'sub_a', 'name' => 'Sub Div D'],
+                ['id' => 'sub_b', 'name' => 'Sub Div E'],
+                ['id' => 'sub_c', 'name' => 'Sub Div F'],
+                ['id' => 'fad', 'name' => 'FAD'],
+                ['id' => 'fsd', 'name' => 'FSD'],
+            ],
+            'Others'      => [
+                ['id' => 'hrd', 'name' => 'HRD'],
+                ['id' => 'safety_dp', 'name' => 'Safety & DP'],
+                ['id' => 'enviro', 'name' => 'Environment'],
+                ['id' => 'it', 'name' => 'IT'],
+                ['id' => 'security', 'name' => 'Security'],
+                ['id' => 'ws', 'name' => 'Workshop'],
+                ['id' => 'fac', 'name' => 'Factory'],
+                ['id' => 'store', 'name' => 'Store'],
+                ['id' => 'ga', 'name' => 'GA'],
+            ],
+            'Acc. & Fin.' => [
+                ['id' => 'acc', 'name' => 'Accounting'],
+                ['id' => 'fin', 'name' => 'Finance'],
+            ],
+            'SPID'        => [
+                ['id' => 'spid', 'name' => 'SPID'],
+                ['id' => 'sal', 'name' => 'Sales'],
+                ['id' => 'pur', 'name' => 'Purchasing'],
+                ['id' => 'civ', 'name' => 'Civil'],
+            ],
+        ];
+
         return view('supporting-documents.edit-master-supporting-document', [
-            'title' => 'Edit Master Data Pendukung',
-            'desc'  => 'Edit Master Data Pendukung',
-            'data'  => $data,
-            'dept'  => $dept,
+            'title'       => 'Edit Master Data Pendukung',
+            'desc'        => 'Edit Master Data Pendukung',
+            'data'        => $data,
+            'dept'        => $dept,
+            'departments' => $departments,
         ]);
     }
 
     public function updateMaster(Request $request, $id)
     {
+        $dept = json_encode($request->input('dept'));
 
         $updateData = [
             'no_kpi'     => null,
             'nama_kpi'   => $request->input('nama_kpi'),
-            'dept'       => $request->input('dept'),
+            'dept'       => $dept,
             'nama_file'  => $request->input('nama_file'),
             'updated_at' => now(),
         ];

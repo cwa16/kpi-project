@@ -50,13 +50,10 @@ class TargetController extends Controller
             $deptList = DB::table('departments')->where('id', $authDept)->get();
         }
 
-
         $statusList = DB::table('employees')->select('status')->distinct()->get();
 
-        // dd($deptList, $statusList);
-
         if ($departmentID == 'all' && $status) {
-            if ($email == 'siswantoko@bskp.co.id' || $email == 'tabrani@bskp.co.id' || $role == 'FAD') {
+            if ($email == 'siswantoko@bskp.co.id' || $email == 'tabrani@bskp.co.id' || $role == 'Approver') {
                 $departments = DB::table('departments')->leftJoin('employees', 'employees.department_id', '=', 'departments.id')
                     ->leftJoin('action_plans', 'action_plans.employee_id', '=', 'employees.id')
                     ->where('employees.status', '=', $status)
@@ -87,7 +84,7 @@ class TargetController extends Controller
                     ->paginate(10)->appends(['status' => $status, 'department' => $departmentID, 'employee' => $employeeID]);
             }
         } elseif ($departmentID && $status) {
-            if ($email == 'siswantoko@bskp.co.id' || $email == 'tabrani@bskp.co.id' || $role == 'FAD') {
+            if ($email == 'siswantoko@bskp.co.id' || $email == 'tabrani@bskp.co.id' || $role == 'Approver') {
                 $departments = DB::table('departments')->leftJoin('employees', 'employees.department_id', '=', 'departments.id')
                     ->leftJoin('action_plans', 'action_plans.employee_id', '=', 'employees.id')
                     ->where('employees.status', '=', $status)
@@ -117,9 +114,11 @@ class TargetController extends Controller
                     ->orderBy('departments.id', 'asc')
                     ->orderBy('employees.id', 'asc')
                     ->paginate(10)->appends(['status' => $status, 'department' => $departmentID, 'employee' => $employeeID]);
+
+                    dd($departments);
             }
         } elseif ($departmentID == 'all') {
-            if ($email == 'siswantoko@bskp.co.id' || $email == 'tabrani@bskp.co.id' || $role == 'FAD') {
+            if ($email == 'siswantoko@bskp.co.id' || $email == 'tabrani@bskp.co.id' || $role == 'Approver') {
                 $departments = DB::table('departments')->leftJoin('employees', 'employees.department_id', '=', 'departments.id')
                     ->leftJoin('action_plans', 'action_plans.employee_id', '=', 'employees.id')
                     ->where('employees.is_active', '=', 1)
@@ -146,8 +145,6 @@ class TargetController extends Controller
                     ->orderBy('employees.id', 'asc')
                     ->paginate(10)->appends(['status' => $status, 'department' => $departmentID, 'employee' => $employeeID]);
             }
-
-            // dd($departments);
         } elseif ($departmentID) {
             $departments = DB::table('departments')
                 ->leftJoin('employees', 'employees.department_id', '=', 'departments.id')

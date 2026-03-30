@@ -53,7 +53,27 @@
                             <tr class="hover:bg-blue-50 transition-colors duration-150">
                                 <td class="border border-gray-300 px-3 py-2 text-xs text-center font-medium">
                                     {{ $loop->iteration }}</td>
-                                <td class="border border-gray-300 px-3 py-2 text-xs">{{ $dt->dept }}</td>
+
+                                <td class="border border-gray-300 px-3 py-2 text-xs">
+                                    @php
+                                        // Decode string JSON menjadi array
+                                        $departments = json_decode($dt->dept, true);
+                                    @endphp
+
+                                    {{-- Menampilkan dept sebagai Badge --}}
+                                    <div class="flex flex-wrap gap-1.5">
+                                        @if (is_array($departments))
+                                            @foreach ($departments as $deptName)
+                                                <span
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                                                    {{ $deptName }}
+                                                </span>
+                                            @endforeach
+                                        @else
+                                            <span class="text-gray-600">{{ $dt->dept }}</span>
+                                        @endif
+                                    </div>
+                                </td>
                                 <td class="border border-gray-300 px-3 py-2 text-xs">{{ $dt->nama_kpi }}</td>
                                 <td class="border border-gray-300 px-3 py-2 text-xs font-mono text-blue-600">
                                     {{ $dt->nama_file }}</td>

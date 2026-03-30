@@ -196,7 +196,6 @@ class ReportController extends Controller
     }
     public function show($id, Request $request)
     {
-
         $semester  = $request->query('semester');
         $year      = $request->query('year');
         $employee  = Employee::find($id);

@@ -29,7 +29,7 @@
                         <select name="dept[]" id="dept" multiple class="hidden">
                             @foreach ($departments as $groupName => $items)
                                 @foreach ($items as $item)
-                                    <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                                    <option value="{{ $item['name'] }}">{{ $item['name'] }}</option>
                                 @endforeach
                             @endforeach
                         </select>
@@ -50,7 +50,7 @@
 
                                 @foreach ($items as $item)
                                     <div class="p-3 border-b border-gray-50 last:border-0 hover:bg-indigo-50 cursor-pointer text-sm flex justify-between items-center group transition-colors"
-                                        data-value="{{ $item['id'] }}" data-label="{{ $item['name'] }}">
+                                        data-value="{{ $item['name'] }}" data-label="{{ $item['name'] }}">
 
                                         <span
                                             class="text-gray-700 group-[.selected]:text-indigo-700 group-[.selected]:font-semibold">{{ $item['name'] }}</span>

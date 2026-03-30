@@ -41,6 +41,7 @@ class SendEmailReminderInput extends Command
 
         $sendTo = DB::table('employees')
             ->where('employees.role', '!=', 'Mng Approver')
+            ->where('employees.id', '=', 12)
             ->select('employees.email', 'employees.name')
             ->get();
 
