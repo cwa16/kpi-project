@@ -119,13 +119,13 @@
             @endif
             @if (auth()->user()->role == 'Approver' || $role == 'Mng Approver')
                 <div class="flex items-center pb-0 border-b border-b-gray-600"></div>
-                <li>
+                {{-- <li>
                     <a href="{{ route('report.summaryDept', 'year=' . $currentYear) }}"
                         class="flex items-center py-1.5 px-6 text-gray-300 hover:bg-gray-700">
                         <i class="ri-line-chart-line text-2xl"></i>
                         <span class="ml-3">Summary KPI Report {{ '(Employees)' }}</span>
                     </a>
-                </li>
+                </li> --}}
                   <li>
                     <a href="{{ route('report-year.summaryDept', 'year=' . $currentYear) }}"
                         class="flex items-center py-1.5 px-6 text-gray-300 hover:bg-gray-700">
@@ -245,6 +245,13 @@
                         class="flex items-center py-1.5 px-6 text-gray-300 hover:bg-gray-700">
                         <i class="ri-group-2-fill text-2xl"></i>
                         <span class="ml-3">Master Employees</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('approval_matrix.index') }}"
+                        class="flex items-center py-1.5 px-6 text-gray-300 hover:bg-gray-700">
+                        <i class="ri-group-2-fill text-2xl"></i>
+                        <span class="ml-3">Approval Matrix</span>
                     </a>
                 </li>
             @endif

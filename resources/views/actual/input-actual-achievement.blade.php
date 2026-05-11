@@ -509,7 +509,7 @@
                     } else if (achievement >= 120 && (unitValue == 'Kg/Tap' || unitValue == 'Rp' || unitValue == 'Rp/Kg' || unitValue == 'Hari' || unitValue == 'Jam')) {
                         achievement = 120;
                     } else if (achievement >= 110 && (unitValue == 'Jlh' || unitValue == 'Freq')) {
-                        achievement = 100;
+                        achievement = 110;
                     }
 
 

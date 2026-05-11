@@ -1,56 +1,53 @@
 <?php
 
-use App\Models\Actual;
-use App\Models\Preview;
-use App\Models\Employee;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Http;
-use Laravel\Sanctum\PersonalAccessToken;
-use App\Http\Controllers\LogController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MailController;
-use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Password;
+use App\Http\Controllers\ActionPlanController;
 use App\Http\Controllers\ActualController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\GeneratePdfController;
+use App\Http\Controllers\LogController;
+use App\Http\Controllers\MailController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PreviewController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReportYearController;
-use App\Http\Controllers\TargetController;
-use App\Http\Controllers\PreviewController;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\ActionPlanController;
-use App\Http\Controllers\GeneratePdfController;
 use App\Http\Controllers\RequirementController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SupportingDocumentController;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use App\Http\Controllers\TargetController;
+use App\Http\Controllers\UserController;
+use App\Models\Employee;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Route;
 
 // Route BSKP Gate
 Route::middleware(['web'])->get('/kpi-new/public', function (Request $request) {
     $token = $request->query('token');
     $appId = $request->query('app_id');
 
-    if (!$token || !$appId) {
+    if (! $token || ! $appId) {
         abort(400, 'Token dan App ID harus disertakan.');
     }
 
     $response = Http::withToken($token)->get("http://192.168.99.202/bskp-gate/public/api/profile?app_id={$appId}");
 
-    if (!$response->ok()) abort(401);
+    if (! $response->ok()) {
+        abort(401);
+    }
 
     $data = $response->json();
 
     $user = Employee::firstWhere('email', $data['email']);
 
     if ($user) {
-    Auth::guard('web')->login($user);
+        Auth::guard('web')->login($user);
 
-    return redirect('/dashboard');
-} else {
-    abort(403, 'User tidak ditemukan di aplikasi ini');
-}
+        return redirect('/dashboard');
+    } else {
+        abort(403, 'User tidak ditemukan di aplikasi ini');
+    }
 });
 
 // Auth Routes
@@ -58,7 +55,6 @@ Route::get('/', [AuthController::class, 'login']);
 Route::get('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::post('auth/me', [AuthController::class, 'authMe'])->name('auth.me');
 Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
-
 
 Route::get('/reset-password', function () {
     return view('reset-password');
@@ -111,7 +107,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/setting-target-deadline', [TargetController::class, 'settingTargetDeadline'])->name('target.settingTargetDeadline');
         Route::get('/create-target', [TargetController::class, 'createTarget'])->name('target.createTarget');
         Route::get('/create-target-dept', [TargetController::class, 'createTargetDept'])->name('target.createTargetDept');
-
 
         Route::post('/input-target-kpi/store', [TargetController::class, 'storeTargetKpi'])->name('target.storeTargetKpi');
         Route::post('/input-target-kpi-department/store', [TargetController::class, 'storeTargetKpiDept'])->name('target.storeTargetKpiDept');
@@ -239,19 +234,21 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/update-master-supporting-document/{id}', [SupportingDocumentController::class, 'updateMaster'])->name('updateMasterSupportingDocument');
     Route::get('/delete-master-supporting-document/{id}', [SupportingDocumentController::class, 'destroyMaster'])->name('deleteMasterSupportingDocument');
 
-     Route::get('/master-supporting-document-dept', [SupportingDocumentController::class, 'indexMasterDept'])->name('masterSupportingDocumentDept');
-     Route::get('/master-supporting-document-dept-index', [SupportingDocumentController::class, 'listMasterDept'])->name('masterSupportingDocumentDeptIndex');
+    Route::get('/master-supporting-document-dept', [SupportingDocumentController::class, 'indexMasterDept'])->name('masterSupportingDocumentDept');
+    Route::get('/master-supporting-document-dept-index', [SupportingDocumentController::class, 'listMasterDept'])->name('masterSupportingDocumentDeptIndex');
     Route::get('/input-master-supporting-document-dept', [SupportingDocumentController::class, 'indexInputMasterDept'])->name('inputMasterSupportingDocumentDept');
     Route::post('/store-master-supporting-document-dept', [SupportingDocumentController::class, 'storeMasterDept'])->name('storeMasterSupportingDocumentDept');
     Route::get('/show-master-supporting-document-dept/{id}', [SupportingDocumentController::class, 'showDocumentDept'])->name('showMasterSupportingDocumentDept');
     Route::get('/edit-master-supporting-document-dept/{id}', [SupportingDocumentController::class, 'editMasterDept'])->name('editMasterSupportingDocumentDept');
     Route::put('/update-master-supporting-document-dept/{id}', [SupportingDocumentController::class, 'updateMasterDept'])->name('updateMasterSupportingDocumentDept');
     Route::get('/delete-master-supporting-document-dept/{id}', [SupportingDocumentController::class, 'destroyMasterDept'])->name('deleteMasterSupportingDocumentDept');
+
+    Route::get('/approval-matrix', [App\Http\Controllers\ApprovalMatrixController::class, 'index'])->name('approval_matrix.index');
+    Route::post('/approval-matrix', [App\Http\Controllers\ApprovalMatrixController::class, 'store'])->name('approval_matrix.store');
+    Route::delete('/approval-matrix/{id}', [App\Http\Controllers\ApprovalMatrixController::class, 'destroy'])->name('approval_matrix.destroy');
 });
 
 Route::get('/get-user-data/{nik}', [UserController::class, 'getUserData'])->name('get.user.data');
-
-
 
 Route::get('404-not-found', function () {
     return view('components/404-page');

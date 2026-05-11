@@ -119,6 +119,7 @@ class ReportController extends Controller
         $role     = $user->role;
         $authDept = $user->department_id;
         $email    = $user->email;
+        $userNik    = $user->nik;
 
         $divDept = DB::table('departments')->whereIn('name', ['Sub Div A', 'Sub Div B', 'Sub Div C', 'Sub Div D', 'Sub Div E', 'Sub Div F'])->get();
         $divFAD  = DB::table('departments')->whereIn('name', ['Sub Div A', 'Sub Div B', 'Sub Div C', 'Sub Div D', 'Sub Div E', 'Sub Div F', 'FAD', 'FSD', 'Div 1', 'Div 2'])->get();
@@ -126,6 +127,13 @@ class ReportController extends Controller
         $factory = DB::table('departments')->where('name', '=', 'Factory')->get();
         $accFin  = DB::table('departments')->whereIn('name', ['Accounting', 'Finance'])->get();
         $allDept = Department::all();
+
+        $canApproveFinal = \App\Models\ApprovalMatrix::where(
+            'employee_nik',
+            $userNik,
+        )
+            ->where('approval_type', 'Approver')
+            ->exists();
 
         if ($role == 'Checker Div 1' || $role == 'Checker Div 2') {
             $deptList = $divDept;
@@ -142,7 +150,7 @@ class ReportController extends Controller
         } else if ($role == 'Checker Factory') {
             $deptList = $factory;
             return view('report.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
-        } else if ($role == 'Approver' || $role == 'Mng Approver') {
+        } else if ($role == 'Approver' || $role == 'Mng Approver' || $authDept == 7 || $authDept == 8 || $canApproveFinal == true) {
             $deptList = $allDept;
             return view('report.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
         } else {
@@ -341,7 +349,6 @@ class ReportController extends Controller
 
     public function department($id, Request $request)
     {
-
         $semester        = $request->query('semester');
         $year            = $request->query('year');
         $departmentCreds = DB::table('departments')->where('id', $id)->first();
@@ -897,8 +904,8 @@ class ReportController extends Controller
                 ->select('id', 'employee_id', 'indicator', 'code', 'is_active')
                 ->where('is_active', false);
 
-            $employeeIds         = $employees->pluck('employee_id');
-            $departmentIdsx       = $employees->pluck('department_id');
+            $employeeIds    = $employees->pluck('employee_id');
+            $departmentIdsx = $employees->pluck('department_id');
             if ($departmentIdsx->contains(11)) {
                 $departmentIds = collect([13, 14, 15, 16, 17, 18]);
             } elseif ($departmentIdsx->contains(21)) {
@@ -2392,10 +2399,10 @@ class ReportController extends Controller
         $reviewPeriod = DB::table('actuals')->where('id', $actualId)->value('review_period');
 
         $mapPeriod = [
-            'M'        => 12,
-            'Q'      => 4,
-            'S'     => 2,
-            'A'         => 1,
+            'M'  => 12,
+            'Q'  => 4,
+            'S'  => 2,
+            'A'  => 1,
             'BM' => 6,
         ];
 
