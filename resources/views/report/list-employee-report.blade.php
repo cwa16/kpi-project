@@ -2,7 +2,7 @@
     <div class="ml-64 mt-4 overflow-x-auto p-2 bg-white border border-gray-100 shadow-md shadow-black/10 rounded-md">
         @php
         $currentYear = Carbon\Carbon::now()->year;
-        $startYear = 2024;
+        $startYear = 2026;
         $endYear = $currentYear + 2;
         $role = auth()->user()->role;
         $email = auth()->user()->email;
@@ -17,7 +17,7 @@
             <div class="flex flex-col">
                 <div class="flex justify-end">
                     <div class="relative mt-1 rounded-md">
-                        <form action="{{ route('report.index') }}" method="GET">
+                        <form action="{{ route('report-year.index') }}" method="GET">
                         <div class="mt-1 mb-1 mx-2">
                             <select name="department" id="department" class="col-start-1 row-start-1 w-full appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 <option value="">-- Departmen --</option>
@@ -34,7 +34,7 @@
                     </div>
                     @if ($role == 'Approver' || $role == 'Mng Approver')
                     <div class="relative mt-1 rounded-md">
-                        <form action="{{ route('report.index') }}" method="GET">
+                        <form action="{{ route('report-year.index') }}" method="GET">
                         <div class="mt-1 mb-1 mx-2">
                             <select name="status" id="status" class="col-start-1 row-start-1 w-full appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
                                 <option value="">-- Status --</option>
@@ -122,7 +122,7 @@
                 <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->occupation }}</td>
                 <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">
                     <div class="flex justify-center gap-2 text-[12px]">
-                        <a id="employee-link-{{ $department->employee_id }}" href="{{ route('report.show', $department->employee_id) }}?semester=&year=">
+                        <a id="employee-link-{{ $department->employee_id }}" href="{{ route('report-year.show', $department->employee_id) }}?semester=&year=">
                             <span class="hover:underline text-blue-600">Summary</span>
                         </a>
                 </div>

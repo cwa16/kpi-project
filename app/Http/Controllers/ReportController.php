@@ -137,26 +137,26 @@ class ReportController extends Controller
 
         if ($role == 'Checker Div 1' || $role == 'Checker Div 2') {
             $deptList = $divDept;
-            return view('report.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
+            return view('report-year.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
         } else if ($role == 'FAD' || $email == 'tabrani@bskp.co.id' || $email == 'siswantoko@bskp.co.id') {
             $deptList = $divFAD;
-            return view('report.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
+            return view('report-year.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
         } else if ($role == 'Checker WS') {
             $deptList = $ws;
-            return view('report.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
+            return view('report-year.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
         } else if ($email == 'hendi@bskp.co.id') {
             $deptList = $accFin;
-            return view('report.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
+            return view('report-year.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
         } else if ($role == 'Checker Factory') {
             $deptList = $factory;
-            return view('report.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
+            return view('report-year.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
         } else if ($role == 'Approver' || $role == 'Mng Approver' || $authDept == 7 || $authDept == 8 || $canApproveFinal == true) {
             $deptList = $allDept;
-            return view('report.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
+            return view('report-year.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
         } else {
             $deptList = DB::table('departments')->where('departments.id', $authDept)
                 ->get();
-            return view('report.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
+            return view('report-year.list-department-report', ['title' => 'Report', 'desc' => 'Department List', 'deptList' => $deptList]);
         }
     }
 

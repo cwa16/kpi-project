@@ -56,7 +56,7 @@
                 <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">{{ $department->code }}</td>
                 <td class="border border-gray-400 text-[12px] tracking-wide px-2 py-0">
                     <div class="flex justify-center gap-2 text-[12px]">
-                        <a id="employee-link-{{ $department->id }}" href="{{ route('report.department', $department->id) }}?semester=&year=">
+                        <a id="employee-link-{{ $department->id }}" href="{{ route('report-year.department', $department->id) }}?semester=&year=">
                             <span class="hover:underline text-blue-600">Summary</span>
                         </a>
                 </div>

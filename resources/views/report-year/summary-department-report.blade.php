@@ -105,13 +105,13 @@
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
                             class="border border-gray-400 text-[13px] tracking-wide font-medium text-white py-0.5 px-2 bg-blue-700"
                             style="width: 8%" colspan="2">
-                            KPI Dept<br>(30%)
+                            KPI Dept
                         </th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
                             class="border border-gray-400 text-[13px] tracking-wide font-medium text-white py-0.5 px-2 bg-blue-700"
                             style="width: 8%" colspan="2">
-                            KPI Individu<br>(70%)
+                            KPI Individu
                         </th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
@@ -124,7 +124,7 @@
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
                             class="border border-gray-400 text-[13px] tracking-wide font-medium text-white py-0.5 px-2 bg-blue-700"
                             style="width: 8%">
-                            Full Year
+                            FY
                         </th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
@@ -136,7 +136,7 @@
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
                             class="border border-gray-400 text-[13px] tracking-wide font-medium text-white py-0.5 px-2 bg-blue-700"
                             style="width: 8%">
-                            Full Year
+                            FY
                         </th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF"

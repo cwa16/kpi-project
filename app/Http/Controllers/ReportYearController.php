@@ -183,13 +183,13 @@ class ReportYearController extends Controller
         } elseif ($unit == 'Tgl' || $unit == 'tgl') {
             $percentageValue = Averages::average($totalPercentage);
         } elseif ($trend == 'Negatif' || $trend == 'negatif') {
-            if ($unit == 'Freq "0"' || $unit == '%' || $unit == 'Hari') {
+            if ($unit == 'Freq "0"' || $unit == '%' || $unit == 'Hari' || $unit == 'Jam') {
                 $percentageValue = Averages::average($totalPercentage);
             } else {
                 $percentageValue = ($target != 0 && $actual != 0) ? ($target / $actual) * 100 : 0;
             }
         } elseif ($trend == 'Positif' || $trend == 'positif') {
-            if ($unit == 'Freq "0"' || $unit == '%') {
+            if ($unit == 'Freq "0"' || $unit == '%' || $unit == 'Jam' || $unit == 'Hari') {
                 $percentageValue = Averages::average($totalPercentage);
             } else {
                 $percentageValue = ($target != 0 && $actual != 0) ? ($actual / $target) * 100 : 0;
@@ -216,7 +216,6 @@ class ReportYearController extends Controller
         if ($semester && $year) {
 
             // 1. AMBIL TARGETS (Master Data)
-            // Join ke target_units untuk dapat target_1 s.d target_12
             $targets = DB::table('targets')
                 ->leftJoin('target_units', 'targets.target_unit_id', '=', 'target_units.id')
                 ->select(
@@ -261,10 +260,6 @@ class ReportYearController extends Controller
                 });
 
             // --- LOGIC UTAMA ---
-            // Grouping berdasarkan 'indicator' dari tabel TARGETS.
-            // Ini memastikan KPI tampil meskipun actual-nya kosong.
-            // Pastikan di Query $targets, kolom 'targets.period' sudah di-select!
-
             $groupedTargets = $targets->groupBy('indicator');
 
             $totals = $groupedTargets->map(function ($targetGroup) use ($actuals) {
@@ -276,11 +271,8 @@ class ReportYearController extends Controller
                 $trendItem = $firstTarget->trend;
                 $period    = $firstTarget->period; // Ambil Periode (Annual, Semester, Quarter, Monthly)
 
-                // --- 1. TENTUKAN PEMBAGI (DIVISOR) BERDASARKAN PERIODE ---
-                // Default 12 (untuk Monthly)
-                $divisor = 12;
-
-                // Cek periode (gunakan strtolower agar tidak sensitif huruf besar/kecil)
+                                  // --- 1. TENTUKAN PEMBAGI (DIVISOR) BERDASARKAN PERIODE ---
+                $divisor    = 12; // Default
                 $periodName = strtolower($period);
 
                 if ($periodName == 'annual') {
@@ -294,8 +286,7 @@ class ReportYearController extends Controller
                 // --- 2. HITUNG SUM TARGET DARI DB (target_1 ... target_12) ---
                 $monthlyTargetsSum = 0;
                 for ($i = 1; $i <= 12; $i++) {
-                    $col  = 'target_' . $i;
-                    // Ambil value, hilangkan koma, ubah ke float
+                    $col                = 'target_' . $i;
                     $val                = isset($firstTarget->$col) ? (float) str_replace(',', '', $firstTarget->$col) : 0;
                     $monthlyTargetsSum += $val;
                 }
@@ -318,40 +309,51 @@ class ReportYearController extends Controller
                 });
 
                 // --- 4. LOGIC PERHITUNGAN FINAL (Target & Actual) ---
-
-                // List unit yang menggunakan logika Rata-rata
                 $averageUnits  = ['Tgl', 'tgl', '%', 'Kg/Tap', 'Rp/Kg', 'mm', 'M3', 'Hari', 'Jam'];
                 $isAverageUnit = in_array($unitItem, $averageUnits);
 
                 if ($isAverageUnit) {
-                    // === LOGIC UNIT RATA-RATA (%, Hari, dll) ===
-                    // Menggunakan $divisor yang sudah ditentukan di atas (1, 2, 4, atau 12)
-
-                    // Target: Total Sum Target / Divisor
-                    // Contoh Annual: Target isi cuma di target_1 (100). Sum = 100. Divisor = 1. Hasil = 100.
-                    // Contoh Monthly: Target isi 12 bulan (1200). Sum = 1200. Divisor = 12. Hasil = 100.
-                    $totalTarget = $monthlyTargetsSum / $divisor;
-
-                    // Actual: Total Sum Actual / Divisor
-                    // Bulan kosong dianggap 0, karena pembagi tetap (1, 2, 4, 12)
+                    $totalTarget     = $monthlyTargetsSum / $divisor;
                     $totalActual     = $sumActualValues / $divisor;
                     $totalPercentage = $sumPercentageValues / $divisor;
-
                 } else {
-                    // === LOGIC UNIT SUM (Rp, Qty, dll) ===
-                    // Unit Sum biasanya tidak mempedulikan rata-rata periode, tapi akumulasi total
-
-                    $totalTarget = $monthlyTargetsSum;
-                    $totalActual = $sumActualValues;
-
-                    // Percentage Achievement biasanya tetap dirata-rata sesuai periode agar skalanya 0-100%
+                    $totalTarget     = $monthlyTargetsSum;
+                    $totalActual     = $sumActualValues;
                     $totalPercentage = $sumPercentageValues / $divisor;
                 }
 
-                // --- 5. KALKULASI SKOR ---
-                $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem, $unitItem, $totalPercentage);
+                // =========================================================
+                // NORMALISASI TREND
+                // =========================================================
+                $normalizedTrend = strtolower(trim($trendItem));
+                if ($normalizedTrend === 'p' || $normalizedTrend === 'positif') {
+                    $trendItem = 'Positif';
+                } elseif ($normalizedTrend === 'n' || $normalizedTrend === 'negatif') {
+                    $trendItem = 'Negatif';
+                }
 
-                $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+                // Ambil target value bulan pertama sebagai base-target
+                $targetVal = isset($firstTarget->target_1) ? (float) str_replace(',', '', $firstTarget->target_1) : $totalTarget;
+
+                // =========================================================
+                // LOGIKA KHUSUS: FREQ "0" (PROPORSIONAL DENGAN DIVISOR)
+                // =========================================================
+                $cleanUnit = strtolower(trim($unitItem));
+                if ($cleanUnit === 'freq "0"' || $cleanUnit === "freq '0'") {
+                    // Bypass fungsi calculation, langsung bagi total persentase valid dengan divisor
+                    $convertedCalc = $divisor > 0 ? ($sumPercentageValues / $divisor) : 0;
+                } else {
+                    // Perhitungan Normal (Bukan Freq "0")
+                    $percentageCalc = $this->calculation(
+                        $targetVal,
+                        $totalTarget,
+                        $totalActual,
+                        $trendItem,
+                        $unitItem,
+                        $totalPercentage
+                    );
+                    $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+                }
 
                 // Capping (Batas Atas)
                 if ($convertedCalc > 120 && in_array($unitItem, ['Kg/Tap', 'Rp', 'Rp/Kg', 'Hari', 'Jam'])) {
@@ -371,7 +373,7 @@ class ReportYearController extends Controller
                 return [
                     'kpi_item'                 => $kpiItem,
                     'unit'                     => $unitItem,
-                    'period'                   => $period, // Opsional: kirim info periode ke view
+                    'period'                   => $period,
                     'trend'                    => $trendItem,
                     'total_target'             => $totalTarget,
                     'total_actual'             => $totalActual,
@@ -387,7 +389,7 @@ class ReportYearController extends Controller
                 'employee'        => $employee,
                 'actuals'         => $actuals,
                 'targets'         => $targets,
-                'totals'          => $totals, // Gunakan variabel ini di view
+                'totals'          => $totals,
                 'userCreds'       => $userCreds,
                 'idParam'         => $id,
                 'inactiveTargets' => $inactiveTarget,
@@ -402,18 +404,17 @@ class ReportYearController extends Controller
     {
         $semester        = $request->query('semester');
         $year            = $request->query('year');
+
         $departmentCreds = DB::table('departments')->where('id', $id)->first();
 
         if ($semester && $year) {
 
             // 1. AMBIL TARGETS
-            // Kita select kolom target bulanan dan Period
             $targets = DB::table('department_targets')
                 ->leftJoin('target_units', 'department_targets.target_unit_id', '=', 'target_units.id')
                 ->select(
                     'department_targets.*',
-                    'target_units.*', // Asumsi ada kolom unit di target_units atau pakai dari department_targets
-                                      // Select Target Bulanan
+                    'target_units.*',
                     'target_units.target_1', 'target_units.target_2', 'target_units.target_3',
                     'target_units.target_4', 'target_units.target_5', 'target_units.target_6',
                     'target_units.target_7', 'target_units.target_8', 'target_units.target_9',
@@ -424,7 +425,7 @@ class ReportYearController extends Controller
                 ->where(DB::raw('YEAR(department_targets.date)'), $year)
                 ->get();
 
-            // Target Inactive (Optional)
+            // Target Inactive
             $inactiveTarget = DB::table('department_targets')
                 ->leftJoin('target_units', 'department_targets.target_unit_id', '=', 'target_units.id')
                 ->select('department_targets.*', 'target_units.*')
@@ -436,11 +437,8 @@ class ReportYearController extends Controller
             // 2. AMBIL ACTUALS
             $actuals = DB::table('department_actuals')
                 ->leftJoin('departments', 'department_actuals.department_id', '=', 'departments.id')
-
-                ->select('department_actuals.date as date', 'department_actuals.department_id as department_id', 'department_actuals.kpi_item', 'department_actuals.kpi_code as kpi_code', 'department_actuals.kpi_weighting', 'department_actuals.kpi_percentage as achievement', 'department_actuals.semester as semester', DB::raw('YEAR(department_actuals.date) as year'), 'department_actuals.target', 'department_actuals.actual', 'department_actuals.kpi_percentage', 'department_actuals.record_file', 'department_actuals.id as department_actual_id', 'department_actuals.status as status', 'departments.name as department', 'department_actuals.trend', 'department_actuals.kpi_unit', 'department_actuals.kpi_unit', 'department_actuals.review_period', 'department_actuals.*')
-
+                ->select('department_actuals.date as date', 'department_actuals.department_id as department_id', 'department_actuals.kpi_item', 'department_actuals.kpi_code as kpi_code', 'department_actuals.kpi_weighting', 'department_actuals.kpi_percentage as achievement', 'department_actuals.semester as semester', DB::raw('YEAR(department_actuals.date) as year'), 'department_actuals.target', 'department_actuals.actual', 'department_actuals.kpi_percentage', 'department_actuals.record_file', 'department_actuals.id as department_actual_id', 'department_actuals.status as status', 'departments.name as department', 'department_actuals.trend', 'department_actuals.kpi_unit', 'department_actuals.review_period', 'department_actuals.*')
                 ->where('department_actuals.department_id', $id)
-            // ->where('department_actuals.semester', $semester) // Opsional: biasanya report tahunan ambil semua data setahun
                 ->where(DB::raw('YEAR(department_actuals.date)'), $year)
                 ->orderBy(DB::raw('MONTH(department_actuals.date)'))
                 ->get();
@@ -457,43 +455,37 @@ class ReportYearController extends Controller
                 return floatval(str_replace('%', '', $item->weighting));
             });
 
-            // --- LOGIC UTAMA (Sama dengan Employee) ---
-
-            // Group by Code atau Indicator (pastikan unik)
+            // --- LOGIC UTAMA (KHUSUS DEPARTMENT: CROSS-SEMESTER RULE) ---
             $groupedTargets = $targets->groupBy('code');
 
             $totals = $groupedTargets->map(function ($targetGroup) use ($actuals) {
                 $firstTarget = $targetGroup->first();
 
-                $unitItem  = $firstTarget->unit; // Ambil unit
-                $kpiCode   = $firstTarget->code; // Kunci pencocokan dengan actual
+                $unitItem  = $firstTarget->unit;
+                $kpiCode   = $firstTarget->code;
                 $trendItem = $firstTarget->trend;
-                $period    = $firstTarget->period ?? 'Monthly'; // Default Monthly jika null
+                $period    = $firstTarget->period ?? 'Monthly';
 
-                // 1. TENTUKAN PEMBAGI (DIVISOR)
-                $divisor    = 12;
-                $periodName = strtolower($period);
-
-                if ($periodName == 'annual') {
-                    $divisor = 1;
-                } elseif ($periodName == 'semester') {
-                    $divisor = 2;
-                } elseif ($periodName == 'quarter') {
-                    $divisor = 4;
-                } elseif ($periodName == 'monthly') {
-                    $divisor = 12;
+                // =========================================================
+                // 1. NORMALISASI TREND
+                // =========================================================
+                $normalizedTrend = strtolower(trim($trendItem));
+                if ($normalizedTrend === 'p' || $normalizedTrend === 'positif') {
+                    $trendItem = 'Positif';
+                } elseif ($normalizedTrend === 'n' || $normalizedTrend === 'negatif') {
+                    $trendItem = 'Negatif';
                 }
 
-                // 2. HITUNG TARGET (Loop target_1 ... target_12)
-                $monthlyTargetsSum = 0;
+                // =========================================================
+                // 2. HITUNG TOTAL TARGET & ACTUAL SETAHUN
+                // =========================================================
+                $targetSum = 0;
                 for ($i = 1; $i <= 12; $i++) {
-                    $col                = 'target_' . $i;
-                    $val                = isset($firstTarget->$col) ? (float) str_replace(',', '', $firstTarget->$col) : 0;
-                    $monthlyTargetsSum += $val;
+                    $col        = 'target_' . $i;
+                    $val        = isset($firstTarget->$col) ? (float) str_replace(',', '', $firstTarget->$col) : 0;
+                    $targetSum += $val;
                 }
 
-                // 3. LOGIC ACTUAL (Matching Data)
-                // Filter actuals yang kpi_code-nya sama
                 $matchedActuals = $actuals->filter(function ($act) use ($kpiCode) {
                     return $act->kpi_code == $kpiCode;
                 });
@@ -502,40 +494,145 @@ class ReportYearController extends Controller
                     return $item->is_valid ? (float) $item->actual : 0;
                 });
 
-                $sumPercentageValues = $matchedActuals->sum(function ($item) {
-                    return $item->is_valid ? (float) $item->kpi_percentage : 0;
-                });
-
                 $totalInvalidWeight = $matchedActuals->sum(function ($item) {
                     return ! $item->is_valid ? (float) $item->invalid_weight : 0;
                 });
 
-                // 4. FINAL CALCULATION (Apply Divisor rule)
-                $averageUnits  = ['Tgl', 'tgl', '%', 'Kg/Tap', 'Rp/Kg', 'mm', 'M3', 'Hari', 'Jam'];
+                $averageUnits  = ['Tgl', 'tgl', '%', 'Kg/Tap', 'Rp/Kg', 'mm', 'M3', 'Hari', 'Jam', 'Freq "0"'];
                 $isAverageUnit = in_array($unitItem, $averageUnits);
 
-                if ($isAverageUnit) {
-                    // Unit Rata-rata: Dibagi Divisor (1, 2, 4, 12)
-                    $totalTarget = $monthlyTargetsSum / $divisor;
-                    // Actual dibagi divisor (Bulan kosong dianggap 0)
-                    $totalActual     = $sumActualValues / $divisor;
-                    $totalPercentage = $sumPercentageValues / $divisor;
-                } else {
-                    // Unit Sum: Akumulasi
-                    $totalTarget = $monthlyTargetsSum;
-                    $totalActual = $sumActualValues;
-                    // Percentage biasanya tetap dirata-rata agar range 0-100%
-                    $totalPercentage = $sumPercentageValues / $divisor;
+                $baseTargetVal = isset($firstTarget->target_1) && is_numeric($firstTarget->target_1)
+                    ? (float) str_replace(',', '', $firstTarget->target_1)
+                    : $targetSum;
+
+                // =========================================================
+                // 3. CEK AKTIVITAS S1 & S2 (CROSS-SEMESTER)
+                // =========================================================
+                $s1HasTarget = false;
+                for ($i = 1; $i <= 6; $i++) {
+                    $col = 'target_' . $i;
+                    $val = $firstTarget->$col ?? null;
+                    if ($val !== null && $val !== '' && $val !== 'N/A') {
+                        $s1HasTarget = true;
+                        break;
+                    }
+                }
+                $s1HasActual = $matchedActuals->contains(fn($act) => $act->semester == 1 && $act->is_valid);
+                $isS1Active  = ($s1HasTarget || $s1HasActual);
+
+                $s2HasTarget = false;
+                for ($i = 7; $i <= 12; $i++) {
+                    $col = 'target_' . $i;
+                    $val = $firstTarget->$col ?? null;
+                    if ($val !== null && $val !== '' && $val !== 'N/A') {
+                        $s2HasTarget = true;
+                        break;
+                    }
+                }
+                $s2HasActual = $matchedActuals->contains(fn($act) => $act->semester == 2 && $act->is_valid);
+                $isS2Active  = ($s2HasTarget || $s2HasActual);
+
+                // =========================================================
+                // 4. CLOSURE: HITUNG BLOK PERIODE (S1, S2, atau Setahun)
+                // =========================================================
+                // PERBAIKAN: Menambahkan $period ke dalam variabel use()
+                $calcDeptBlock = function ($startM, $endM) use ($firstTarget, $matchedActuals, $isAverageUnit, $trendItem, $unitItem, $baseTargetVal, $period) {
+                    $tSum = 0;
+                    for ($i = $startM; $i <= $endM; $i++) {
+                        $col   = 'target_' . $i;
+                        $val   = isset($firstTarget->$col) ? (float) str_replace(',', '', $firstTarget->$col) : 0;
+                        $tSum += $val;
+                    }
+
+                    $acts = $matchedActuals->filter(fn($a) => $a->semester == ($startM == 1 ? 1 : 2));
+                    if ($startM == 1 && $endM == 12) {
+                        $acts = $matchedActuals;
+                    }
+
+                    $aSum   = $acts->sum(fn($i) => $i->is_valid ? (float) $i->actual : 0);
+                    $pSum   = $acts->sum(fn($i) => $i->is_valid ? (float) $i->kpi_percentage : 0);
+                    $vCount = $acts->where('is_valid', 1)->count();
+
+                    // =========================================================
+                    // PERBAIKAN LOGIKA KHUSUS: FREQ "0"
+                    // Menggunakan pembagi berdasarkan $period review
+                    // =========================================================
+                    $cleanUnit = strtolower(trim($unitItem));
+                    if ($cleanUnit === 'freq "0"' || $cleanUnit === "freq '0'") {
+                        $pName         = strtolower($period);
+                        $monthsInBlock = ($endM - $startM) + 1; // Akan bernilai 12 (Setahun) atau 6 (Semester)
+
+                        $blockDivisor = $monthsInBlock; // Default monthly (12 atau 6)
+
+                        if ($pName == 'annual') {
+                            $blockDivisor = 1;
+                        } elseif ($pName == 'semester') {
+                            $blockDivisor = ($monthsInBlock == 12) ? 2 : 1;
+                        } elseif ($pName == 'quarter') {
+                            $blockDivisor = ($monthsInBlock == 12) ? 4 : 2;
+                        }
+
+                        return $blockDivisor > 0 ? ($pSum / $blockDivisor) : 0;
+                    }
+
+                    // Perhitungan Normal (Bukan Freq "0")
+                    if ($isAverageUnit) {
+                        return $vCount > 0 ? ($pSum / $vCount) : 0;
+                    } else {
+                        if ($tSum > 0) {
+                            $res = $this->calculation($baseTargetVal, $tSum, $aSum, $trendItem, $unitItem, 0);
+                            return floatval(str_replace('%', '', $res));
+                        } else {
+                            return $aSum > 0 ? 100 : 0;
+                        }
+                    }
+                };
+
+                // =========================================================
+                // 5. TERAPKAN RULE FULL BOBOT LINTAS SEMESTER
+                // =========================================================
+                $convertedCalc = 0;
+
+                if (! $isS1Active && ! $isS2Active) {
+                    // Keduanya Kosong
+                    $convertedCalc = 0;
+                } elseif ($isS1Active && $isS2Active) {
+                    // Keduanya Ada -> Hitung Setahun Normal
+                    $convertedCalc = $calcDeptBlock(1, 12);
+                } elseif ($isS1Active && ! $isS2Active) {
+                    // S1 Ada, S2 Kosong -> S1 Normal, S2 Full (100)
+                    $s1Calc        = $calcDeptBlock(1, 6);
+                    $convertedCalc = ($s1Calc + 100) / 2;
+                } elseif (! $isS1Active && $isS2Active) {
+                    // S2 Ada, S1 Kosong -> S2 Normal, S1 Full (100)
+                    $s2Calc        = $calcDeptBlock(7, 12);
+                    $convertedCalc = (100 + $s2Calc) / 2;
                 }
 
-                // 5. Calculate Score
-                // Gunakan $targetVal sebagai totalTarget jika logic sebelumnya menggunakan single value,
-                // tapi di sini kita sudah hitung $totalTarget yang benar dari breakdown.
-                $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem, $unitItem, $totalPercentage);
+                // =========================================================
+                // 6. PERSIAPAN DATA UNTUK DITAMPILKAN DI VIEW (Tabel)
+                // =========================================================
+                $divisor    = 12;
+                $periodName = strtolower($period);
+                if ($periodName == 'annual') {
+                    $divisor = 1;
+                } elseif ($periodName == 'semester') {
+                    $divisor = 2;
+                } elseif ($periodName == 'quarter') {
+                    $divisor = 4;
+                }
 
-                $convertedCalc = floatval(str_replace('%', '', $percentageCalc));
+                if ($isAverageUnit) {
+                    $displayTarget = $targetSum / $divisor;
+                    $displayActual = $sumActualValues / $divisor;
+                } else {
+                    $displayTarget = $targetSum;
+                    $displayActual = $sumActualValues;
+                }
 
-                // Capping
+                // =========================================================
+                // 7. FINAL CAPPING & WEIGHTING
+                // =========================================================
                 if ($convertedCalc > 120 && in_array($unitItem, ['Kg/Tap', 'Rp', 'Rp/Kg', 'Hari', 'Jam'])) {
                     $convertedCalc = 120;
                 } elseif ($convertedCalc > 110 && in_array($unitItem, ['Tgl', 'tgl', 'Freq'])) {
@@ -544,21 +641,19 @@ class ReportYearController extends Controller
                     $convertedCalc = 150;
                 }
 
-                // Weight
                 $weightRaw = $firstTarget->weighting;
                 $weight    = floatval(str_replace('%', '', $weightRaw));
 
                 $totalAchievementWeight = ($convertedCalc * $weight / 100) - $totalInvalidWeight;
 
-                // Return structure (sesuaikan dengan view department-report)
                 return [
                     'kpi_code'                 => $kpiCode,
                     'indicator'                => $firstTarget->indicator ?? $kpiCode,
                     'unit'                     => $unitItem,
                     'period'                   => $period,
                     'trend'                    => $trendItem,
-                    'total_target'             => $totalTarget,
-                    'total_actual'             => $totalActual,
+                    'total_target'             => $displayTarget,
+                    'total_actual'             => $displayActual,
                     'weight'                   => $weight,
                     'percentageCalc'           => $convertedCalc,
                     'total_achievement_weight' => $totalAchievementWeight,
@@ -611,7 +706,7 @@ class ReportYearController extends Controller
             $departmentIds = $employees->pluck('department_id')->unique();
             $empDeptMap    = $employees->pluck('department_id', 'employee_id');
 
-            // Logic Department ID Grouping (Director/HO Logic)
+            // Logic Department ID Grouping
             $departmentIdsToCheck = $departmentIds->toArray();
             if (in_array(11, $departmentIdsToCheck)) {
                 $departmentIdsToCheck = array_merge($departmentIdsToCheck, [13, 14, 15, 16, 17, 18]);
@@ -625,7 +720,6 @@ class ReportYearController extends Controller
             $departmentIdsToCheck = array_unique($departmentIdsToCheck);
 
             // 3. FETCH TARGETS
-            // NOTE: Tambahkan 'target_units.period' agar logika Employee bisa jalan (butuh Annual/Semester/dll)
             $empTargets = DB::table('targets')
                 ->leftJoin('target_units', 'targets.target_unit_id', '=', 'target_units.id')
                 ->select('targets.*', 'target_units.*',
@@ -675,20 +769,25 @@ class ReportYearController extends Controller
                         $kpiCode   = $firstTarget->code;
                         $kpiItem   = $firstTarget->indicator;
 
+                        // =========================================================
+                        // NORMALISASI TREND
+                        // =========================================================
+                        $normalizedTrend = strtolower(trim($trendItem));
+                        if ($normalizedTrend === 'p' || $normalizedTrend === 'positif') {
+                            $trendItem = 'Positif';
+                        } elseif ($normalizedTrend === 'n' || $normalizedTrend === 'negatif') {
+                            $trendItem = 'Negatif';
+                        }
+
                         // --- Hitung Total Target (Sum 1-12) ---
-                        $targetSum   = 0;
-                        $targetCount = 0;
+                        $targetSum = 0;
                         for ($i = 1; $i <= 12; $i++) {
                             $col        = 'target_' . $i;
                             $val        = isset($firstTarget->$col) ? (float) str_replace(',', '', $firstTarget->$col) : 0;
                             $targetSum += $val;
-                            if ($val > 0) {
-                                $targetCount++;
-                            }
-
                         }
 
-                        // --- Filter Actuals (Strict ID Match) ---
+                        // --- Filter Actuals ---
                         $matchedActuals = $actuals->filter(function ($act) use ($kpiCode, $kpiItem, $isDept, $currentId) {
                             $idMatch   = $isDept ? ($act->department_id == $currentId) : ($act->employee_id == $currentId);
                             $codeMatch = $isDept ? ($act->kpi_code == $kpiCode) : ($act->kpi_item == $kpiItem);
@@ -697,10 +796,9 @@ class ReportYearController extends Controller
 
                         $sumActualValues     = $matchedActuals->sum(fn($item) => $item->is_valid ? (float) $item->actual : 0);
                         $sumPercentageValues = $matchedActuals->sum(fn($item) => $item->is_valid ? (float) $item->kpi_percentage : 0);
-                        $actualCountValid    = $matchedActuals->where('is_valid', 1)->count();
                         $totalInvalidWeight  = $matchedActuals->sum(fn($item) => ! $item->is_valid ? (float) $item->invalid_weight : 0);
 
-                        // --- Logic Calculation ---
+                        // --- Persiapan Logic Calculation ---
                         $averageUnits = ['Tgl', 'tgl', '%', 'Kg/Tap', 'Rp/Kg', 'mm', 'M3', 'Hari', 'Jam'];
                         if ($isDept) {
                             $averageUnits[] = 'Freq "0"';
@@ -709,38 +807,110 @@ class ReportYearController extends Controller
 
                         $convertedCalc = 0;
 
-                        // ==========================================
-                        //  PERCABANGAN LOGIKA: DEPT vs EMPLOYEE
-                        // ==========================================
+                        // Parameter awal target untuk calculation
+                        $baseTargetVal = isset($firstTarget->target_1) && is_numeric($firstTarget->target_1)
+                            ? (float) str_replace(',', '', $firstTarget->target_1)
+                            : $targetSum;
+
                         if ($isDept) {
-                            // === LOGIKA DEPARTMENT (Sesuai request Anda: "KPI deptnya sudah pas") ===
-                            // Menggunakan logic Dynamic Count ($actualCountValid)
+                            // =========================================================
+                            // === LOGIKA DEPARTMENT (CROSS-SEMESTER RULE & FREQ "0") ===
+                            // =========================================================
 
-                            if ($isAverageUnit) {
-                                if ($actualCountValid > 0) {
-                                    $rawPercentage = $sumPercentageValues / $actualCountValid;
-                                } else {
-                                    $rawPercentage = 0;
+                            // 1. Cek Aktivitas S1 (Bulan 1-6)
+                            $s1HasTarget = false;
+                            for ($i = 1; $i <= 6; $i++) {
+                                $col = 'target_' . $i;
+                                $val = $firstTarget->$col ?? null;
+                                if ($val !== null && $val !== '' && $val !== 'N/A') {
+                                    $s1HasTarget = true;
+                                    break;
                                 }
-                                $convertedCalc = $rawPercentage;
-                            } else {
-                                // Sum Unit Dept
-                                $totalTarget = $targetSum;
-                                $totalActual = $sumActualValues;
+                            }
+                            $s1HasActual = $matchedActuals->contains(fn($act) => $act->semester == 1 && $act->is_valid);
+                            $isS1Active  = ($s1HasTarget || $s1HasActual);
 
-                                if ($totalTarget > 0) {
-                                    $calcRes       = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem, $unitItem, 0);
-                                    $convertedCalc = floatval(str_replace('%', '', $calcRes));
-                                } else {
-                                    $convertedCalc = ($totalActual > 0) ? 100 : 0;
+                            // 2. Cek Aktivitas S2 (Bulan 7-12)
+                            $s2HasTarget = false;
+                            for ($i = 7; $i <= 12; $i++) {
+                                $col = 'target_' . $i;
+                                $val = $firstTarget->$col ?? null;
+                                if ($val !== null && $val !== '' && $val !== 'N/A') {
+                                    $s2HasTarget = true;
+                                    break;
                                 }
+                            }
+                            $s2HasActual = $matchedActuals->contains(fn($act) => $act->semester == 2 && $act->is_valid);
+                            $isS2Active  = ($s2HasTarget || $s2HasActual);
+
+                            // 3. Fungsi Hitung Department Per Semester/Full
+                            // PERBAIKAN: Menambahkan $period ke 'use' agar bisa baca periode review
+                            $calcDeptBlock = function ($startM, $endM) use ($firstTarget, $matchedActuals, $isAverageUnit, $trendItem, $unitItem, $baseTargetVal, $period) {
+                                $tSum = 0;
+                                for ($i = $startM; $i <= $endM; $i++) {
+                                    $col   = 'target_' . $i;
+                                    $val   = isset($firstTarget->$col) ? (float) str_replace(',', '', $firstTarget->$col) : 0;
+                                    $tSum += $val;
+                                }
+
+                                $acts = $matchedActuals->filter(fn($a) => $a->semester == ($startM == 1 ? 1 : 2));
+                                if ($startM == 1 && $endM == 12) {
+                                    $acts = $matchedActuals;
+                                }
+
+                                $aSum   = $acts->sum(fn($i) => $i->is_valid ? (float) $i->actual : 0);
+                                $pSum   = $acts->sum(fn($i) => $i->is_valid ? (float) $i->kpi_percentage : 0);
+                                $vCount = $acts->where('is_valid', 1)->count();
+
+                                // =========================================================
+                                // PERBAIKAN LOGIKA KHUSUS: FREQ "0" (PROPORSIONAL DIVISOR)
+                                // =========================================================
+                                $cleanUnit = strtolower(trim($unitItem));
+                                if ($cleanUnit === 'freq "0"' || $cleanUnit === "freq '0'") {
+                                    $pName         = strtolower($period);
+                                    $monthsInBlock = ($endM - $startM) + 1; // Akan bernilai 12 atau 6
+
+                                    $blockDivisor = $monthsInBlock; // Default monthly
+                                    if ($pName == 'annual') {
+                                        $blockDivisor = 1;
+                                    } elseif ($pName == 'semester') {
+                                        $blockDivisor = ($monthsInBlock == 12) ? 2 : 1;
+                                    } elseif ($pName == 'quarter') {
+                                        $blockDivisor = ($monthsInBlock == 12) ? 4 : 2;
+                                    }
+
+                                    return $blockDivisor > 0 ? ($pSum / $blockDivisor) : 0;
+                                }
+
+                                if ($isAverageUnit) {
+                                    return $vCount > 0 ? ($pSum / $vCount) : 0;
+                                } else {
+                                    if ($tSum > 0) {
+                                        $res = $this->calculation($baseTargetVal, $tSum, $aSum, $trendItem, $unitItem, 0);
+                                        return floatval(str_replace('%', '', $res));
+                                    } else {
+                                        return $aSum > 0 ? 100 : 0;
+                                    }
+                                }
+                            };
+
+                            // 4. TERAPKAN RULE FULL BOBOT LINTAS SEMESTER
+                            if (! $isS1Active && ! $isS2Active) {
+                                $convertedCalc = 0;
+                            } elseif ($isS1Active && $isS2Active) {
+                                $convertedCalc = $calcDeptBlock(1, 12);
+                            } elseif ($isS1Active && ! $isS2Active) {
+                                $s1Calc        = $calcDeptBlock(1, 6);
+                                $convertedCalc = ($s1Calc + 100) / 2;
+                            } elseif (! $isS1Active && $isS2Active) {
+                                $s2Calc        = $calcDeptBlock(7, 12);
+                                $convertedCalc = (100 + $s2Calc) / 2;
                             }
 
                         } else {
-                            // === LOGIKA EMPLOYEE (Sesuai request Anda: "Jiplak function SHOW") ===
-                            // Menggunakan logic Fixed Divisor (1, 2, 4, 12)
-
-                                              // 1. Tentukan Divisor
+                                              // =========================================================
+                                              // === LOGIKA EMPLOYEE ===
+                                              // =========================================================
                             $divisor    = 12; // Default Monthly
                             $periodName = strtolower($period);
                             if ($periodName == 'annual') {
@@ -752,24 +922,30 @@ class ReportYearController extends Controller
                             }
 
                             if ($isAverageUnit) {
-                                // Unit Rata-rata: Dibagi Divisor (1, 2, 4, 12)
-                                // Note: $targetSum disini dipakai untuk TotalTarget perhitungan calculation()
                                 $totalTarget     = $targetSum / $divisor;
                                 $totalActual     = $sumActualValues / $divisor;
                                 $totalPercentage = $sumPercentageValues / $divisor;
                             } else {
-                                // Unit Sum: Akumulasi
                                 $totalTarget     = $targetSum;
                                 $totalActual     = $sumActualValues;
                                 $totalPercentage = $sumPercentageValues / $divisor;
                             }
 
-                            // 2. Kalkulasi
-                            $percentageCalc = $this->calculation($totalTarget, $totalTarget, $totalActual, $trendItem, $unitItem, $totalPercentage);
-                            $convertedCalc  = floatval(str_replace('%', '', $percentageCalc));
+                            // =========================================================
+                            // PERBAIKAN LOGIKA KHUSUS: FREQ "0" UNTUK EMPLOYEE
+                            // =========================================================
+                            $cleanUnit = strtolower(trim($unitItem));
+                            if ($cleanUnit === 'freq "0"' || $cleanUnit === "freq '0'") {
+                                // Bypass fungsi calculation, langsung bagi total persentase valid dengan divisor
+                                $convertedCalc = $divisor > 0 ? ($sumPercentageValues / $divisor) : 0;
+                            } else {
+                                // Perhitungan Normal (Bukan Freq "0")
+                                $percentageCalc = $this->calculation($baseTargetVal, $totalTarget, $totalActual, $trendItem, $unitItem, $totalPercentage);
+                                $convertedCalc  = floatval(str_replace('%', '', $percentageCalc));
+                            }
                         }
 
-                        // --- Final Capping & Weighting (Sama untuk keduanya) ---
+                        // --- Final Capping & Weighting ---
                         if ($convertedCalc > 120 && in_array($unitItem, ['Kg/Tap', 'Rp', 'Rp/Kg', 'Hari', 'Jam'])) {
                             $convertedCalc = 120;
                         } elseif ($convertedCalc > 110 && in_array($unitItem, ['Tgl', 'tgl', 'Freq'])) {
@@ -823,8 +999,8 @@ class ReportYearController extends Controller
             });
 
             // Inactive Sums
-            $sumInactiveEmpAnnual   = $annualInactiveEmpGroup->mapWithKeys(fn($g, $id) => [$id => $g->sum('total_achievement_weight')]);
-            $sumInactiveDeptAnnual  = $annualInactiveDeptGroup->mapWithKeys(fn($g, $id) => [$id => $g->sum('total_achievement_weight')]);
+            $sumInactiveEmpAnnual  = $annualInactiveEmpGroup->mapWithKeys(fn($g, $id) => [$id => $g->sum('total_achievement_weight')]);
+            $sumInactiveDeptAnnual = $annualInactiveDeptGroup->mapWithKeys(fn($g, $id) => [$id => $g->sum('total_achievement_weight')]);
 
             $totalSumInactiveAnnual = $sumInactiveEmpAnnual->map(function ($empVal, $empId) use ($sumInactiveDeptAnnual, $empDeptMap) {
                 $deptId  = $empDeptMap[$empId] ?? null;
@@ -936,7 +1112,7 @@ class ReportYearController extends Controller
 
         // dd($actuals);
 
-        return view('report.target-kpi-department-report', ['title' => 'Summary KPI', 'desc' => 'All Department', 'actuals' => $actuals, 'targets' => $targets, 'indicatorList' => $indicatorList]);
+        return view('report-year.target-kpi-department-report', ['title' => 'Summary KPI', 'desc' => 'All Department', 'actuals' => $actuals, 'targets' => $targets, 'indicatorList' => $indicatorList]);
     }
 
     public function setDataInvalid(Request $request)
