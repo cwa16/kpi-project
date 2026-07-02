@@ -606,6 +606,9 @@ class ActualController extends Controller
             } elseif ($request->status == 'Approved') {
                 $actual->approved_at = now();
                 $actual->approved_by = $user;
+                $actual->is_valid = 1;
+                $actual->invalid_weight = null;
+                $actual->invalid_reason = null;
             } elseif ($request->status == 'Revise') {
                 $actual->deadline = $newDeadline;
             }

@@ -119,7 +119,7 @@ class ReportController extends Controller
         $role     = $user->role;
         $authDept = $user->department_id;
         $email    = $user->email;
-        $userNik    = $user->nik;
+        $userNik  = $user->nik;
 
         $divDept = DB::table('departments')->whereIn('name', ['Sub Div A', 'Sub Div B', 'Sub Div C', 'Sub Div D', 'Sub Div E', 'Sub Div F'])->get();
         $divFAD  = DB::table('departments')->whereIn('name', ['Sub Div A', 'Sub Div B', 'Sub Div C', 'Sub Div D', 'Sub Div E', 'Sub Div F', 'FAD', 'FSD', 'Div 1', 'Div 2'])->get();
@@ -2431,12 +2431,44 @@ class ReportController extends Controller
         $actualId      = $request->input('department_actual_id');
         $invalidReason = $request->input('invalid_reason');
 
+        // Return a success response
+
+        $from         = Auth::user()->name;
+        $emailBy      = Auth::user()->email;
+        $departmentID = $actualId;
+        $sendTo       = DB::table('employees')
+            ->join('departments', 'employees.department_id', '=', 'departments.id')
+            ->where('employees.department_id', $departmentID)
+            ->where('employees.occupation', '=', 'Asst Mng')
+            ->select('employees.email')
+            ->first();
+        if (! $sendTo || ! $sendTo->email) {
+            return back()->withErrors(['email' => 'No valid email address found for the specified department.']);
+        }
+
+        $details = [
+            'revised_by' => $from,
+            'email'      => $sendTo,
+            'email_by'   => $emailBy,
+            'title'      => 'Revisi Data Pendukung KPI',
+            'greetings'  => 'Dengan Hormat,',
+            'msg'        => 'Berdasarkan pengecekan yang kami lakukan terdapat perhitungan KPI dan data pendukung yang tidak sesuai, untuk itu segera hubungi personnel yang terkait dan segara siapkan data KPI dan data pendukung yang sesuai. Berikut ini adalah data yang perlu direvisi:',
+            'kpi_code'   => $request->kpi_code,
+            'kpi_item'   => $request->kpi_item,
+            'comment'    => $request->comment,
+            'request'    => 'Segera lakukan perbaikan dan upload data yang sesuai (maksimal 3 hari setelah email ini)',
+            'closing'    => 'Terima kasih atas perhatian dan kerjasamanya.',
+        ];
+        $now                             = now()->format('d');
+        $newDeadline                     = $now + 3;
+        $newDeadline > 31 ? $newDeadline = 31 : $newDeadline;
+
+        ProcessEmail::dispatch($details);
         // Update the status of the actual record
         DB::table('department_actuals')
             ->where('id', $actualId)
             ->update(['is_valid' => 0, 'status' => 'Invalid', 'invalid_reason' => $invalidReason]);
 
-        // Return a success response
         return back()->with('success', 'Data has been set to invalid successfully.');
     }
 }

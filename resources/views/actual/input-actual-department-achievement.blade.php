@@ -464,7 +464,7 @@
                     var trendValue = document.getElementById('trend').value; // Retrieve the trend value
                     if (unitValue === 'Rp') {
                         achievement = (target / actual) * 100;
-                    } else if (trendValue === 'Negatif') {
+                    } else if (trendValue === 'Negatif' || trendValue === 'N') {
                         achievement = (target / actual) * 100;
                     } else {
                         achievement = (actual / target) * 100;

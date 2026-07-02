@@ -6,30 +6,46 @@
             $allStatus = request()->query('all');
             $statusQuery = request()->query('status');
             $email = auth()->user()->email;
+
+            // Definisikan langsung 12 bulan untuk di-render sekaligus
+            $months = [
+                '1' => 'Jan',
+                '2' => 'Feb',
+                '3' => 'Mar',
+                '4' => 'Apr',
+                '5' => 'May',
+                '6' => 'Jun',
+                '7' => 'Jul',
+                '8' => 'Aug',
+                '9' => 'Sep',
+                '10' => 'Oct',
+                '11' => 'Nov',
+                '12' => 'Dec',
+            ];
+
+            $year = request()->query('year') ?? date('Y');
+            // Tetap simpan variabel semester jika rute PDF masih membutuhkannya di backend
+            $semester = request()->query('semester') ?? 1;
         @endphp
+
         <div class="p-1">
             <span class="text-gray-600 font-bold text-lg">PT BRIDGESTONE KALIMANTAN PLANTATION</span>
         </div>
+
         <div class="justify-center flex flex-col items-center">
-            <div class="">
-                <span class="text-gray-600 font-bold text-lg text-center">KPI Report {{ '(Employees)' }}</span>
+            <div>
+                <span class="text-gray-600 font-bold text-lg text-center">KPI Report (Employees)</span>
             </div>
-            <div class="">
-                @php
-                    $year = request()->query('year') ?? date('Y');
-                    $semester = request()->query('semester') ?? 1;
-                @endphp
-                <span class="text-gray-600 font-bold text-xs text-center">Periode: Semester {{ $semester }}
-                    {{ $year }}</span>
+            <div>
+                <span class="text-gray-600 font-bold text-xs text-center">Tahun {{ $year }}</span>
             </div>
         </div>
 
         {{-- Container Utama: Flexbox untuk menyatukan Kiri dan Kanan --}}
-        <div class="flex flex-col md:flex-row justify-between items-start p-1 gap-4">
-
+        <div class="flex flex-col md:flex-row justify-between items-start p-1 gap-4 mt-2">
             {{-- Sisi Kiri: Data Karyawan --}}
             <div class="grid grid-cols-2 gap-4 flex-grow">
-                <div class="">
+                <div>
                     <table class="table-auto w-full">
                         <tr>
                             <td style="width: 30%" class="text-[13px] tracking-wide font-medium text-gray-600 px-1">Dept
@@ -47,7 +63,7 @@
                         </tr>
                     </table>
                 </div>
-                <div class="">
+                <div>
                     <table class="table-auto w-full">
                         <tr>
                             <td style="width: 30%" class="text-[13px] tracking-wide font-medium text-gray-600 px-1">Nama
@@ -67,27 +83,21 @@
                 </div>
             </div>
 
-            {{-- Sisi Kanan: Menggunakan flex-col agar konten menumpuk secara vertikal --}}
+            {{-- Sisi Kanan --}}
             <div class="flex flex-col items-end gap-2">
-
                 {{-- Baris Atas: Form Filter dan Tombol Export --}}
                 <div class="flex items-center gap-2">
-                    {{-- Form Filter --}}
-                    <form action="{{ route('report.show', $idParam) }}" method="GET" class="flex items-center gap-2">
+                    <form action="{{ route('report.show', $idParam) }}" method="GET"
+                        class="flex items-center gap-2 m-0">
                         <input type="hidden" name="year" id="year" value="{{ $year }}">
-                        <select name="semester" id="semester"
-                            class="rounded-md py-1.5 pl-3 pr-8 text-sm text-gray-500 border border-gray-300 focus:ring-indigo-600">
-                            <option value="">-- Semester --</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                        </select>
-                        <button class="py-1.5 px-3 bg-blue-600 rounded-md text-white text-sm">
-                            Filter
+                        <button type="submit"
+                            class="py-1.5 px-3 bg-blue-600 hover:bg-blue-700 rounded-md text-white text-sm">
+                            Refresh Data
                         </button>
                     </form>
 
-                    {{-- Tombol Export sejajar dengan Filter --}}
-                    <button id="exportBtn" class="p-1.5 px-3 rounded-md text-white bg-green-500 text-sm">Export</button>
+                    <button id="exportBtn"
+                        class="p-1.5 px-3 rounded-md text-white bg-green-500 hover:bg-green-600 text-sm">Export</button>
                 </div>
 
                 {{-- Baris Bawah: Tombol Navigasi --}}
@@ -100,13 +110,13 @@
                         </button>
                     @endif
                     <a href="{{ route('report.show_pdf', ['id' => $idParam, 'semester' => $semester, 'year' => $year]) }}"
-                        class="p-1.5 px-3 rounded-md text-white bg-red-500 text-sm">PDF</a>
+                        class="p-1.5 px-3 rounded-md text-white bg-red-500 hover:bg-red-600 text-sm">PDF</a>
                 </div>
             </div>
         </div>
 
         {{-- Main Content --}}
-        <div class="mx-1">
+        <div class="mx-1 mt-2">
             <table id="exportTable" class="w-full table-auto">
                 <thead>
                     <tr>
@@ -123,11 +133,11 @@
                             class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">No. KPI</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 25%"
+                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 20%"
                             class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">KPI</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 35%"
+                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 25%"
                             class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">Data Pendukung</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
@@ -153,48 +163,12 @@
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 40%"
                             class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                            colspan="13">Target & Actual KPI</th>
+                            colspan="{{ count($months) + 1 }}">Target & Actual KPI</th>
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
                             class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
                             rowspan="2">Acv. %</th>
                     </tr>
-                    @php
-                        $months = [];
-                        $selectedSemester = $semester;
-
-                        if ($selectedSemester == 1) {
-                            $months = [
-                                '1' => 'Jan',
-                                '2' => 'Feb',
-                                '3' => 'Mar',
-                                '4' => 'Apr',
-                                '5' => 'May',
-                                '6' => 'Jun',
-                                '7' => 'Jul',
-                                '8' => 'Aug',
-                                '9' => 'Sep',
-                                '10' => 'Oct',
-                                '11' => 'Nov',
-                                '12' => 'Dec',
-                            ];
-                        } else {
-                            $months = [
-                                '1' => 'Jan',
-                                '2' => 'Feb',
-                                '3' => 'Mar',
-                                '4' => 'Apr',
-                                '5' => 'May',
-                                '6' => 'Jun',
-                                '7' => 'Jul',
-                                '8' => 'Aug',
-                                '9' => 'Sep',
-                                '10' => 'Oct',
-                                '11' => 'Nov',
-                                '12' => 'Dec',
-                            ];
-                        }
-                    @endphp
                     <tr>
                         @foreach ($months as $month)
                             <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
@@ -205,7 +179,7 @@
                         <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                             data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 7%"
                             class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700">
-                            Total/ <br>Avg</th>
+                            Total/<br>Avg</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -217,27 +191,26 @@
                     @foreach ($targets as $target)
                         @php
                             $i++;
-
-                            $trend = $target->trend === 'Negatif' ? 'N' : 'P';
-
+                            $trend = $target->trend;
+                            $rowColor = $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF';
+                            $rowClass = $i % 2 === 0 ? 'bg-gray-50' : 'bg-blue-100';
                         @endphp
-                        <tr class="{{ $i % 2 === 0 ? 'bg-gray-50' : 'bg-blue-100' }}">
+                        <tr class="{{ $rowClass }}">
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                name="selected_targets[]"
+                                data-fill-color="{{ $rowColor }}" name="selected_targets[]"
                                 class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-1 text-center exclude-from-export"
                                 rowspan="4">
                                 <input id="selected-item-{{ $target->id }}" type="checkbox"
                                     class="selected-item appearance-none w-4 h-4 border border-gray-400 rounded-sm bg-white text-green-500"
                                     data-code="{{ $target->code }}"
-                                    {{ $role == 'Inputer' || $role == '' ? 'disabled' : '' }}">
+                                    {{ $role == 'Inputer' || $role == '' ? 'disabled' : '' }}>
                             </td>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-2"
+                                data-fill-color="{{ $rowColor }}"
+                                class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-2 text-center"
                                 rowspan="4">{{ $target->code }}</td>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                data-fill-color="{{ $rowColor }}"
                                 class="relative border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-2 group"
                                 rowspan="4">
                                 {{ $target->indicator }}
@@ -247,48 +220,47 @@
                                 </div>
                             </td>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                data-fill-color="{{ $rowColor }}"
                                 class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-3"
                                 rowspan="4">{{ $target->supporting_document }}</td>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-3"
+                                data-fill-color="{{ $rowColor }}"
+                                class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-3 text-center"
                                 rowspan="4">{{ $trend }}</td>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                data-fill-color="{{ $rowColor }}"
                                 class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
                                 rowspan="4">{{ $target->period }}</td>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                data-fill-color="{{ $rowColor }}"
                                 class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
                                 rowspan="4">{{ $target->unit }}</td>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                data-fill-color="{{ $rowColor }}"
                                 class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
-                                rowspan="4">
-                                {{ $target->weighting }}
-                            </td>
+                                rowspan="4">{{ $target->weighting }}</td>
+
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-blue-100  border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
+                                data-fill-color="{{ $rowColor }}"
+                                class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                                 T</td>
-                            @php
-                                $sumTarget = 0;
-                            @endphp
+
+                            @php $sumTarget = 0; @endphp
+
                             @foreach ($months as $month => $monthName)
                                 @php
                                     $targetUnitField = 'target_' . $month;
                                     $targetUnit = $target->$targetUnitField;
-                                    $sumTarget += $targetUnit;
+                                    $sumTarget += floatval($targetUnit);
+
                                     $actual = $actuals->first(function ($item) use ($target, $month) {
                                         return \Carbon\Carbon::parse($item->date)->format('m') == $month &&
                                             $item->kpi_item == $target->indicator &&
                                             $target->is_active == 1;
                                     });
-                                    // dump($actual);
                                 @endphp
                                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                    data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                    data-fill-color="{{ $rowColor }}"
                                     class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                                     @if ($actual)
                                         @if ($actual->kpi_unit === '%')
@@ -302,7 +274,7 @@
                                         @endif
                                     @else
                                         @if ($target->unit === '%')
-                                            {{ $targetUnit !== null ? $targetUnit * 100 . '%' : 'N/A' }}
+                                            {{ $targetUnit !== null ? floatval($targetUnit) * 100 . '%' : 'N/A' }}
                                         @elseif ($target->unit == 'Rp' || $target->unit == 'Kg/Tap' || $target->unit == 'Rp/Kg')
                                             {{ $targetUnit !== null ? substr(number_format($targetUnit, 0, '.', ','), 0, 7) : 'N/A' }}
                                         @elseif ($target->unit == 'Kg')
@@ -311,27 +283,19 @@
                                             {{ $targetUnit !== null ? $targetUnit : 'N/A' }}
                                         @endif
                                     @endif
-
                                 </td>
                             @endforeach
 
                             @if ($targetUnit >= 0)
                                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                    data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                    data-fill-color="{{ $rowColor }}"
                                     class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                                     @if ($target->unit === '%')
-                                        {{ PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average(floatval($targetUnit)) * 100 }}%
-                                    @elseif (
-                                        $target->unit === 'Tgl' ||
-                                            $target->unit === 'tgl' ||
-                                            $target->unit === 'mm' ||
-                                            $target->unit === 'M3' ||
-                                            $target->unit === 'Hari' ||
-                                            $target->unit === 'Freq "0"' ||
-                                            $target->unit === 'Jam')
-                                        {{ PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average(floatval($actual ? $actual->target : $targetUnit)) }}
-                                    @elseif ($target->unit === 'Kg/Tap' || $target->unit === 'Rp/Kg')
-                                        {{ substr(number_format(PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average($targetUnit), 0, '.', ','), 0, 9) }}
+                                        {{ \PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average([floatval($targetUnit)]) * 100 }}%
+                                    @elseif (in_array($target->unit, ['Tgl', 'tgl', 'mm', 'M3', 'Hari', 'Freq "0"', 'Jam']))
+                                        {{ \PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average([floatval($actual ? $actual->target : $targetUnit)]) }}
+                                    @elseif (in_array($target->unit, ['Kg/Tap', 'Rp/Kg']))
+                                        {{ substr(number_format(\PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average([$targetUnit]), 0, '.', ','), 0, 9) }}
                                     @elseif ($target->unit === 'Rp')
                                         {{ substr(number_format($sumTarget, 0, '.', ','), 0, 9) }}
                                     @elseif ($target->unit === 'Kg')
@@ -342,10 +306,11 @@
                                 </td>
                             @else
                                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                    data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                    data-fill-color="{{ $rowColor }}"
                                     class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                                 </td>
                             @endif
+
                             @php
                                 $totalWeightingAchievement =
                                     $totals[$target->indicator]['total_achievement_weight'] ?? 0;
@@ -353,22 +318,17 @@
                                 $totalWeighting += floatval($target->weighting);
                             @endphp
 
-                            {{-- Kolom Bobot Pencapaian --}}
-                            @if ($totalWeightingAchievement >= 0)
-                                <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                    data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                    class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
-                                    rowspan="4">{{ number_format($totalWeightingAchievement, 1) }}%</td>
-                            @else
-                                <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                    data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                    class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
-                                    rowspan="4">{{ number_format($totalWeightingAchievement, 1) }}%</td>
-                            @endif
+                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
+                                data-fill-color="{{ $rowColor }}"
+                                class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
+                                rowspan="4">
+                                {{ $totalWeightingAchievement >= 0 ? number_format($totalWeightingAchievement, 1) . '%' : '' }}
+                            </td>
                         </tr>
+
                         <tr>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                data-fill-color="{{ $rowColor }}"
                                 class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                                 A</td>
                             @foreach ($months as $month => $monthName)
@@ -378,23 +338,13 @@
                                             $item->kpi_item == $target->indicator &&
                                             $target->is_active == 1;
                                     });
-
-                                    // dump($actual);
-
-                                    //  dump('target: ', $target, 'actual: ', $actual,  $month);
-
                                 @endphp
-
                                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                    data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                    data-fill-color="{{ $rowColor }}"
                                     class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                                     @if ($target->unit === '%')
                                         {{ $actual ? $actual->actual . '%' : '' }}
-                                    @elseif ($target->unit === 'Rp' || $target->unit === 'Rp/Kg' || $target->unit === 'Kg/Tap')
-                                        {{ $actual ? substr(number_format($actual->actual, 0, '.', ','), 0, 7) : '' }}
-                                    @elseif ($target->unit == 'Rp')
-                                        {{ $actual ? substr(number_format($actual->actual, 0, '.', ','), 0, 7) : '' }}
-                                    @elseif ($target->unit == 'Kg')
+                                    @elseif (in_array($target->unit, ['Rp', 'Rp/Kg', 'Kg/Tap', 'Kg']))
                                         {{ $actual ? substr(number_format($actual->actual, 0, '.', ','), 0, 7) : '' }}
                                     @else
                                         {{ $actual ? $actual->actual : '' }}
@@ -402,22 +352,21 @@
                                 </td>
                             @endforeach
 
-                            @php
-                                $totalActual = $totals[$target->indicator]['total_actual'] ?? 0;
-                            @endphp
+                            @php $totalActual = $totals[$target->indicator]['total_actual'] ?? 0; @endphp
+
                             @if ($targetUnit >= 0)
                                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                    data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                    data-fill-color="{{ $rowColor }}"
                                     class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                                     @if ($target->unit === '%')
                                         {{ number_format($totalActual, 0) }}%
-                                    @elseif ($target->unit === 'Tgl' || $target->unit === 'tgl')
+                                    @elseif (in_array($target->unit, ['Tgl', 'tgl']))
                                         {{ number_format($totalActual) }}
-                                    @elseif ($target->unit === 'Rp' || $target->unit === 'Rp/Kg' || $target->unit === 'Kg/Tap')
+                                    @elseif (in_array($target->unit, ['Rp', 'Rp/Kg', 'Kg/Tap']))
                                         {{ substr(number_format($totalActual, 0, '.', ','), 0, 9) }}
                                     @elseif ($target->unit === 'Kg')
                                         {{ substr(number_format($totalActual, 0, '.', ','), 0, 7) }}
-                                    @elseif ($target->unit == 'Hari' || $target->unit == 'Jam')
+                                    @elseif (in_array($target->unit, ['Hari', 'Jam']))
                                         {{ number_format($totalActual, 1) }}
                                     @else
                                         {{ $totalActual }}
@@ -425,14 +374,15 @@
                                 </td>
                             @else
                                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                    data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                    data-fill-color="{{ $rowColor }}"
                                     class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                                 </td>
                             @endif
                         </tr>
+
                         <tr>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                data-fill-color="{{ $rowColor }}"
                                 class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                                 %</td>
                             @foreach ($months as $month => $monthName)
@@ -443,27 +393,21 @@
                                     });
                                 @endphp
                                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                    data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                    data-fill-color="{{ $rowColor }}"
                                     class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                                     {{ $actual ? $actual->kpi_percentage : '' }}</td>
                             @endforeach
-                            @php
-                                $totalPercentage = $totals[$target->indicator]['percentageCalc'] ?? 0;
-                            @endphp
-                            @if ($targetUnit >= 0)
-                                <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                    data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                    class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                                    {{ number_format($totalPercentage, 0) }}%</td>
-                            @else
-                                <td
-                                    class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                                </td>
-                            @endif
+                            @php $totalPercentage = $totals[$target->indicator]['percentageCalc'] ?? 0; @endphp
+                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
+                                data-fill-color="{{ $rowColor }}"
+                                class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
+                                {{ $targetUnit >= 0 ? number_format($totalPercentage, 0) . '%' : '' }}
+                            </td>
                         </tr>
+
                         <tr>
                             <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                data-fill-color="{{ $rowColor }}"
                                 class="relative border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center group">
                                 Rec
                                 <div
@@ -480,7 +424,7 @@
                                     });
                                 @endphp
                                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                    data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
+                                    data-fill-color="{{ $rowColor }}"
                                     class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center hover:underline">
                                     @if ($actual)
                                         @if ($actual->record_file)
@@ -488,11 +432,10 @@
                                                 $modalId = 'modal-' . $actual->actual_id;
                                                 $buttonId = 'open-modal-' . $actual->actual_id;
                                                 $backgroundId = 'modal-background-' . $actual->actual_id;
-                                                $date = \Carbon\Carbon::parse($actual->date); // Parse the date
+                                                $date = \Carbon\Carbon::parse($actual->date);
                                                 $prevButtonId = 'prevButton-' . $actual->actual_id;
                                                 $nextButtonId = 'nextButton-' . $actual->actual_id;
                                                 $pdfObjectId = 'pdfObject-' . $actual->actual_id;
-                                                // dd($userID);
                                             @endphp
                                             <button id="{{ $buttonId }}" class="hover:underline"
                                                 data-month="{{ $date->format('m') }}"
@@ -513,6 +456,7 @@
                                                     <span class="text-yellow-500">Check</span>
                                                 @endif
                                             </button>
+
                                             {{-- MODAL --}}
                                             <div id="{{ $backgroundId }}"
                                                 class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden exclude-from-export">
@@ -533,55 +477,47 @@
                                                             <span
                                                                 class="text-[12px] tracking-wide font-medium text-gray-600 mb-0.5">Bulan:
                                                                 {{ $monthName }}</span>
-                                                            <div class="">
-                                                                <span id="fileNumber-modal-{{ $actual->actual_id }}"
+
+                                                            <div><span id="fileNumber-modal-{{ $actual->actual_id }}"
                                                                     class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
                                                             </div>
                                                             <div class="p-0">
                                                                 <span
-                                                                    class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
-                                                                    Komentar:
-                                                                </span>
+                                                                    class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">Komentar:</span>
                                                                 <span id="comment-modal-{{ $actual->actual_id }}"
                                                                     class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
                                                             </div>
                                                             <div class="p-0 flex gap-x-4 justify-center">
-                                                                <div class="">
-                                                                    <span
-                                                                        class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
-                                                                        T:
-                                                                    </span>
+                                                                <div><span
+                                                                        class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">T:</span>
                                                                     <span id="t-modal-{{ $actual->actual_id }}"
                                                                         class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
                                                                 </div>
-                                                                <div class="">
-                                                                    <span
-                                                                        class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
-                                                                        A:
-                                                                    </span>
+                                                                <div><span
+                                                                        class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">A:</span>
                                                                     <span id="a-modal-{{ $actual->actual_id }}"
                                                                         class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
                                                                 </div>
-                                                                <div class="">
-                                                                    <span
-                                                                        class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
-                                                                        %:
-                                                                    </span>
+                                                                <div><span
+                                                                        class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">%:</span>
                                                                     <span id="percent-modal-{{ $actual->actual_id }}"
                                                                         class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
                                                                 </div>
                                                             </div>
                                                         </div>
+
                                                         <div class="p-1 flex justify-between">
                                                             <button id="{{ $prevButtonId }}"
                                                                 class="bg-blue-500 text-white p-2 text-[12px] rounded">Previous</button>
                                                             <button id="{{ $nextButtonId }}"
                                                                 class="bg-blue-500 text-white p-2 text-[12px] rounded">Next</button>
                                                         </div>
-                                                        <div id="pdfViewer" class="mt-1">
+
+                                                        <div class="pdfViewer mt-1">
                                                             <object id="{{ $pdfObjectId }}" type="application/pdf"
                                                                 width="100%" height="400px"></object>
                                                         </div>
+
                                                         <div id="checkbox-container-{{ $modalId }}"
                                                             class="p-1 grid grid-cols-4">
                                                             <div class="p-0">
@@ -597,33 +533,18 @@
                                                                     <div class="flex flex-col">
                                                                         <span class="text-[9px] text-center">Check 1
                                                                             By:</span>
-                                                                        @if ($actual->asst_mng_checked_by)
-                                                                            <span class="text-[9px] text-center">
-                                                                                {{ $actual->asst_mng_checked_by }}
-                                                                            </span>
-                                                                        @else
-                                                                            <span
-                                                                                class="text-[9px] text-center text-red-500">
-                                                                                N/A
-                                                                            </span>
-                                                                        @endif
+                                                                        <span
+                                                                            class="text-[9px] text-center {{ !$actual->asst_mng_checked_by ? 'text-red-500' : '' }}">{{ $actual->asst_mng_checked_by ?? 'N/A' }}</span>
                                                                     </div>
                                                                     <div class="flex flex-col">
                                                                         <span class="text-[9px] text-center">Check 1
                                                                             At:</span>
-                                                                        @if ($actual->asst_mng_checked_at)
-                                                                            <span class="text-[9px] text-center">
-                                                                                {{ \Carbon\Carbon::parse($actual->asst_mng_checked_at)->format('d M Y H:i') }}
-                                                                            </span>
-                                                                        @else
-                                                                            <span
-                                                                                class="text-[9px] text-center text-red-500">
-                                                                                N/A
-                                                                            </span>
-                                                                        @endif
+                                                                        <span
+                                                                            class="text-[9px] text-center {{ !$actual->asst_mng_checked_at ? 'text-red-500' : '' }}">{{ $actual->asst_mng_checked_at ? \Carbon\Carbon::parse($actual->asst_mng_checked_at)->format('d M Y H:i') : 'N/A' }}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
+
                                                             <div class="p-0">
                                                                 <label class="text-[14px]">
                                                                     <input type="checkbox" class="status-checkbox"
@@ -637,33 +558,18 @@
                                                                     <div class="flex flex-col">
                                                                         <span class="text-[9px] text-center">Check 2
                                                                             By:</span>
-                                                                        @if ($actual->checked_by)
-                                                                            <span class="text-[9px] text-center">
-                                                                                {{ $actual->checked_by }}
-                                                                            </span>
-                                                                        @else
-                                                                            <span
-                                                                                class="text-[9px] text-center text-red-500">
-                                                                                N/A
-                                                                            </span>
-                                                                        @endif
+                                                                        <span
+                                                                            class="text-[9px] text-center {{ !$actual->checked_by ? 'text-red-500' : '' }}">{{ $actual->checked_by ?? 'N/A' }}</span>
                                                                     </div>
                                                                     <div class="flex flex-col">
                                                                         <span class="text-[9px] text-center">Check 2
                                                                             At:</span>
-                                                                        @if ($actual->checked_at)
-                                                                            <span class="text-[9px] text-center">
-                                                                                {{ \Carbon\Carbon::parse($actual->checked_at)->format('d M Y H:i') }}
-                                                                            </span>
-                                                                        @else
-                                                                            <span
-                                                                                class="text-[9px] text-center text-red-500">
-                                                                                N/A
-                                                                            </span>
-                                                                        @endif
+                                                                        <span
+                                                                            class="text-[9px] text-center {{ !$actual->checked_at ? 'text-red-500' : '' }}">{{ $actual->checked_at ? \Carbon\Carbon::parse($actual->checked_at)->format('d M Y H:i') : 'N/A' }}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
+
                                                             <div class="p-0">
                                                                 <label class="text-[14px]">
                                                                     <input type="checkbox" class="status-checkbox"
@@ -671,39 +577,24 @@
                                                                         data-status="Mng Approve"
                                                                         {{ $actual->mng_approved_at ? 'checked' : '' }}
                                                                         {{ $role == 'Mng Approver' ? '' : 'disabled' }}>
-                                                                    Approved {{ '(Mng)' }}
+                                                                    Approved (Mng)
                                                                 </label>
                                                                 <div class="flex justify-center gap-x-2 mt-1.5">
                                                                     <div class="flex flex-col">
                                                                         <span class="text-[9px] text-center">Approved
                                                                             By:</span>
-                                                                        @if ($actual->mng_approved_by)
-                                                                            <span class="text-[9px] text-center">
-                                                                                {{ $actual->mng_approved_by }}
-                                                                            </span>
-                                                                        @else
-                                                                            <span
-                                                                                class="text-[9px] text-center text-red-500">
-                                                                                N/A
-                                                                            </span>
-                                                                        @endif
+                                                                        <span
+                                                                            class="text-[9px] text-center {{ !$actual->mng_approved_by ? 'text-red-500' : '' }}">{{ $actual->mng_approved_by ?? 'N/A' }}</span>
                                                                     </div>
                                                                     <div class="flex flex-col">
                                                                         <span class="text-[9px] text-center">Approved
                                                                             At:</span>
-                                                                        @if ($actual->mng_approved_at)
-                                                                            <span class="text-[9px] text-center">
-                                                                                {{ \Carbon\Carbon::parse($actual->mng_approved_at)->format('d M Y H:i') }}
-                                                                            </span>
-                                                                        @else
-                                                                            <span
-                                                                                class="text-[9px] text-center text-red-500">
-                                                                                N/A
-                                                                            </span>
-                                                                        @endif
+                                                                        <span
+                                                                            class="text-[9px] text-center {{ !$actual->mng_approved_at ? 'text-red-500' : '' }}">{{ $actual->mng_approved_at ? \Carbon\Carbon::parse($actual->mng_approved_at)->format('d M Y H:i') : 'N/A' }}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
+
                                                             <div class="p-0">
                                                                 <label class="text-[14px]">
                                                                     <input type="checkbox" class="status-checkbox"
@@ -711,60 +602,39 @@
                                                                         data-status="Approved"
                                                                         {{ $actual->approved_at ? 'checked' : '' }}
                                                                         {{ $role == 'Approver' ? '' : 'disabled' }}>
-                                                                    Final Check {{ '(HRD Spv)' }}
+                                                                    Final Check (HRD Spv)
                                                                 </label>
                                                                 <div class="flex justify-center gap-x-2 mt-1.5">
                                                                     <div class="flex flex-col">
                                                                         <span class="text-[9px] text-center">Final
                                                                             Check By:</span>
-                                                                        @if ($actual->approved_by)
-                                                                            <span class="text-[9px] text-center">
-                                                                                {{ $actual->approved_by }}
-                                                                            </span>
-                                                                        @else
-                                                                            <span
-                                                                                class="text-[9px] text-center text-red-500">
-                                                                                N/A
-                                                                            </span>
-                                                                        @endif
+                                                                        <span
+                                                                            class="text-[9px] text-center {{ !$actual->approved_by ? 'text-red-500' : '' }}">{{ $actual->approved_by ?? 'N/A' }}</span>
                                                                     </div>
                                                                     <div class="flex flex-col">
                                                                         <span class="text-[9px] text-center">Final
                                                                             Check At:</span>
-                                                                        @if ($actual->approved_at)
-                                                                            <span class="text-[9px] text-center">
-                                                                                {{ \Carbon\Carbon::parse($actual->approved_at)->format('d M Y H:i') }}
-                                                                            </span>
-                                                                        @else
-                                                                            <span
-                                                                                class="text-[9px] text-center text-red-500">
-                                                                                N/A
-                                                                            </span>
-                                                                        @endif
+                                                                        <span
+                                                                            class="text-[9px] text-center {{ !$actual->approved_at ? 'text-red-500' : '' }}">{{ $actual->approved_at ? \Carbon\Carbon::parse($actual->approved_at)->format('d M Y H:i') : 'N/A' }}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        @php
-                                                            $user = auth()->user();
-                                                            $role = $user->role;
-                                                        @endphp
+
                                                         @if ($role != 'Inputer' && $role != '')
                                                             @if ($actual->status !== 'Approved' && $actual->status !== 'Invalid')
                                                                 <div class="p-1 flex justify-start gap-x-2">
                                                                     <span
                                                                         class="text-semibold mb-1 text-[12px]">Berikan
-                                                                        Komentar
-                                                                    </span>
+                                                                        Komentar</span>
                                                                     @if ($role == 'Approver')
                                                                         <div class="flex gap-x-2 items-center">
-                                                                            <div class="">
+                                                                            <div>
                                                                                 <input type="checkbox"
                                                                                     name="is_invalid"
                                                                                     id="is_invalid_{{ $actual->actual_id }}">
                                                                             </div>
-                                                                            <span class="">Data Pendukung
-                                                                                Invalid</span>
+                                                                            <span>Data Pendukung Invalid</span>
                                                                         </div>
                                                                     @endif
                                                                 </div>
@@ -773,880 +643,139 @@
                                                                     id="send-email-form-{{ $actual->actual_id }}">
                                                                     @csrf
                                                                     <div class="p-0 mb-2 flex justify-center gap-x-2">
-                                                                        <textarea name="comment" id="comment" cols="40" rows="2"></textarea>
+                                                                        <textarea name="comment" id="comment-{{ $actual->actual_id }}" cols="40" rows="2"></textarea>
                                                                     </div>
                                                                     <div class="flex justify-center gap-3">
-
                                                                         <div class="flex flex-col">
                                                                             <button
                                                                                 class="bg-yellow-500 text-white px-4 py-2 rounded text-[12px] mb-3">
                                                                                 <i class="ri-send-plane-line"></i>
                                                                                 <span>Kirim Revisi</span>
                                                                             </button>
-
                                                                         </div>
-                                                                        @php
-
-                                                                        @endphp
-                                                                        <input type="hidden" name="email"
-                                                                            id="email"
-                                                                            value="{{ $actuals->first()->email ?? '' }}">
-                                                                        <input type="hidden" name="kpi_code"
-                                                                            id="kpi_code"
-                                                                            value="{{ $target->code }}">
-                                                                        <input type="hidden" name="kpi_item"
-                                                                            id="kpi_item"
-                                                                            value="{{ $target->indicator }}">
-                                                                        <input type="hidden" name="department_id"
-                                                                            id="department_id"
-                                                                            value="{{ $actuals->first()->department_id }}">
-                                                                        <input type="hidden" name="actual_id"
-                                                                            id="actual_id"
-                                                                            value="{{ $actual->actual_id }}">
-
-                                                                </form>
-                                                    </div>
-                                                    <form action="{{ route('report.setInvalid') }}" method="POST">
-                                                        @csrf
-                                                        <input type="hidden" name="actual_id" id=""
-                                                            value="{{ $actual->actual_id }}">
-                                                        <div class="hidden"
-                                                            id="invalid-comment-{{ $actual->actual_id }}">
-                                                            <div class="p-1 flex justify-start">
-                                                                <span class="text-semibold mb-1 text-[12px]">
-                                                                    Komentar data pendukung tidak valid:
-                                                                </span>
-                                                            </div>
-                                                            <div class="p-0 mb-2 flex justify-center gap-x-2">
-                                                                <textarea name="invalid_reason" id="invalid_reason" cols="40" rows="2"></textarea>
-                                                            </div>
-                                                            <button type="submit"
-                                                                id="set-invalid-btn-{{ $actual->actual_id }}"
-                                                                class="bg-red-500 text-white px-4 py-2 rounded text-[12px] mb-3 hidden">
-                                                                <i class="ri-close-line"></i>
-                                                                <span>Set Data Invalid</span>
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                        @endif
-                                        @if ($actual->status == 'Invalid')
-                                            <div class="p-1 flex justify-start">
-                                                <span class="text-semibold mb-1 text-[12px]">
-                                                    Komentar data pendukung tidak valid:
-                                                </span>
-                                                <span class="text-red-500 ml-2"
-                                                    id="invalid-comment-text-{{ $actual->actual_id }}">{{ $actual->invalid_reason }}</span>
-                                            </div>
-                                        @endif
-                                    @endif
-
-                                    {{-- <div class="flex justify-end">
-                                        <button id="close-modal-{{ $modalId }}" class="bg-red-500 text-white px-4 py-2 rounded mr-2 text-[12px] mt-0.5">Close</button>
-                                    </div> --}}
-        </div>
-    </div>
-    </div>
-@else
-    <span class="text-red-500">No</span>
-    @endif
-@else
-    <span class="text-red-500"></span>
-    @endif
-    {{-- MODAL ENDS --}}
-    </td>
-    @endforeach
-    <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-        data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-        class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-    </td>
-    </tr>
-    @endforeach
-    <tr>
-        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
-            data-f-color="FFFFFFFF"
-            class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
-            id="changeColSpan" colspan="7">Total</td>
-        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
-            data-f-color="FFFFFFFF"
-            class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center">
-            {{ $totalWeighting }}%</td>
-        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
-            data-f-color="FFFFFFFF"
-            class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
-            colspan="14"></td>
-        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
-            data-f-color="FFFFFFFF"
-            class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
-            colspan="1">{{ number_format($sumTotalWeightingAchievement, 1) }}%</td>
-
-    </tr>
-    </tbody>
-    </table>
-    </div>
-
-    <div class="mx-2 my-3">
-        <p class="font-bold text-xl">KPI Sebelumnya</p>
-    </div>
-    <div class="mx-1 mt-2">
-        <table id="exportTable" class="w-full table-auto">
-            <thead>
-                <tr>
-                    {{-- <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 3%;" class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700 exclude-from-export" rowspan="2">
-                        <input id="" type="checkbox" class="appearance-none w-4 h-4 border border-gray-400 rounded-sm bg-white text-green-500" {{ $role == 'Inputer' || $role == '' ? 'disabled' : '' }}>
-                    </th> --}}
-                    <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                        data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 3%;"
-                        class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        rowspan="2">No. KPI</th>
-                    <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                        data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 25%"
-                        class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        rowspan="2">KPI</th>
-                    <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                        data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 3%"
-                        class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        rowspan="2">Trend</th>
-                    <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                        data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 4%"
-                        class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        rowspan="2">Rev.</th>
-                    <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                        data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 3%"
-                        class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        rowspan="2">Unit</th>
-                    <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                        data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 4%"
-                        class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        rowspan="2">Bobot "%"</th>
-                    <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                        data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 6%"
-                        class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        rowspan="2"></th>
-                    <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                        data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 40%"
-                        class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        colspan="13">Target & Actual KPI</th>
-                    <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                        data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
-                        class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700"
-                        rowspan="2">Acv. %</th>
-                </tr>
-                @php
-                    $months = [];
-                    $selectedSemester = $semester;
-
-                    if ($selectedSemester == 1) {
-                        $months = [
-                            '1' => 'Jan',
-                            '2' => 'Feb',
-                            '3' => 'Mar',
-                            '4' => 'Apr',
-                            '5' => 'May',
-                            '6' => 'Jun',
-                            '7' => 'Jul',
-                            '8' => 'Aug',
-                            '9' => 'Sep',
-                            '10' => 'Oct',
-                            '11' => 'Nov',
-                            '12' => 'Dec',
-                        ];
-                    } else {
-                        $months = [
-                            '1' => 'Jan',
-                            '2' => 'Feb',
-                            '3' => 'Mar',
-                            '4' => 'Apr',
-                            '5' => 'May',
-                            '6' => 'Jun',
-                            '7' => 'Jul',
-                            '8' => 'Aug',
-                            '9' => 'Sep',
-                            '10' => 'Oct',
-                            '11' => 'Nov',
-                            '12' => 'Dec',
-                        ];
-                    }
-                @endphp
-                <tr>
-                    @foreach ($months as $month)
-                        <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 7%"
-                            class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700">
-                            {{ $month }}</th>
-                    @endforeach
-                    <th data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                        data-fill-color="FF0066FF" data-f-color="FFFFFFFF" style="width: 7%"
-                        class="border border-gray-400 text-[12px] tracking-wide font-medium text-white py-1 px-0.5 bg-blue-700">
-                        Total/<br>Avg</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $i = 0;
-                    $sumTotalWeightingAchievement = 0;
-                    $totalWeighting = 0;
-                @endphp
-                @foreach ($inactiveTargets as $target)
-                    @php
-                        $i++;
-
-                    @endphp
-                    <tr class="{{ $i % 2 === 0 ? 'bg-gray-50' : 'bg-blue-100' }}">
-                        {{-- <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}" name="selected_targets[]" class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-1 text-center exclude-from-export" rowspan="4">
-                        <input id="" type="checkbox" class="selected-item appearance-none w-4 h-4 border border-gray-400 rounded-sm bg-white text-green-500"  data-code="{{ $target->code }}" {{ $role == 'Inputer' || $role == '' ? 'disabled' : '' }}">
-                    </td> --}}
-                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                            class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-2"
-                            rowspan="4">{{ $target->code }}</td>
-                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                            class="relative border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-2 group"
-                            rowspan="4">
-                            {{ $target->indicator }}
-                            <div
-                                class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
-                                {{ $target->detail }}
-                            </div>
-                        </td>
-                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                            class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-3"
-                            rowspan="4">{{ $target->trend }}</td>
-                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                            class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
-                            rowspan="4">{{ $target->period }}</td>
-                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                            class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
-                            rowspan="4">{{ $target->unit }}</td>
-                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                            class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
-                            rowspan="4">
-                            {{ $target->weighting }}
-                        </td>
-                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                            class="border bg-blue-100  border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                            Target</td>
-                        @php
-                            $sumTarget = 0;
-                        @endphp
-                        @foreach ($months as $month => $monthName)
-                            @php
-                                $targetUnitField = 'target_' . $month;
-                                $targetUnit = $target->$targetUnitField;
-                                $sumTarget += $targetUnit;
-                                $actual = $actuals->first(function ($item) use ($target, $month) {
-                                    return \Carbon\Carbon::parse($item->date)->format('m') == $month &&
-                                        $item->kpi_item == $target->indicator;
-                                });
-                            @endphp
-                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                                @if ($actual)
-                                    @if ($actual->target === '%')
-                                        {{ $actual->target !== null ? $actual->target * 100 . '%' : '' }}
-                                    @elseif ($actual->target == 'Rp')
-                                        {{ $actual->target !== null ? substr(number_format($actual->target, 0, '.', ','), 0, 7) : '' }}
-                                    @elseif ($actual->target == 'Kg')
-                                        {{ $actual->target !== null ? substr(number_format($actual->target, 1, '.', ','), 0, 7) : '' }}
-                                    @else
-                                        {{ $actual->target !== null ? $actual->target : 'N/A' }}
-                                    @endif
-                                @else
-                                    @if ($target->unit === '%')
-                                        {{ $targetUnit !== null ? $targetUnit * 100 . '%' : 'N/A' }}
-                                    @elseif ($target->unit == 'Rp')
-                                        {{ $targetUnit !== null ? substr(number_format($targetUnit, 0, '.', ','), 0, 7) : 'N/A' }}
-                                    @elseif ($target->unit == 'Kg')
-                                        {{ $targetUnit !== null ? substr(number_format($targetUnit, 1, '.', ','), 0, 7) : 'N/A' }}
-                                    @else
-                                        {{ $targetUnit !== null ? $targetUnit : 'N/A' }}
-                                    @endif
-                                @endif
-
-                            </td>
-                        @endforeach
-
-                        @php
-                            $targetUnit = $sumTarget;
-                        @endphp
-                        @if ($targetUnit >= 0)
-                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                                @if ($target->unit === '%')
-                                    {{ PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average(floatval($targetUnit)) * 100 }}%
-                                @elseif ($target->unit === 'Rp')
-                                    {{ substr(number_format($targetUnit, 0, '.', ','), 0, 9) }}
-                                @elseif ($target->unit === 'Kg')
-                                    {{ substr(number_format($targetUnit, 0, '.', ','), 0, 7) }}
-                                @else
-                                    {{ $targetUnit }}
-                                @endif
-                            </td>
-                        @else
-                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                            </td>
-                        @endif
-                        @php
-                            $totalWeightingAchievement = $totals[$target->indicator]['total_achievement_weight'] ?? 0;
-                            $sumTotalWeightingAchievement += $totalWeightingAchievement;
-                            $totalWeighting += floatval($target->weighting);
-                        @endphp
-
-
-                        @if ($totalWeightingAchievement >= 0)
-                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
-                                rowspan="4">{{ number_format($totalWeightingAchievement, 1) }}%</td>
-                        @else
-                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center"
-                                rowspan="4"></td>
-                        @endif
-                    </tr>
-                    <tr>
-                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                            class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                            Actual</td>
-                        @foreach ($months as $month => $monthName)
-                            @php
-                                $actual = $actuals->first(function ($item) use ($target, $month) {
-                                    return \Carbon\Carbon::parse($item->date)->format('m') == $month &&
-                                        $item->kpi_item == $target->indicator;
-                                });
-
-                                //  dump('target: ', $target, 'actual: ', $actual,  $month);
-
-                            @endphp
-
-                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                                @if ($target->unit === '%')
-                                    {{ $actual ? $actual->actual . '%' : '' }}
-                                @elseif ($target->unit == 'Rp')
-                                    {{ $actual ? substr(number_format($actual->actual, 0, '.', ','), 0, 7) : '' }}
-                                @elseif ($target->unit == 'Kg')
-                                    {{ $actual ? substr(number_format($actual->actual, 0, '.', ','), 0, 7) : '' }}
-                                @else
-                                    {{ $actual ? $actual->actual : '' }}
-                                @endif
-                            </td>
-                        @endforeach
-
-                        @php
-                            $totalActual = $totals[$target->indicator]['total_actual'] ?? 0;
-                        @endphp
-                        @if ($targetUnit >= 0)
-                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                                @if ($target->unit === '%')
-                                    {{ number_format($totalActual, 0) }}%
-                                @elseif ($target->unit === 'Tgl' || $target->unit === 'tgl')
-                                    {{ number_format($totalActual) }}
-                                @elseif ($target->unit === 'Rp')
-                                    {{ substr(number_format($totalActual, 0, '.', ','), 0, 7) }}
-                                @elseif ($target->unit === 'Kg')
-                                    {{ substr(number_format($totalActual, 0, '.', ','), 0, 7) }}
-                                @else
-                                    {{ $totalActual }}
-                                @endif
-                            </td>
-                        @else
-                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                            </td>
-                        @endif
-                    </tr>
-                    <tr>
-                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                            class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                            %</td>
-                        @foreach ($months as $month => $monthName)
-                            @php
-                                $actual = $actuals->first(function ($item) use ($target, $month) {
-                                    return \Carbon\Carbon::parse($item->date)->format('m') == $month &&
-                                        $item->kpi_item == $target->indicator;
-                                });
-                            @endphp
-                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                                {{ $actual ? $actual->kpi_percentage : '' }}</td>
-                        @endforeach
-                        @php
-                            $totalPercentage = $totals[$target->indicator]['percentageCalc'] ?? 0;
-                        @endphp
-                        @if ($targetUnit >= 0)
-                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                                {{ number_format($totalPercentage) }}%</td>
-                        @else
-                            <td
-                                class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                            </td>
-                        @endif
-                    </tr>
-                    <tr>
-                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                            data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                            class="relative border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center group">
-                            Rekaman
-                            <div
-                                class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
-                                <p>Data Pendukung:</p>
-                                {{ $target->supporting_document }}
-                            </div>
-                        </td>
-                        @foreach ($months as $month => $monthName)
-                            @php
-                                $actual = $actuals->first(function ($item) use ($target, $month) {
-                                    return \Carbon\Carbon::parse($item->date)->format('m') == $month &&
-                                        $item->kpi_item == $target->indicator;
-                                });
-                            @endphp
-                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-                                data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-                                class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center hover:underline">
-                                @if ($actual)
-                                    @if ($actual->record_file)
-                                        @php
-                                            $modalId = 'modal-' . $actual->actual_id;
-                                            $buttonId = 'open-modal-' . $actual->actual_id;
-                                            $backgroundId = 'modal-background-' . $actual->actual_id;
-                                            $date = \Carbon\Carbon::parse($actual->date); // Parse the date
-                                            $prevButtonId = 'prevButton-' . $actual->actual_id;
-                                            $nextButtonId = 'nextButton-' . $actual->actual_id;
-                                            $pdfObjectId = 'pdfObject-' . $actual->actual_id;
-                                            // dd($userID);
-                                        @endphp
-                                        <button id="{{ $buttonId }}" class="hover:underline"
-                                            data-month="{{ $date->format('m') }}"
-                                            data-actual-id="{{ $actual->actual_id }}">
-                                            @if ($actual->status == 'Revise')
-                                                <span class="text-orange-600">Revisi</span>
-                                            @elseif ($actual->approved_at != null)
-                                                <span class="text-green-500">Yes</span>
-                                            @elseif ($actual->mng_approved_at != null)
-                                                <span class="text-blue-500">Review</span>
-                                            @elseif ($actual->checked_at != null)
-                                                <span class="text-indigo-700">Check 2</span>
-                                            @elseif ($actual->asst_mng_checked_at != null)
-                                                <span class="text-orange-300">Check 1</span>
-                                            @elseif ($actual->input_at != null)
-                                                <span class="text-yellow-500">Check</span>
-                                            @endif
-                                        </button>
-                                        <div id="{{ $backgroundId }}"
-                                            class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden exclude-from-export">
-                                        </div>
-                                        <div id="{{ $modalId }}"
-                                            class="modal fixed inset-0 justify-center hidden exclude-from-export z-50"
-                                            data-month="{{ $date->format('m') }}">
-                                            <div class="flex justify-center">
-                                                <div
-                                                    class="bg-gray-50 rounded-lg shadow-lg px-4 py-2 w-1/2 max-h-[750px] overflow-y-auto">
-                                                    <div class="flex justify-end">
-                                                        <button id="close-modal-{{ $modalId }}"
-                                                            class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <h2 class="text-xl font-bold mb-0.5">Review Data Pendukung</h2>
-                                                        <span
-                                                            class="text-[12px] tracking-wide font-medium text-gray-600 mb-0.5">Bulan:
-                                                            {{ $monthName }}</span>
-                                                        <div class="">
-                                                            <span id="fileNumber-modal-{{ $actual->actual_id }}"
-                                                                class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
-                                                        </div>
-                                                        <div class="p-0">
-                                                            <span
-                                                                class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
-                                                                Komentar:
-                                                            </span>
-                                                            <span id="comment-modal-{{ $actual->actual_id }}"
-                                                                class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
-                                                        </div>
-                                                        <div class="p-0 flex gap-x-4 justify-center">
-                                                            <div class="">
-                                                                <span
-                                                                    class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
-                                                                    T:
-                                                                </span>
-                                                                <span id="t-modal-{{ $actual->actual_id }}"
-                                                                    class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
-                                                            </div>
-                                                            <div class="">
-                                                                <span
-                                                                    class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
-                                                                    A:
-                                                                </span>
-                                                                <span id="a-modal-{{ $actual->actual_id }}"
-                                                                    class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
-                                                            </div>
-                                                            <div class="">
-                                                                <span
-                                                                    class="text-[12px] tracking-wide font-medium text-gray-600 mb-1">
-                                                                    %:
-                                                                </span>
-                                                                <span id="percent-modal-{{ $actual->actual_id }}"
-                                                                    class="text-[12px] tracking-wide font-medium text-gray-600 mb-1"></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="p-1 flex justify-between">
-                                                        <button id="{{ $prevButtonId }}"
-                                                            class="bg-blue-500 text-white p-2 text-[12px] rounded">Previous</button>
-                                                        <button id="{{ $nextButtonId }}"
-                                                            class="bg-blue-500 text-white p-2 text-[12px] rounded">Next</button>
-                                                    </div>
-                                                    <div id="pdfViewer" class="mt-1">
-                                                        <object id="{{ $pdfObjectId }}" type="application/pdf"
-                                                            width="100%" height="400px"></object>
-                                                    </div>
-                                                    <div id="checkbox-container-{{ $modalId }}"
-                                                        class="p-1 grid grid-cols-4">
-                                                        <div class="p-0">
-                                                            <label class="text-[14px]">
-                                                                <input type="checkbox" class="status-checkbox"
-                                                                    data-actual-id="{{ $actual->actual_id }}"
-                                                                    data-status="Checked 1"
-                                                                    {{ $actual->asst_mng_checked_at ? 'checked' : '' }}
-                                                                    {{ $role == 'Checker 1' || $role == 'Checker WS' || $role == 'Checker Factory' || $role == 'FAD' || $email == 'widya.citra@bskp.co.id' ? '' : 'disabled' }}>
-                                                                Check 1
-                                                            </label>
-                                                            <div class="flex justify-center gap-x-2 mt-1.5">
-                                                                <div class="flex flex-col">
-                                                                    <span class="text-[9px] text-center">Check 1
-                                                                        By:</span>
-                                                                    @if ($actual->asst_mng_checked_by)
-                                                                        <span class="text-[9px] text-center">
-                                                                            {{ $actual->asst_mng_checked_by }}
-                                                                        </span>
-                                                                    @else
-                                                                        <span
-                                                                            class="text-[9px] text-center text-red-500">
-                                                                            N/A
-                                                                        </span>
-                                                                    @endif
-                                                                </div>
-                                                                <div class="flex flex-col">
-                                                                    <span class="text-[9px] text-center">Check 1
-                                                                        At:</span>
-                                                                    @if ($actual->asst_mng_checked_at)
-                                                                        <span class="text-[9px] text-center">
-                                                                            {{ \Carbon\Carbon::parse($actual->asst_mng_checked_at)->format('d M Y H:i') }}
-                                                                        </span>
-                                                                    @else
-                                                                        <span
-                                                                            class="text-[9px] text-center text-red-500">
-                                                                            N/A
-                                                                        </span>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="p-0">
-                                                            <label class="text-[14px]">
-                                                                <input type="checkbox" class="status-checkbox"
-                                                                    data-actual-id="{{ $actual->actual_id }}"
-                                                                    data-status="Checked 2"
-                                                                    {{ $actual->checked_by ? 'checked' : '' }}
-                                                                    {{ $role == 'Checker Div 1' || ($role == 'Checker Div 2' && $actual->status == 'Checked 1') ? '' : 'disabled' }}>
-                                                                Check 2
-                                                            </label>
-                                                            <div class="flex justify-center gap-x-2 mt-1.5">
-                                                                <div class="flex flex-col">
-                                                                    <span class="text-[9px] text-center">Check 2
-                                                                        By:</span>
-                                                                    @if ($actual->checked_by)
-                                                                        <span class="text-[9px] text-center">
-                                                                            {{ $actual->checked_by }}
-                                                                        </span>
-                                                                    @else
-                                                                        <span
-                                                                            class="text-[9px] text-center text-red-500">
-                                                                            N/A
-                                                                        </span>
-                                                                    @endif
-                                                                </div>
-                                                                <div class="flex flex-col">
-                                                                    <span class="text-[9px] text-center">Check 2
-                                                                        At:</span>
-                                                                    @if ($actual->checked_at)
-                                                                        <span class="text-[9px] text-center">
-                                                                            {{ \Carbon\Carbon::parse($actual->checked_at)->format('d M Y H:i') }}
-                                                                        </span>
-                                                                    @else
-                                                                        <span
-                                                                            class="text-[9px] text-center text-red-500">
-                                                                            N/A
-                                                                        </span>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="p-0">
-                                                            <label class="text-[14px]">
-                                                                <input type="checkbox" class="status-checkbox"
-                                                                    data-actual-id="{{ $actual->actual_id }}"
-                                                                    data-status="Mng Approve"
-                                                                    {{ $actual->mng_approved_at ? 'checked' : '' }}
-                                                                    {{ $role == 'Mng Approver' ? '' : 'disabled' }}>
-                                                                Approved {{ '(Mng)' }}
-                                                            </label>
-                                                            <div class="flex justify-center gap-x-2 mt-1.5">
-                                                                <div class="flex flex-col">
-                                                                    <span class="text-[9px] text-center">Approved
-                                                                        By:</span>
-                                                                    @if ($actual->mng_approved_by)
-                                                                        <span class="text-[9px] text-center">
-                                                                            {{ $actual->mng_approved_by }}
-                                                                        </span>
-                                                                    @else
-                                                                        <span
-                                                                            class="text-[9px] text-center text-red-500">
-                                                                            N/A
-                                                                        </span>
-                                                                    @endif
-                                                                </div>
-                                                                <div class="flex flex-col">
-                                                                    <span class="text-[9px] text-center">Approved
-                                                                        At:</span>
-                                                                    @if ($actual->mng_approved_at)
-                                                                        <span class="text-[9px] text-center">
-                                                                            {{ \Carbon\Carbon::parse($actual->mng_approved_at)->format('d M Y H:i') }}
-                                                                        </span>
-                                                                    @else
-                                                                        <span
-                                                                            class="text-[9px] text-center text-red-500">
-                                                                            N/A
-                                                                        </span>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="p-0">
-                                                            <label class="text-[14px]">
-                                                                <input type="checkbox" class="status-checkbox"
-                                                                    data-actual-id="{{ $actual->actual_id }}"
-                                                                    data-status="Approved"
-                                                                    {{ $actual->approved_at ? 'checked' : '' }}
-                                                                    {{ $role == 'Approver' ? '' : 'disabled' }}>
-                                                                Final Check {{ '(HRD Spv)' }}
-                                                            </label>
-                                                            <div class="flex justify-center gap-x-2 mt-1.5">
-                                                                <div class="flex flex-col">
-                                                                    <span class="text-[9px] text-center">Final Check
-                                                                        By:</span>
-                                                                    @if ($actual->approved_by)
-                                                                        <span class="text-[9px] text-center">
-                                                                            {{ $actual->approved_by }}
-                                                                        </span>
-                                                                    @else
-                                                                        <span
-                                                                            class="text-[9px] text-center text-red-500">
-                                                                            N/A
-                                                                        </span>
-                                                                    @endif
-                                                                </div>
-                                                                <div class="flex flex-col">
-                                                                    <span class="text-[9px] text-center">Final Check
-                                                                        At:</span>
-                                                                    @if ($actual->approved_at)
-                                                                        <span class="text-[9px] text-center">
-                                                                            {{ \Carbon\Carbon::parse($actual->approved_at)->format('d M Y H:i') }}
-                                                                        </span>
-                                                                    @else
-                                                                        <span
-                                                                            class="text-[9px] text-center text-red-500">
-                                                                            N/A
-                                                                        </span>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    @php
-                                                        $user = auth()->user();
-                                                        $role = $user->role;
-                                                    @endphp
-                                                    @if ($role != 'Inputer' && $role != '')
-                                                        @if ($actual->status !== 'Approved' && $actual->status !== 'Invalid')
-                                                            <div class="p-1 flex justify-start gap-x-2">
-                                                                <span class="text-semibold mb-1 text-[12px]">Berikan
-                                                                    Komentar
-                                                                </span>
-                                                                @if ($role == 'Approver')
-                                                                    <div class="flex gap-x-2 items-center">
-                                                                        <div class="">
-                                                                            <input type="checkbox" name="is_invalid"
-                                                                                id="is_invalid_{{ $actual->actual_id }}">
-                                                                        </div>
-                                                                        <span class="">Data Pendukung
-                                                                            Invalid</span>
                                                                     </div>
-                                                                @endif
-                                                            </div>
-                                                            <form action="{{ route('email.sendEmail') }}"
-                                                                method="POST"
-                                                                id="send-email-form-{{ $actual->actual_id }}">
-                                                                @csrf
-                                                                <div class="p-0 mb-2 flex justify-center gap-x-2">
-                                                                    <textarea name="comment" id="comment" cols="40" rows="2"></textarea>
-                                                                </div>
-                                                                <div class="flex justify-center gap-3">
-
-                                                                    <div class="flex flex-col">
-                                                                        <button
-                                                                            class="bg-yellow-500 text-white px-4 py-2 rounded text-[12px] mb-3">
-                                                                            <i class="ri-send-plane-line"></i>
-                                                                            <span>Kirim Revisi</span>
-                                                                        </button>
-
-                                                                    </div>
-                                                                    @php
-
-                                                                    @endphp
                                                                     <input type="hidden" name="email"
-                                                                        id="email"
                                                                         value="{{ $actuals->first()->email ?? '' }}">
                                                                     <input type="hidden" name="kpi_code"
-                                                                        id="kpi_code" value="{{ $target->code }}">
+                                                                        value="{{ $target->code }}">
                                                                     <input type="hidden" name="kpi_item"
-                                                                        id="kpi_item"
                                                                         value="{{ $target->indicator }}">
                                                                     <input type="hidden" name="department_id"
-                                                                        id="department_id"
-                                                                        value="{{ $actuals->first()->department_id }}">
+                                                                        value="{{ $actuals->first()->department_id ?? '' }}">
                                                                     <input type="hidden" name="actual_id"
-                                                                        id="actual_id"
                                                                         value="{{ $actual->actual_id }}">
+                                                                </form>
 
-                                                            </form>
-                                                </div>
-                                                <form action="{{ route('report.setInvalid') }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="actual_id" id=""
-                                                        value="{{ $actual->actual_id }}">
-                                                    <div class="hidden"
-                                                        id="invalid-comment-{{ $actual->actual_id }}">
-                                                        <div class="p-1 flex justify-start">
-                                                            <span class="text-semibold mb-1 text-[12px]">
-                                                                Komentar data pendukung tidak valid:
-                                                            </span>
-                                                        </div>
-                                                        <div class="p-0 mb-2 flex justify-center gap-x-2">
-                                                            <textarea name="invalid_reason" id="invalid_reason" cols="40" rows="2"></textarea>
-                                                        </div>
-                                                        <button type="submit"
-                                                            id="set-invalid-btn-{{ $actual->actual_id }}"
-                                                            class="bg-red-500 text-white px-4 py-2 rounded text-[12px] mb-3 hidden">
-                                                            <i class="ri-close-line"></i>
-                                                            <span>Set Data Invalid</span>
-                                                        </button>
+                                                                <form action="{{ route('report.setInvalid') }}"
+                                                                    method="POST">
+                                                                    @csrf
+                                                                    <input type="hidden" name="actual_id"
+                                                                        value="{{ $actual->actual_id }}">
+                                                                    <div class="hidden"
+                                                                        id="invalid-comment-{{ $actual->actual_id }}">
+                                                                        <div class="p-1 flex justify-start">
+                                                                            <span
+                                                                                class="text-semibold mb-1 text-[12px]">Komentar
+                                                                                data pendukung tidak valid:</span>
+                                                                        </div>
+                                                                        <div
+                                                                            class="p-0 mb-2 flex justify-center gap-x-2">
+                                                                            <textarea name="invalid_reason" id="invalid_reason-{{ $actual->actual_id }}" cols="40" rows="2"></textarea>
+                                                                        </div>
+                                                                        <button type="submit"
+                                                                            id="set-invalid-btn-{{ $actual->actual_id }}"
+                                                                            class="bg-red-500 text-white px-4 py-2 rounded text-[12px] mb-3 hidden">
+                                                                            <i class="ri-close-line"></i>
+                                                                            <span>Set Data Invalid</span>
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            @endif
+                                                            @if ($actual->status == 'Invalid')
+                                                                <div class="p-1 flex justify-start">
+                                                                    <span
+                                                                        class="text-semibold mb-1 text-[12px]">Komentar
+                                                                        data pendukung tidak valid:</span>
+                                                                    <span class="text-red-500 ml-2"
+                                                                        id="invalid-comment-text-{{ $actual->actual_id }}">{{ $actual->invalid_reason }}</span>
+                                                                </div>
+                                                            @endif
+                                                        @endif
                                                     </div>
-                                                </form>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <span class="text-red-500">No</span>
+                                        @endif
+                                    @else
+                                        <span></span>
                                     @endif
-                                    @if ($actual->status == 'Invalid')
-                                        <div class="p-1 flex justify-start">
-                                            <span class="text-semibold mb-1 text-[12px]">
-                                                Komentar data pendukung tidak valid:
-                                            </span>
-                                            <span class="text-red-500 ml-2"
-                                                id="invalid-comment-text-{{ $actual->actual_id }}">{{ $actual->invalid_reason }}</span>
-                                        </div>
-                                    @endif
-                                @endif
+                                </td>
+                            @endforeach
+                            <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
+                                data-fill-color="{{ $rowColor }}"
+                                class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
+                            </td>
+                        </tr>
+                    @endforeach
+                    <tr>
+                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
+                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
+                            class="changeColSpan border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
+                            colspan="7">Total</td>
+                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
+                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
+                            class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center">
+                            {{ $totalWeighting }}%</td>
+                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
+                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
+                            class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
+                            colspan="{{ count($months) + 2 }}"></td>
+                        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
+                            data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
+                            class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
+                            colspan="1">{{ number_format($sumTotalWeightingAchievement, 1) }}%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-                                {{-- <div class="flex justify-end">
-                                        <button id="close-modal-{{ $modalId }}" class="bg-red-500 text-white px-4 py-2 rounded mr-2 text-[12px] mt-0.5">Close</button>
-                                    </div> --}}
+        <div class="mx-2 my-3">
+            <p class="font-bold text-xl">KPI Sebelumnya</p>
+        </div>
+        <div class="mx-1 mt-2">
+            <table id="exportTableInactive" class="w-full table-auto">
+            </table>
+        </div>
     </div>
-    </div>
-    </div>
-@else
-    <span class="text-red-500">No</span>
-    @endif
-@else
-    <span class="text-red-500"></span>
-    @endif
-    {{-- MODAL ENDS --}}
-    </td>
-    @endforeach
-    <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-        data-fill-color="{{ $i % 2 === 0 ? 'FFF2F2F2' : 'FFFFFFFF' }}"
-        class="border border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-    </td>
-    </tr>
-    @endforeach
-    <tr>
-        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
-            data-f-color="FFFFFFFF"
-            class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
-            id="changeColSpan" colspan="5">Total</td>
-        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
-            data-f-color="FFFFFFFF"
-            class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center">
-            {{ $totalWeighting }}%</td>
-        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true" data-fill-color="FF0066FF"
-            data-f-color="FFFFFFFF"
-            class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
-            colspan="14"></td>
-        <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
-            data-fill-color="FF0066FF" data-f-color="FFFFFFFF"
-            class="border bg-blue-500 border-gray-400 text-[13px] tracking-wide font-medium text-white py-0 px-0.5 text-center"
-            colspan="1">{{ number_format($sumTotalWeightingAchievement, 1) }}%</td>
 
-    </tr>
-    </tbody>
-    </table>
-    </div>
-    </div>
-    {{-- Modal --}}
+    {{-- Modal Batch --}}
     <div id="batch-modal-bg" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden"></div>
     <div id="batch-modal" class="fixed inset-0 justify-center hidden">
         <div class="flex justify-center">
             <div
                 class="bg-gray-50 rounded-lg shadow-lg px-4 py-2 w-[500px] max-h-[750px] overflow-y-auto mt-52 items-center">
                 <div class="flex justify-end">
-                    <button id="close-batch-modal"
-                        class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                    <button id="close-batch-modal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
                 </div>
                 <div class="mt-1">
                     <div class="mt-0 py-3 px-0.5">
-                        <div class="">
+                        <div>
                             <span class="mb-0.5 font-semibold">Pilih Bulan</span>
                         </div>
                         <form id="batch-approve-form" action="{{ route('actual.batchUpdateActual', $userID) }}"
                             method="POST" class="flex gap-x-3 p-0">
                             @csrf
                             @method('PUT')
-                            <input type="hidden" name="year" id="year"
+                            <input type="hidden" name="year" id="year_batch"
                                 value="{{ request()->query('year') }}">
                             <input type="hidden" name="selected_targets" id="selected_targets">
                             <input type="hidden" name="target_codes" id="target_codes">
                             <input type="hidden" name="nik" id="nik" value="{{ $userCreds->nik }}">
-                            <input type="hidden" name="employee_id" id="employee_id"
-                                value="{{ $userID }}">
+                            <input type="hidden" name="employee_id" id="employee_id" value="{{ $userID }}">
                             <div class="my-2">
                                 <select name="month" id="month"
-                                    class="col-start-1 row-start-1 w-60 appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                    class="col-start-1 row-start-1 w-60 appearance-none rounded-md py-1.5 pl-3 pr-7 text-base text-gray-500 border border-gray-300 focus:outline-indigo-600 sm:text-sm">
                                     <option value="">Bulan</option>
                                     <option value="01">January</option>
                                     <option value="02">February</option>
@@ -1662,10 +791,9 @@
                                     <option value="12">December</option>
                                 </select>
                             </div>
-                            <div class="">
-                                <button class="py-1.5 px-2 bg-blue-600 my-2 rounded-md text-white">
-                                    Approve
-                                </button>
+                            <div>
+                                <button type="submit"
+                                    class="py-1.5 px-2 bg-blue-600 my-2 rounded-md text-white">Approve</button>
                             </div>
                         </form>
                     </div>
@@ -1673,23 +801,19 @@
             </div>
         </div>
     </div>
-    {{-- Modal Ends --}}
 </x-app-layout>
 
 <script type="text/javascript" src="{{ asset('js/tableToExcel.js') }}"></script>
 <script src="https://unpkg.com/pdfobject"></script>
 
-
 <script>
-    let pdfData = {}; // Dictionary to store pdfUrls for each modal
-    let currentIndexes = {}; // Dictionary to store currentIndex for each modal
-    let modalOrder = {}; // Dictionary to store the order of modals for each month
+    let pdfData = {};
+    let currentIndexes = {};
+    let modalOrder = {};
 
-    // Collect modal data based on month
     document.querySelectorAll('.modal').forEach(modal => {
         const month = modal.dataset.month;
         const actualId = modal.id.split('-').pop();
-
 
         if (!modalOrder[month]) {
             modalOrder[month] = [];
@@ -1727,15 +851,12 @@
         fetch(url)
             .then(response => response.json())
             .then(data => {
-
                 const index = buttonId.split('-').pop();
-                pdfData[index] = data; // Store pdfUrls for this modal
-                currentIndexes[index] = 0; // Initialize currentIndex for this modal
+                pdfData[index] = data;
+                currentIndexes[index] = 0;
                 updatePdfViewer(buttonId, actualId);
-                const modalId = `modal-${actualId}`;
-                const backgroundId = `modal-background-${actualId}`;
-                document.getElementById(modalId).classList.remove('hidden');
-                document.getElementById(backgroundId).classList.remove('hidden');
+                document.getElementById(`modal-${actualId}`).classList.remove('hidden');
+                document.getElementById(`modal-background-${actualId}`).classList.remove('hidden');
             })
             .catch(error => console.error('Error fetching PDF URLs:', error));
     }
@@ -1750,32 +871,27 @@
         const targetModalId = document.getElementById(`t-modal-${actualId}`);
         const actualModalId = document.getElementById(`a-modal-${actualId}`);
         const percentModalId = document.getElementById(`percent-modal-${actualId}`);
-        const currentIndex = currentIndexes[index]; // Get currentIndex for this modal
-        const pdfUrls = pdfData[index]; // Get pdfUrls for this modal
+        const currentIndex = currentIndexes[index];
+        const pdfUrls = pdfData[index];
 
         if (pdfUrls.length > 0) {
             const currentPdf = pdfUrls[currentIndex];
             const baseUrl = "{{ asset('record_files') }}";
             pdfObject.data = `${baseUrl}/${currentPdf.record_file}`;
-            // console.log(pdfObject.data);
 
             fileNumberElement.textContent = `${currentPdf.kpi_code} | ${currentPdf.kpi_item}`;
             if (currentPdf.comment != null) {
                 commentElement.textContent = `${currentPdf.comment}`;
             }
 
-            // Format target with commas
             if (currentPdf.target != null) {
-                const formattedTarget = parseFloat(currentPdf.target).toLocaleString('en-US');
-                targetModalId.textContent = formattedTarget;
+                targetModalId.textContent = parseFloat(currentPdf.target).toLocaleString('en-US');
             } else {
                 targetModalId.textContent = '';
             }
 
-            // Format actual with commas
             if (currentPdf.actual != null) {
-                const formattedActual = parseFloat(currentPdf.actual).toLocaleString('en-US');
-                actualModalId.textContent = formattedActual;
+                actualModalId.textContent = parseFloat(currentPdf.actual).toLocaleString('en-US');
             } else {
                 actualModalId.textContent = '';
             }
@@ -1790,11 +906,9 @@
             commentElement.textContent = '';
         }
 
-        // Remove existing event listeners
         prevButton.replaceWith(prevButton.cloneNode(true));
         nextButton.replaceWith(nextButton.cloneNode(true));
 
-        // Reassign the buttons after cloning
         const newPrevButton = document.getElementById(`prevButton-${index}`);
         const newNextButton = document.getElementById(`nextButton-${index}`);
 
@@ -1831,17 +945,13 @@
         });
     }
 
-    // update status
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.status-checkbox').forEach(function(checkbox) {
-            // if (checkbox.checked) {
-            //     checkbox.disabled = true;
-            // }
             checkbox.addEventListener('change', function() {
                 const actualId = this.getAttribute('data-actual-id');
                 const status = this.getAttribute('data-status');
                 const isChecked = this.checked;
-                const url = "{{ route('actual.updateActual') }}"
+                const url = "{{ route('actual.updateActual') }}";
 
                 fetch(url, {
                         method: 'PUT',
@@ -1865,39 +975,36 @@
             });
         });
     });
-    // update status end
 
     let exportButton = document.getElementById("exportBtn");
     exportButton.addEventListener("click", e => {
-        // Create a copy of the table
         let originalTable = document.querySelector("#exportTable");
         let tableCopy = originalTable.cloneNode(true);
 
-        // Remove modal elements from the copy
         tableCopy.querySelectorAll('.exclude-from-export').forEach(element => {
             element.remove();
         });
 
-        const totalCell = tableCopy.querySelector('#changeColSpan');
-        if (totalCell) {
-            totalCell.setAttribute('colspan', '5');
-        }
-
-
+        // Pakai querySelectorAll class agar export table dinamis colspan-nya jalan dengan mulus
+        const totalCells = tableCopy.querySelectorAll('.changeColSpan');
+        totalCells.forEach(cell => {
+            cell.setAttribute('colspan',
+            '6'); // Dikurangi 1 dari normal karena checkbox di-exclude saat export
+        });
 
         tableCopy.querySelectorAll('td').forEach(cell => {
-            if (cell.textContent.trim() === 'No') {
+            let text = cell.textContent.trim();
+            if (text === 'No') {
                 cell.setAttribute('data-f-color', 'FFFF0000'); // Red
-            } else if (cell.textContent.trim() === 'Yes') {
+            } else if (text === 'Yes') {
                 cell.setAttribute('data-f-color', 'FF00CC00'); // Green
-            } else if (cell.textContent.trim() === 'Review') {
+            } else if (text === 'Review') {
                 cell.setAttribute('data-f-color', 'FF3399FF'); // Blue
-            } else if (cell.textContent.trim() === 'Check') {
+            } else if (text === 'Check 1' || text === 'Check 2' || text === 'Check') {
                 cell.setAttribute('data-f-color', 'FFFF9900'); // Orange
             }
         });
 
-        // Export the copied table
         TableToExcel.convert(tableCopy, {
             name: "employee_report.xlsx",
             sheet: {
@@ -1922,16 +1029,12 @@
             targetCodes.push(checkbox.getAttribute('data-code'));
         });
 
-        console.log('Selected Target Codes:', targetCodes); // Log the selected target codes
-
         const selectedTargetsInput = document.getElementById('selected_targets');
         const targetCodesInput = document.getElementById('target_codes');
 
         if (selectedTargetsInput && targetCodesInput) {
             selectedTargetsInput.value = selectedItems.join(',');
             targetCodesInput.value = targetCodes.join(',');
-        } else {
-            console.error('Hidden input fields not found');
         }
 
         document.getElementById('batch-modal').classList.remove('hidden');
@@ -1952,33 +1055,28 @@
             targetCodes.push(checkbox.getAttribute('data-code'));
         });
 
-        console.log('Selected Target Codes on Submit:',
-            targetCodes); // Log the selected target codes on form submit
-
         const selectedTargetsInput = document.getElementById('selected_targets');
         const targetCodesInput = document.getElementById('target_codes');
 
         if (selectedTargetsInput && targetCodesInput) {
             selectedTargetsInput.value = selectedItems.join(',');
             targetCodesInput.value = targetCodes.join(',');
-        } else {
-            console.error('Hidden input fields not found');
         }
     });
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Select all checkboxes with id starting with 'is_invalid_'
         document.querySelectorAll('input[type="checkbox"][id^="is_invalid_"]').forEach(function(checkbox) {
             checkbox.addEventListener('change', function() {
-                // Get the actual_id from the checkbox id
                 const actualId = this.id.replace('is_invalid_', '');
                 const button = document.getElementById('set-invalid-btn-' + actualId);
                 const invalidComment = document.getElementById('invalid-comment-' + actualId);
-                const sendEamilForm = document.getElementById('send-email-form-' + actualId);
+                // Fix typo const sendEamilForm -> sendEmailForm
+                const sendEmailForm = document.getElementById('send-email-form-' + actualId);
+
                 if (button) {
                     button.classList.toggle('hidden', !this.checked);
                     invalidComment.classList.toggle('hidden', !this.checked);
-                    sendEamilForm.classList.toggle('hidden', this.checked);
+                    sendEmailForm.classList.toggle('hidden', this.checked);
                 }
             });
         });

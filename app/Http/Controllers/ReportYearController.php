@@ -182,13 +182,13 @@ class ReportYearController extends Controller
             return $percentageValue;
         } elseif ($unit == 'Tgl' || $unit == 'tgl') {
             $percentageValue = Averages::average($totalPercentage);
-        } elseif ($trend == 'Negatif' || $trend == 'negatif') {
+        } elseif ($trend == 'Negatif' || $trend == 'negatif' || $trend == 'N' || $trend == 'n') {
             if ($unit == 'Freq "0"' || $unit == '%' || $unit == 'Hari' || $unit == 'Jam') {
                 $percentageValue = Averages::average($totalPercentage);
             } else {
                 $percentageValue = ($target != 0 && $actual != 0) ? ($target / $actual) * 100 : 0;
             }
-        } elseif ($trend == 'Positif' || $trend == 'positif') {
+        } elseif ($trend == 'Positif' || $trend == 'positif' || $trend == 'P' || $trend == 'p') {
             if ($unit == 'Freq "0"' || $unit == '%' || $unit == 'Jam' || $unit == 'Hari') {
                 $percentageValue = Averages::average($totalPercentage);
             } else {
@@ -630,6 +630,8 @@ class ReportYearController extends Controller
                     $displayActual = $sumActualValues;
                 }
 
+                // dd($trendItem, $unitItem, $convertedCalc);
+
                 // =========================================================
                 // 7. FINAL CAPPING & WEIGHTING
                 // =========================================================
@@ -638,6 +640,7 @@ class ReportYearController extends Controller
                 } elseif ($convertedCalc > 110 && in_array($unitItem, ['Tgl', 'tgl', 'Freq'])) {
                     $convertedCalc = 110;
                 } elseif ($convertedCalc > 150 && $unitItem == '%') {
+                    dd('disni');
                     $convertedCalc = 150;
                 }
 
