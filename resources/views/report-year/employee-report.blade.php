@@ -251,38 +251,25 @@
                                 @php
                                     $targetUnitField = 'target_' . $month;
                                     $targetUnit = $target->$targetUnitField;
-                                    $sumTarget += floatval($targetUnit);
 
-                                    $actual = $actuals->first(function ($item) use ($target, $month) {
-                                        return \Carbon\Carbon::parse($item->date)->format('m') == $month &&
-                                            $item->kpi_item == $target->indicator &&
-                                            $target->is_active == 1;
-                                    });
+                                    // Pastikan dijumlahkan agar $sumTarget di akhir loop benar nilainya
+                                    $sumTarget += floatval($targetUnit);
                                 @endphp
+
                                 <td data-b-a-s="thin" data-a-h="center" data-a-v="middle" data-a-wrap="true"
                                     data-fill-color="{{ $rowColor }}"
                                     class="border bg-blue-100 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
-                                    @if ($actual)
-                                        @if ($actual->kpi_unit === '%')
-                                            {{ $actual->target !== null ? $actual->target . '%' : '' }}
-                                        @elseif ($actual->kpi_unit == 'Rp')
-                                            {{ $actual->target !== null ? substr(number_format($actual->target, 0, '.', ','), 0, 7) : '' }}
-                                        @elseif ($actual->kpi_unit == 'Kg')
-                                            {{ $actual->target !== null ? substr(number_format($actual->target, 1, '.', ','), 0, 7) : '' }}
-                                        @else
-                                            {{ $actual->target !== null ? $actual->target : 'N/A' }}
-                                        @endif
+
+                                    @if ($target->unit === '%')
+                                        {{ $targetUnit !== null && $targetUnit !== '' ? floatval($targetUnit) . '%' : 'N/A' }}
+                                    @elseif ($target->unit == 'Rp' || $target->unit == 'Kg/Tap' || $target->unit == 'Rp/Kg')
+                                        {{ $targetUnit !== null && $targetUnit !== '' ? substr(number_format(floatval($targetUnit), 0, '.', ','), 0, 7) : 'N/A' }}
+                                    @elseif ($target->unit == 'Kg')
+                                        {{ $targetUnit !== null && $targetUnit !== '' ? substr(number_format(floatval($targetUnit), 1, '.', ','), 0, 7) : 'N/A' }}
                                     @else
-                                        @if ($target->unit === '%')
-                                            {{ $targetUnit !== null ? floatval($targetUnit) * 100 . '%' : 'N/A' }}
-                                        @elseif ($target->unit == 'Rp' || $target->unit == 'Kg/Tap' || $target->unit == 'Rp/Kg')
-                                            {{ $targetUnit !== null ? substr(number_format($targetUnit, 0, '.', ','), 0, 7) : 'N/A' }}
-                                        @elseif ($target->unit == 'Kg')
-                                            {{ $targetUnit !== null ? substr(number_format($targetUnit, 1, '.', ','), 0, 7) : 'N/A' }}
-                                        @else
-                                            {{ $targetUnit !== null ? $targetUnit : 'N/A' }}
-                                        @endif
+                                        {{ $targetUnit !== null && $targetUnit !== '' ? $targetUnit : 'N/A' }}
                                     @endif
+
                                 </td>
                             @endforeach
 
@@ -989,7 +976,7 @@
         const totalCells = tableCopy.querySelectorAll('.changeColSpan');
         totalCells.forEach(cell => {
             cell.setAttribute('colspan',
-            '6'); // Dikurangi 1 dari normal karena checkbox di-exclude saat export
+                '6'); // Dikurangi 1 dari normal karena checkbox di-exclude saat export
         });
 
         tableCopy.querySelectorAll('td').forEach(cell => {

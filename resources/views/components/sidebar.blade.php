@@ -11,8 +11,13 @@
         $semester = $currentMonth < 7 ? '1' : '2';
         $userID = $user->id;
         $role = $user->role;
+        $userNik = $user->nik;
         $departmentID = $user->department_id;
         $inputType = $user->input_type;
+
+        $canApproveFinal = \App\Models\ApprovalMatrix::where('employee_nik', $userNik)
+            ->where('approval_type', 'Approver')
+            ->exists();
     @endphp
 
     <ul class="mt-4 space-y-1 text-sm">
@@ -75,11 +80,19 @@
                         (Dept)</span></a></li>
         @endif
 
+        @if ($canApproveFinal)
+            <li class="border-b border-gray-600 my-2"></li>
+            <li><a href="{{ route('report-year.departmentTargetReport', 'year=' . $currentYear) }}"
+                    class="flex items-center py-1.5 px-6 text-gray-300 hover:bg-gray-700"><i
+                        class="ri-bar-chart-box-line text-xl"></i><span class="ml-3">Summary KPI Report
+                        (Dept)</span></a></li>
+        @endif
+
         <li class="border-b border-gray-600 my-2"></li>
 
         <li><a href="{{ route('masterSupportingDocument') }}?department={{ $departmentID }}"
                 class="flex items-center py-1.5 px-6 text-gray-300 hover:bg-gray-700"><i
-                    class="ri-database-line text-xl"></i><span class="ml-3">Master Data Pendukung</span></a></li>
+                    class="ri-database-line text-xl"></i><span class="ml-3">Contoh Form Data Pendukung</span></a></li>
         <li><a href="{{ route('supportingDocumentEmployee') }}?department={{ $departmentID }}"
                 class="flex items-center py-1.5 px-6 text-gray-300 hover:bg-gray-700"><i
                     class="ri-database-line text-xl"></i><span class="ml-3">Lihat Data Pendukung</span></a></li>

@@ -8,7 +8,7 @@
         @endphp
         <div class="flex justify-between">
             <div class="">
-                <span class="font-bold text-2xl">Master Data Pendukung</span>
+                <span class="font-bold text-2xl">Contoh Form Data Pendukung</span>
             </div>
         </div>
 

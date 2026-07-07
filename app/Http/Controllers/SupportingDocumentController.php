@@ -143,8 +143,8 @@ class SupportingDocumentController extends Controller
         $auth_dept = auth()->user()->department_id;
 
         return view('supporting-documents.index', [
-            'title'     => 'Master Data Pendukung',
-            'desc'      => 'Master Data Pendukung',
+            'title'     => 'Contoh Form Data Pendukung',
+            'desc'      => 'Contoh Form Data Pendukung',
             'data'      => $data,
             'auth_dept' => $auth_dept,
         ]);
