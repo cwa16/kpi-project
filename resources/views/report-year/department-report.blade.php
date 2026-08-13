@@ -298,13 +298,13 @@
                                     data-fill-color="{{ $rowColor }}"
                                     class="border bg-gray-50 border-gray-400 text-[10px] tracking-wide font-medium text-gray-600 py-0 px-0.5 text-center">
                                     @if ($target->unit === '%')
-                                        {{ number_format($totalActual, 0) }}%
+                                        {{ number_format($totalActual, 0) }}
                                     @elseif ($target->unit === 'Tgl' || $target->unit === 'tgl')
                                         {{ number_format($totalActual) }}
                                     @elseif ($target->unit === 'Rp')
-                                        {{ substr(number_format($totalActual, 0, '.', ','), 0, 7) }}
+                                        {{ substr(number_format($totalActual, 0, '.', ','), 0) }}
                                     @elseif ($target->unit === 'Kg')
-                                        {{ substr(number_format($totalActual, 0, '.', ','), 0, 7) }}
+                                        {{ substr(number_format($totalActual, 0, '.', ','), 0) }}
                                     @else
                                         {{ $totalActual }}
                                     @endif

@@ -280,7 +280,7 @@
                                     @if ($target->unit === '%')
                                         {{ \PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average([floatval($targetUnit)]) * 100 }}%
                                     @elseif (in_array($target->unit, ['Tgl', 'tgl', 'mm', 'M3', 'Hari', 'Freq "0"', 'Jam']))
-                                        {{ \PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average([floatval($actual ? $actual->target : $targetUnit)]) }}
+                                        {{ \PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average([floatval($targetUnit)]) }}
                                     @elseif (in_array($target->unit, ['Kg/Tap', 'Rp/Kg']))
                                         {{ substr(number_format(\PhpOffice\PhpSpreadsheet\Calculation\Statistical\Averages::average([$targetUnit]), 0, '.', ','), 0, 9) }}
                                     @elseif ($target->unit === 'Rp')
